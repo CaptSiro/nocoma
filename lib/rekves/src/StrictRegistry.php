@@ -28,7 +28,6 @@
 
     public function get ($propName) {
       if (isset($this->__map[$propName])) {
-        file_put_contents("download.txt", $this->__map[$propName], FILE_APPEND);
         return $this->optionalyUnserializeValue($this->__map[$propName]);
       }
 

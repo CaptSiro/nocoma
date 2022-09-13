@@ -117,7 +117,11 @@ class Response {
     exit();
   }
 
-  function error (string $errorMessage) {
+  function error (string $errorMessage, int $statusCode = -1) {
+    if ($statusCode !== -1) {
+      $this->setStatusCode($statusCode);
+    }
+
     $this->send($errorMessage);
   }
 

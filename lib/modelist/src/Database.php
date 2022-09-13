@@ -3,6 +3,14 @@
   require_once(__DIR__ . "/access.php");
   require_once(__DIR__ . "/DatabaseParam.php");
 
+  class SideEffect {
+    public $lastInsertedID, $rowCount;
+
+    public function __construct ($liID, $rc) {
+      $this->lastInsertedID = $liID;
+      $this->rowCount = $rc;
+    }
+  }
 
   class Database {
     private $con;
@@ -35,13 +43,13 @@
       )->max;
     }
 
-    public function statement($sql, $params = []) {
+    public function statement($sql, $params = []): SideEffect {
       $stmt = $this->con->prepare($sql);
       foreach($params as $param) {
         $stmt->bindValue($param->name, $param->value, $param->type);
       }
       $stmt->execute();
-      return $stmt->rowCount();
+      return new SideEffect($this->con->lastInsertId(), $stmt->rowCount());
     }
 
     public function fetch($sql, $className, $params = []) {

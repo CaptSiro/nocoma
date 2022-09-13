@@ -1,16 +1,15 @@
 <?php
 
   class Console {
-    static function log ($content, $__file__ = null, $__line__ = null, $f = "logs.txt", $dir = null) {
+    static function log ($content, $f = "logs.txt", $dir = null) {
       $dir = ($dir == null)
         ? __DIR__
         : $dir;
 
       $path = $dir . "\\" . $f;
-      $log = (isset($__file__) ? "$__file__:($__line__) " : "") . $content . "\n";
 
       $temp = file_get_contents($path);
-      file_put_contents($path, $log . $temp);
+      file_put_contents($path, $content . $temp);
     }
 
     static function print ($object, $__file__ = null, $__line__ = null, $f = "logs.txt", $dir = null) {
@@ -23,5 +22,11 @@
 
     static function date ($content, $f = "log.txt", $dir = null) {
       self::log(date("Y-m-d H:i:s") . ": $content", null, null, $f, $dir);
+    }
+
+    static function debug ($content, $f = "log.txt", $dir = null) {
+      $trace = debug_backtrace()[0];
+
+      self::log($trace["file"] . "(" . $trace["line"] . "): $content\n", $f, $dir);
     }
   }

@@ -1,6 +1,6 @@
 <?php
 
-  require_once(Path::translate("./lib/autrack/autrack.php"));
+  require_once __DIR__ . "/../lib/modelist/modelist.php";
 
   class Media extends StrictModel {
     protected $src, $extension, $basename;

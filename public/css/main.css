@@ -1,0 +1,55 @@
+* {
+  padding: 0px;
+  margin: 0px;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+}
+
+:root {
+  --text-color: #223;
+  --text-color-2: #556;
+  --container: #eef;
+  --container-2: #dde;
+  --container-3: #ccd;
+  --container-4: #99a;
+  --blue: #87e5ff;
+  --pink: #FFACC9;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.center-text {
+  text-align: center;
+}
+
+.chained-inputs {
+  display: flex;
+  box-sizing: unset;
+}
+
+.chained-inputs input::-webkit-outer-spin-button,
+.chained-inputs input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+.chained-inputs input[type=number] {
+  -moz-appearance: textfield;
+}
+
+
+p.PHP-Exception {
+  display: none;
+  position: fixed;
+  top: 10px;
+  left: 10px;
+}
+
+p.PHP-Exception.throw {
+  display: block;
+}

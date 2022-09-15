@@ -10,6 +10,7 @@
   $userRes->forwardFailure($res);
   
   $user = $userRes->getSuccess();
+  TimeoutMail::removeCodesFor($user->ID);
 
   $code = null;
   while ($code == null) {
@@ -23,7 +24,9 @@
     });
   }
 
-  TimeoutMail::insertCode($code, $user->ID);
+  $insertRes = TimeoutMail::insertCode($code, $user->ID);
+  $insertRes->forwardFailure($res);
+  
   MailTemplate::verifyAccount($user, $code)->send();
 
   $res->json((object)["msg" => "code sent"]);

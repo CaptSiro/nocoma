@@ -38,7 +38,11 @@
 
   // all good, register user
 
-  $sideEffect = User::register($req->body->email, $req->body->website, password_hash($req->body->password, PASSWORD_DEFAULT));
+  $sideEffect = User::register(
+    $req->body->email,
+    $req->body->website,
+    password_hash($req->body->password, PASSWORD_DEFAULT)
+  );
   $userRes = User::get($sideEffect->lastInsertedID);
 
   $userRes->either(function ($user) use ($req) {

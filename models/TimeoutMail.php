@@ -13,9 +13,12 @@
     protected static function getNumberProps (): array {
       return ["ID", "usersID", "expires", "passwordRecoveriesID", "verificationCodesID", "code"];
     }
+
+
     protected static function getBooleanProps (): array {
       return [];
     }
+
 
     private function finish () {
       if (isset($this->passwordRecoveriesID)) {
@@ -31,7 +34,7 @@
 
 
 
-    
+
     public static $timeout = 60 * 5; // 5 minutes
     private static function insert ($userID): SideEffect {
       return Database::get()->statement(
@@ -44,11 +47,20 @@
       );
     }
 
+    private static function delete (int $timeoutMailID): SideEffect {
+      return Database::get()->statement(
+        "DELETE FROM `timeoutmails`
+        WHERE ID = :tmID
+        LIMIT 1",
+        [new DatabaseParam("tmID", $timeoutMailID)]
+      );
+    }
 
 
 
 
-    
+
+
     public static function getUsersMails ($usersID): array {
       $mails = self::parseProps(Database::get()->fetchAll(
         "SELECT
@@ -75,6 +87,7 @@
       return $mails;
     }
 
+
     public static function purgeOld (): void {
       Database::get()->statement("DELETE FROM `timeoutmails` WHERE `expires` - UNIX_TIMESTAMP() < 0");
     }
@@ -93,6 +106,7 @@
       ));
     }
 
+
     public static function isCodeTaken (string $code): Result {
       if ($code == "") {
         return fail(new InvalidArgumentExc("Code is not defined."));
@@ -107,6 +121,7 @@
       ))->amount != 0);
     }
 
+
     public static function insertCode (string $code, int $userID): Result {
       if ($code == "") {
         return fail(new InvalidArgumentExc("Code is not defined."));
@@ -120,16 +135,15 @@
         VALUES (:tmID, :code)",
         [
           new DatabaseParam("tmID", $timeoutMailID),
-          new DatabaseParam("code", $code)
+          new DatabaseParam("code", $code, PDO::PARAM_STR)
         ]
       );
 
       return success($timeoutMailID);
     }
 
-    public static function getUserWithCode (string $code): Result {
-      self::purgeOld();
 
+    public static function getUserWithCode (string $code): Result {
       if ($code == "") {
         return fail(new InvalidArgumentExc("Code is not defined."));
       }
@@ -141,14 +155,14 @@
           users.email email,
           users.password \"password\",
           users.level \"level\",
-          users.website website
+          users.website website,
+          timeoutmails.expires as expires
         FROM
           `timeoutmails`
           JOIN verificationcodes as vc ON vc.verificationCodesID = timeoutmails.ID
             AND vc.code = :code
-            AND timeoutmails.expires - UNIX_TIMESTAMP() >= 0
           JOIN users ON users.ID = timeoutmails.usersID",
-        User::class,
+        stdClass::class,
         [new DatabaseParam("code", $code, PDO::PARAM_STR)]
       );
 
@@ -156,8 +170,75 @@
         return fail(new NotFoundExc("Could not found user."));
       }
 
+      if (intval($optionalUser->expires) - time() < 0) {
+        return fail(new InvalidArgumentExc("Code has expired."));
+      }
+
       return success($optionalUser);
     }
+
+
+    public static function removeCode (string $code): Result {
+      if ($code == "") {
+        return fail(new InvalidArgumentExc("Code is not defined"));
+      }
+
+      $mail = self::parseProps(Database::get()->fetch(
+        "SELECT verificationCodesID
+        FROM `verificationcodes`
+        WHERE code = :code",
+        self::class,
+        [new DatabaseParam("code", $code, PDO::PARAM_STR)]
+      ));
+
+      $sideEffect = Database::get()->statement(
+        "DELETE FROM timeoutmails
+        WHERE ID = :tmID
+        LIMIT 1",
+        [new DatabaseParam("tmID", $mail->verificationCodesID)]
+      );
+
+      if ($sideEffect->rowCount == 0) {
+        return fail(new NotFoundExc("Could not found timeout mail with code: '$code'"));
+      }
+      
+      return success("Successfull.");
+    }
+
+
+    public static function removeCodesFor (int $userID): Result {
+      if ($userID < 1) {
+        return fail(new InvalidArgumentExc("User ID is not defined."));
+      }
+
+      $mails = self::parseProps(Database::get()->fetchAll(
+        "SELECT
+          `timeoutmails`.`ID` ID
+        FROM
+          `timeoutmails`
+          JOIN verificationcodes AS vc ON (timeoutmails.ID, timeoutmails.usersID) = (vc.verificationCodesID, :userID)",
+        self::class,
+        [new DatabaseParam("userID", $userID)]
+      ));
+
+      $deleted = 0;
+      foreach ($mails as $mail) {
+        $sideEffect = self::delete($mail->ID);
+
+        if ($sideEffect->rowCount == 1) {
+          $deleted++;
+        }
+      }
+
+      return success($deleted);
+    }
+
+
+
+
+
+
+    
 
 
 
@@ -179,6 +260,7 @@
       );
     }
 
+
     public static function isUrlArgTaken (string $urlArg): Result {
       if ($urlArg == "") {
         return fail(new InvalidArgumentExc("Url argument is not defined."));
@@ -193,6 +275,7 @@
       ))->amount != 0);
     }
 
+
     public static function insertUrlArg (string $urlArg, int $userID): Result {
       if ($urlArg == "") {
         return fail(new InvalidArgumentExc("Url argument is not defined."));
@@ -206,16 +289,15 @@
         VALUES (:tmID, :urlArg)",
         [
           new DatabaseParam("tmID", $timeoutMailID),
-          new DatabaseParam("urlArg", $urlArg)
+          new DatabaseParam("urlArg", $urlArg, PDO::PARAM_STR)
         ]
       );
 
       return success($timeoutMailID);
     }
 
-    public static function getUserWithUA (string $urlArg): Result {
-      self::purgeOld();
 
+    public static function getUserWithUA (string $urlArg): Result {
       if ($urlArg == "") {
         return fail(new InvalidArgumentExc("Url argument is not defined."));
       }
@@ -227,14 +309,15 @@
           users.email email,
           users.password \"password\",
           users.level \"level\",
-          users.website website
+          users.website website,
+          timeoutmails.expires as expires
         FROM
           `timeoutmails`
           JOIN passwordrecoveries as pr ON pr.passwordRecoveriesID = timeoutmails.ID
             AND pr.urlArg = :urlArg
             AND timeoutmails.expires - UNIX_TIMESTAMP() >= 0
           JOIN users ON users.ID = timeoutmails.usersID",
-        User::class,
+        stdClass::class,
         [new DatabaseParam("urlArg", $urlArg, PDO::PARAM_STR)]
       );
 
@@ -242,6 +325,66 @@
         return fail(new NotFoundExc("Could not found user."));
       }
 
+      if (intval($optionalUser->expires) - time() < 0) {
+        return fail(new InvalidArgumentExc("Url argument has expired."));
+      }
+
       return success($optionalUser);
+    }
+
+
+    public static function removeUA (string $ua): Result {
+      if ($ua == "") {
+        return fail(new InvalidArgumentExc("Url argument is not defined"));
+      }
+
+      $mail = self::parseProps(Database::get()->fetch(
+        "SELECT passwordRecoveriesID
+        FROM `passwordrecoveries`
+        WHERE urlArg = :ua",
+        self::class,
+        [new DatabaseParam("ua", $ua, PDO::PARAM_STR)]
+      ));
+
+      $sideEffect = Database::get()->statement(
+        "DELETE FROM timeoutmails
+        WHERE ID = :tmID
+        LIMIT 1",
+        [new DatabaseParam("tmID", $mail->passwordRecoveriesID)]
+      );
+
+      if ($sideEffect->rowCount == 0) {
+        return fail(new NotFoundExc("Could not found timeout mail with url argument: '$ua'"));
+      }
+      
+      return success("Successfull.");
+    }
+
+
+    public static function removeUAsFor (int $userID): Result {
+      if ($userID < 1) {
+        return fail(new InvalidArgumentExc("User ID is not defined."));
+      }
+
+      $mails = self::parseProps(Database::get()->fetchAll(
+        "SELECT
+          `timeoutmails`.`ID` ID
+        FROM
+          `timeoutmails`
+          JOIN passwordrecoveries AS pr ON (timeoutmails.ID, timeoutmails.usersID) = (pr.passwordRecoveriesID, :userID)",
+        self::class,
+        [new DatabaseParam("userID", $userID)]
+      ));
+
+      $deleted = 0;
+      foreach ($mails as $mail) {
+        $sideEffect = self::delete($mail->ID);
+
+        if ($sideEffect->rowCount == 1) {
+          $deleted++;
+        }
+      }
+
+      return success($deleted);
     }
   }

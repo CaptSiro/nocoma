@@ -4,5 +4,5 @@
 
   $req->session->unset("user");
 
-  $res->setHeader("Location", "../");
+  $res->setHeader("Location", "/nocoma");
   $res->generateHeaders();

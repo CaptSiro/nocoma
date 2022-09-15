@@ -5,11 +5,11 @@
   class MailTemplate {
     public const PASSWORD_RECOVERY_GATEWAY = "http://localhost/nocoma/templates/password-recovery.php";
 
-    static function passwordRecovery ($user, $paswordRecoveryID): MailTemplate {
+    static function passwordRecovery ($user, $urlArg): MailTemplate {
       return new MailTemplate($user, "Password Recovery", "
         Hello,<br><br>
         
-        We are reaching to you in case of password recovery. If you are interested please continue here: <a href=\"" . self::PASSWORD_RECOVERY_GATEWAY . "?prid=$paswordRecoveryID\" target=\"_blank\">Reset Password</a><br>
+        We are reaching to you in case of password recovery. If you are interested please continue here: <a href=\"" . self::PASSWORD_RECOVERY_GATEWAY . "?prid=$urlArg\" target=\"_blank\">Reset Password.</a><br><br>
         
         If you are not interested, just ignore or delete this email.
 

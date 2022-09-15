@@ -16,7 +16,7 @@ const regexes = {
     r: /(?=.{8,})(?=.*[a-zA-Z]+)(?=.*[0-9]+)(?=.*[%_&@]+)^[a-zA-Z0-9&%@_]+$/,
     err: "Password is not strong enough. At least 8 characters long, must contain capital/lowercase letters, numbers and one of special characters (&%@_)."
   }
-}
+};
 $$(".form.register input[regex]").forEach(e => {
   const key = e.getAttribute("regex");
   const errorPar = e.nextElementSibling;
@@ -24,9 +24,11 @@ $$(".form.register input[regex]").forEach(e => {
     const isValid = regexes[key].r.test(e.value);
     if (isValid === true) {
       errorPar.textContent = "";
+      errorPar.classList.remove("show");
       e.classList.remove("invalid");
     } else {
       errorPar.innerHTML = regexes[key].err;
+      errorPar.classList.add("show");
       e.classList.add("invalid");
     }
   });
@@ -80,12 +82,15 @@ registerSubmit.addEventListener("click", evt => {
     "create-register.php",
     toFormData(body),
     json => {
+      const err = registerSubmit.nextElementSibling;
       if (json.error !== undefined) {
-        registerSubmit.nextElementSibling.textContent = "Server: " + json.error;
+        err.textContent = "Server: " + json.error;
+        err.classList.add("show");
       } else {
-        registerSubmit.nextElementSibling.textContent = "";
-        registerSubmit.closest(".form").classList.add("hide");
-        forms.get(json.next).classList.remove("hide");
+        err.textContent = "";
+        err.classList.remove("show");
+
+        switchForm(registerSubmit.closest(".form"), json.next);
 
         $("button.request-code").dispatchEvent(new Event("pointerdown"));
       }

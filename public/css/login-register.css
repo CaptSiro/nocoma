@@ -1,9 +1,10 @@
 body {
   width: 100vw;
   height: 100vh;
-  overflow: hidden;
+  overflow-x: hidden;
   background: url(../glassmorphism-1.jpg);
   background-position: center;
+  background-attachment: fixed;
   background-size: cover;
 }
 
@@ -65,19 +66,13 @@ body {
   cursor: pointer;
 }
 
-.form p {
-  font-size: 0.9em;
-}
-.form p.error {
-  color: crimson;
-}
-
 .form button.link {
   all: unset;
   color: #417;
   font-size: 0.9em;
   font-weight: bold;
 }
+
 .form button.link:hover {
   cursor: pointer;
   text-decoration: underline;

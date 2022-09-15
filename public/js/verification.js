@@ -1,10 +1,10 @@
 const requestCode = $("button.request-code");
-const requestTimer = new Timer(30);
+const requestTimer = new Timer(60);
 requestTimer.onChange(num => {
-  requestCode.textContent = `You may request code again in (${num})`;
+  requestCode.textContent = `You may request code again in (${num}).`;
 });
 requestTimer.onFinish(() => {
-  requestCode.textContent = `You may request code again`;
+  requestCode.textContent = `You may request code again.`;
 });
 
 
@@ -18,7 +18,12 @@ requestCode.addEventListener("pointerdown", evt => {
       json => {
         if (json.error !== undefined) {
           verificationError.textContent = json.error;
+          verificationError.classList.add("show");
+          return;
         }
+
+        verificationError.classList.remove("show");
+        verificationError.textContent = "";
       },
       {
         credentials: "include"
@@ -44,8 +49,12 @@ verificationSubmit.addEventListener("pointerdown", evt => {
     json => {
       if (json.error !== undefined) {
         verificationError.textContent = json.error;
+        verificationError.classList.add("show");
         return;
       }
+
+      verificationError.classList.remove("show");
+      verificationError.textContent = "";
 
       if (json.redirect !== undefined) {
         window.location.replace(json.redirect);

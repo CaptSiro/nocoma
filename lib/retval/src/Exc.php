@@ -12,20 +12,22 @@
 
   class Exc implements JsonSerializable {
     protected $message;
-    protected $trace;
+    protected $trace = [];
 
     public function getMessage (): string {
       return $this->message;
     }
 
-    public function getTrace (): Trace {
+    public function getTrace (): array {
       return $this->trace;
     }
 
     public function __construct (string $msg) {
       $this->message = $msg;
-      $t = debug_backtrace()[0];
-      $this->trace = new Trace($t["file"], $t["line"]);
+      $backtrace = debug_backtrace();
+      foreach ($backtrace as $t) {
+        $this->trace[] = new Trace($t["file"], $t["line"]);
+      }
     }
 
     function jsonSerialize() {

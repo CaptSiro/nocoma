@@ -12,3 +12,13 @@ $$("button[link-to]").forEach(e => {
     forms.get(linkTo).classList.remove("hide");
   });
 });
+
+
+/**
+ * @param {HTMLElement} currentForm 
+ * @param {string} formToken 
+ */
+function switchForm (currentForm, formToken) {
+  currentForm.classList.add("hide");
+  forms.get(formToken).classList.remove("hide");
+}

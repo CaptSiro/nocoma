@@ -11,4 +11,7 @@
   $user = $userRes->getSuccess();
   User::verify($user->ID);
 
+  $removalRes = TimeoutMail::removeCode($req->body->code);
+  $removalRes->forwardFailure($res);
+
   $res->json((object)["redirect" => "./user-dashboard.php"]);

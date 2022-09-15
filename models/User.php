@@ -23,7 +23,13 @@
     protected static function getNumberProps (): array {
       return ["ID", "themesID", "level"];
     }
+
+
     protected static function getBooleanProps (): array { return ["isVerified"]; }
+
+
+
+
 
 
 
@@ -49,6 +55,7 @@
       return success(self::parseProps($optionalUser));
     }
 
+
     static function getByEmail (string $email): Result {
       if ($email == "") {
         return fail(new InvalidArgumentExc("Email is not defined"));
@@ -61,13 +68,14 @@
           users.email email,
           users.password \"password\",
           users.level \"level\",
-          users.website website
+          users.website website,
+          users.isVerified isVerified
         FROM users
         WHERE users.email = :email",
         self::class,
         [new DatabaseParam("email", $email, PDO::PARAM_STR)]
       );
-
+      
       if ($optUser === false) {
         return fail(new NotFoundExc("Could not find user."));
       }
@@ -75,14 +83,10 @@
       return success(self::parseProps($optUser));
     }
 
-    static function verify (int $userID) {
-      Database::get()->statement(
-        "UPDATE `users`
-        SET `isVerified` = 1
-        WHERE ID = :userID",
-        [new DatabaseParam("userID", $userID)]
-      );
-    }
+
+
+
+
 
     static function isEmailTaken (string $email): Result {
       if ($email == "") {
@@ -99,6 +103,7 @@
       )))->amount != 0);
     }
 
+
     static function isWebsiteTaken (string $website): Result {
       if ($website == "") {
         return fail(new InvalidArgumentExc("Website is not defined"));
@@ -114,6 +119,11 @@
       )))->amount != 0);
     }
 
+
+
+
+
+
     static function register (string $email, string $website, string $password): SideEffect {
       return Database::get()->statement(
         "INSERT INTO `users`(`themesID`, `email`, `password`, `level`, `website`, `isVerified`)
@@ -122,6 +132,29 @@
           new DatabaseParam("email", $email, PDO::PARAM_STR),
           new DatabaseParam("website", $website, PDO::PARAM_STR),
           new DatabaseParam("password", $password, PDO::PARAM_STR),
+        ]
+      );
+    }
+
+
+    static function verify (int $userID) {
+      Database::get()->statement(
+        "UPDATE `users`
+        SET `isVerified` = 1
+        WHERE ID = :userID",
+        [new DatabaseParam("userID", $userID)]
+      );
+    }
+
+
+    static function updatePassword (string $hashedPassword, int $userID) {
+      Database::get()->statement(
+        "UPDATE `users`
+        SET `password` = :newPassword
+        WHERE ID = :userID",
+        [
+          new DatabaseParam("newPassword", $hashedPassword, PDO::PARAM_STR),
+          new DatabaseParam("userID", $userID),
         ]
       );
     }

@@ -26,17 +26,16 @@
 <body class="center">
   <p class="PHP-Exception"></p>
 
+
   <div class="form login">
     <div class="wrapper">
       <p class="label">Email:</p>
       <input type="text" name="l-email" id="l-email">
-      <p class="error"></p>
     </div>
 
     <div class="wrapper">
       <p class="label">Password:</p>
       <input type="password" name="l-password" id="l-password">
-      <p class="error"></p>
     </div>
     
     <div class="wrapper">
@@ -47,6 +46,10 @@
 
     <div class="wrapper">
       <button class="submit">Login</button>
+    </div>
+
+    <div class="wrapper">
+      <p class="blockquote error"></p>
     </div>
 
     <div class="hline"></div>
@@ -61,22 +64,26 @@
     <div class="wrapper">
       <p class="label">Please enter your email you used for registration:</p>
       <input type="text" name="f-email" id="f-email" regex="email">
-      <p class="error"></p>
+      <p class="blockquote error"></p>
+    </div>
+
+    <div class="wrapper">
+      <p class="blockquote note">Note: You may request password only on verified accounts.</p>
     </div>
 
     <div class="divider"></div>
 
     <div class="wrapper">
       <button class="submit">Submit</button>
+      <p class="blockquote error"></p>
     </div>
 
     <div class="hline"></div>
 
-    <div class="wrapper center">
+    <div class="wrapper">
       <p>Back to <button class="link" link-to="login">login.</button></p>
     </div>
   </div>
-
 
 
   <div class="form forgotten-password-2 hide">
@@ -84,44 +91,45 @@
       <p class="label">We have sent you email with instruction. Please follow from there. (You may close this tab)</p>
     </div>
 
+    <div class="divider"></div>
+
     <div class="wrapper">
       <p>Back to <button class="link" link-to="login">login.</button></p>
     </div>
   </div>
 
 
-
   <div class="form register hide">
     <div class="wrapper">
       <p class="label">Email:</p>
       <input type="text" name="r-email" id="r-email" regex="email">
-      <p class="error"></p>
+      <p class="blockquote error"></p>
     </div>
 
     <div class="wrapper">
       <p class="label">Website:</p>
       <span class="url-website">./hosts/<span id="your-website"></span></span>
       <input type="text" name="r-website" id="r-website" regex="website">
-      <p class="error"></p>
+      <p class="blockquote error"></p>
     </div>
 
     <div class="wrapper">
       <p class="label">Password:</p>
       <input type="password" name="r-password" id="r-password" regex="password">
-      <p class="error"></p>
+      <p class="blockquote error"></p>
     </div>
 
     <div class="wrapper">
       <p class="label">Password again:</p>
       <input type="password" name="r-password-again" id="r-password-again">
-      <p class="error"></p>
+      <p class="blockquote error"></p>
     </div>
 
     <div class="divider"></div>
 
     <div class="wrapper">
       <button class="submit">Register</button>
-      <p class="error"></p>
+      <p class="blockquote error"></p>
     </div>
 
     <div class="hline"></div>
@@ -130,7 +138,6 @@
       <p>Already have an account? <button class="link" link-to="login">Login.</button></p>
     </div>
   </div>
-
 
 
   <div class="form code-verification hide">
@@ -158,7 +165,7 @@
         const getVarificationValue = chainedInputs(document.currentScript.previousElementSibling);
       </script>
 
-      <p class="error center-text"></p>
+      <p class="blockquote error center-text"></p>
     </div>
 
     <div class="divider"></div>

@@ -276,7 +276,7 @@ class AJAX {
               resolve();
             }
   
-            reject(response.status + ": " + t);
+            reject(resp.status + ": " + t);
           });
         }
       });

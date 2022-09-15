@@ -26,12 +26,14 @@
 
 
 
-    public function get ($propName) {
+    public function get ($propName, $default = null) {
       if (isset($this->__map[$propName])) {
         return $this->optionalyUnserializeValue($this->__map[$propName]);
       }
 
-      return null;
+      return (isset($default))
+        ? $default
+        : null;
     }
 
 
@@ -46,6 +48,10 @@
     
     public function unset ($propName) {
       unset($this->__map[$propName]);
+    }
+
+    public function isset ($propName): bool {
+      return isset($this->__map[$propName]);
     }
 
 

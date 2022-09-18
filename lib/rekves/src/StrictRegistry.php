@@ -47,6 +47,7 @@
 
     
     public function unset ($propName) {
+      $this->setValue($propName, null);
       unset($this->__map[$propName]);
     }
 

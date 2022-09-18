@@ -3,7 +3,7 @@
   require_once __DIR__ . "/../lib/rekves/rekves.php";
   require_once __DIR__ . "/../lib/src/authenticate.php";
 
-  Auth::redirect($req->session->get("user"), [AUTH_USER], AUTH_DEFAULT_REDIRECT_MAP);
+  Auth::redirect($req->session->get("user"), [AUTH_ADMIN], AUTH_DEFAULT_REDIRECT_MAP);
 ?><!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,7 +13,7 @@
   <title>Dashboard - NoComa</title>
 </head>
 <body>
-  <p>YOU MADE IT HERE AT LAST!</p>
+  <p>LETS START THE BAN-FEST😈, shall we?</p>
   <a href="../ajax/get/delete-logout.php">Logout</a>
 </body>
 </html>

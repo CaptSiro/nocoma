@@ -1,4 +1,10 @@
-<!DOCTYPE html>
+<?php
+  require_once __DIR__ . "/../models/User.php";
+  require_once __DIR__ . "/../lib/rekves/rekves.php";
+  require_once __DIR__ . "/../lib/src/authenticate.php";
+
+  Auth::redirect($req->session->get("user"), [AUTH_NOT_LOGGED_IN], AUTH_DEFAULT_REDIRECT_MAP);
+?><!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">

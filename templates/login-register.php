@@ -16,6 +16,7 @@
   <script src="../public/js/components/FireAble.js"></script>
   <script src="../public/js/components/SequentialAnimation.js"></script>
   <script src="../public/js/components/TextSlider.js"></script>
+  <script src="../public/js/components/CheckBox.js"></script>
 
   <script src="../public/js/forms.js" defer></script>
   <script src="../public/js/login.js" defer></script>
@@ -123,6 +124,10 @@
       <p class="label">Password again:</p>
       <input type="password" name="r-password-again" id="r-password-again">
       <p class="blockquote error"></p>
+    </div>
+
+    <div class="wrapper">
+      <check-box id="r-tos-pp" cb-border-radius="4px" cb-border="2px solid #ccd" cb-background="#dde">I agree to the <a href="./terms-of-service.html">terms of service</a> and <a href="./privaci-policy.html">privacy policy</a></check-box>
     </div>
 
     <div class="divider"></div>

@@ -59,7 +59,7 @@ inputWebsite.addEventListener("input", evt => yourWebsite.textContent = inputWeb
 
 
 
-
+const tosCheckBox = $("check-box#r-tos-pp");
 const registerSubmit = $(".form.register button.submit");
 registerSubmit.addEventListener("click", evt => {
   const inputs = {
@@ -77,6 +77,14 @@ registerSubmit.addEventListener("click", evt => {
       body[key] = inputs[key].value;
     }
   }
+
+  if (!tosCheckBox.isChecked()) {
+    registerSubmit.nextElementSibling.innerHTML = "You must agree with terms of service and privacy policy.";
+    registerSubmit.nextElementSibling.classList.add("show");
+    return;
+  }
+
+  registerSubmit.nextElementSibling.classList.remove("show");
 
   AJAX.post(
     "create-register.php",

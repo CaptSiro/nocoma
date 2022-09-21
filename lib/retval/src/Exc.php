@@ -30,6 +30,14 @@
       }
     }
 
+    public function bubbleUp () {
+      $this->trace = [];
+      $backtrace = debug_backtrace();
+      foreach ($backtrace as $t) {
+        $this->trace[] = new Trace($t["file"], $t["line"]);
+      }
+    }
+
     function jsonSerialize() {
       return (object)[
         "error" => $this->message,

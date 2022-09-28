@@ -1,0 +1,21 @@
+<?xml version='1.0' standalone='yes'?>
+<compoment>
+  <properties>
+    <name>name of component</name>
+    <class>class that script creates</class>
+    <category>name of category</category>
+  </properties>
+
+  <imports>
+    <class>class name1</class>
+    <class>class name2</class>
+    <class>class name3</class>
+  </imports>
+  
+  <files>
+    <icon>name of icon file</icon>
+    <source>name of javascript source file</source>
+    <template>name of html template file</template>
+    <styles>name of css styles file</styles>
+  </files>
+</compoment>

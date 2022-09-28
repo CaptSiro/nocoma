@@ -1,0 +1,16 @@
+<?xml version='1.0' standalone='yes'?>
+<compoment>
+  <properties>
+    <name>Table</name>
+    <class>WCTable</class>
+    <category>Layout</category>
+  </properties>
+
+  <imports>
+    <class>WCTextColumn</class>
+  </imports>
+  
+  <files>
+    <source>component.js</source>
+  </files>
+</compoment>

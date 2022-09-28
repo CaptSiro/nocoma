@@ -58,6 +58,12 @@
     }
   }
 
+  class NullPointerExc extends Exc {
+    public function __construct ($msg) {
+      parent::__construct($msg);
+    }
+  }
+
   class InvalidArgumentExc extends Exc {
     public function __construct ($msg) {
       parent::__construct($msg);

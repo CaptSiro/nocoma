@@ -10,6 +10,7 @@
 
   $user = $userRes->getSuccess();
   User::verify($user->ID);
+  mkdir(__DIR__ . "/../../hosts/" . $user->website);
 
   $removalRes = TimeoutMail::removeCode($req->body->code);
   $removalRes->forwardFailure($res);

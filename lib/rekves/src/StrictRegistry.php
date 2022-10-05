@@ -75,4 +75,23 @@
 
       return null;
     }
+
+
+
+
+
+    public function stringify (): string {
+      $rtn = "{";
+
+      foreach ($this->__map as $key => $value) {
+        $rtn .= "\n\t\"$key\": \"$value\",";
+      }
+
+      $rtn .= "\n}\n";
+
+      return $rtn;
+    }
+    public function getMap (): array {
+      return $this->__map;
+    }
   }

@@ -12,3 +12,5 @@
 /ajax/get/hash.php
 
 .env
+
+/.vscode

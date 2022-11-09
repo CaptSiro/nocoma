@@ -6,7 +6,7 @@
       $handle = fopen($file, "r");
       if ($handle) {
         while (($line = fgets($handle)) !== false) {
-          preg_match("/(.*)=(.*)./", $line, $matches);
+          preg_match("/(.*)=(.*)/", rtrim($line, "\r\n"), $matches);
           $this->__map[$matches[1]] = $matches[2];
         }
 

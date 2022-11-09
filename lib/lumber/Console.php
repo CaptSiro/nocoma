@@ -1,19 +1,19 @@
 <?php
 
   class Console {
-    static function log ($content, $f = "logs.txt", $dir = null) {
+    static function log ($content, $f = "log.txt", $dir = null) {
       $dir = ($dir == null)
         ? __DIR__
         : $dir;
 
-      $path = $dir . "\\" . $f;
+      $path = $dir . "/" . $f;
 
       $temp = file_get_contents($path);
-      file_put_contents($path, $content . $temp);
+      file_put_contents($path, $content . "\n" . $temp);
     }
 
-    static function print ($object, $__file__ = null, $__line__ = null, $f = "logs.txt", $dir = null) {
-      self::log(print_r($object, true), $__file__, $__line__, $f, $dir);
+    static function print ($object, $f = "log.txt", $dir = null) {
+      self::log(print_r($object, true), $f, $dir);
     }
 
     static function header ($header, $content, $f = "log.txt", $dir = null) {

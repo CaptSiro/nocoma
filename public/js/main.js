@@ -207,6 +207,8 @@ const functionOrPromise = (returnVal, resolve, reject) => {
 };
 
 class AJAX {
+  static GET_DIR = "/nocoma/ajax/get";
+  static POST_DIR = "/nocoma/ajax/post";
   /**
    * @typedef FetchEXOptions
    * @prop {"json"|"HTMLText"|"plainText"=} handlerType
@@ -293,7 +295,7 @@ class AJAX {
    * @param {(reason: any, txt: string)=>void=} errorHandler
    */
   static get (address, handler, options, errorHandler) {
-    return this.#fetch("http://localhost/nocoma/AJAX/get/" + address, handler, options, errorHandler);
+    return this.#fetch(this.GET_DIR + "/" + address, handler, options, errorHandler);
   }
 
   /**
@@ -308,6 +310,13 @@ class AJAX {
       ? {}
       : options;
 
-    return this.#fetch("http://localhost/nocoma/AJAX/post/" + address, handler, Object.assign(options, {body}, {method: "POST"}), errorHandler);
+    return this.#fetch(this.POST_DIR + "/" + address, handler, Object.assign(options, {body}, {method: "POST"}), errorHandler);
   }
 }
+
+
+/**
+ * @typedef WidgetJSON
+ * @prop {string} type
+ * @prop {Object.<string, string>=} style
+ */

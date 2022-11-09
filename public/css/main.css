@@ -8,10 +8,15 @@
 :root {
   --text-color: #223;
   --text-color-2: #556;
-  --container: #eef;
+  --container-0: #fff;
+  --container-1: #eef;
   --container-2: #dde;
   --container-3: #ccd;
   --container-4: #99a;
+  --container-opposite-0: rgb(177, 59, 165);
+  --container-opposite-1: rgb(120, 37, 131);
+  --container-opposite-2: rgb(69, 20, 93);
+  --container-opposite-3: rgb(23, 5, 45);
   --blue: #87e5ff;
   --pink: #FFACC9;
 }

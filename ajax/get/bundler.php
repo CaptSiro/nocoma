@@ -1,0 +1,35 @@
+<?php
+
+  require_once __DIR__ . "/../../lib/rekves/rekves.php";
+  require_once __DIR__ . "/../../lib/structure/structure.php";
+  require_once __DIR__ . "/../../lib/lumber/Console.php";
+
+  $parser = new Parser(__DIR__ . "/../../widgets");
+  $importOrder = $parser->getClassSet(explode(",", $req->body->w));
+
+
+  foreach ($importOrder as $class) {
+    $r = $parser->registry[$class];
+
+    if (!$r->isUpToDate()) {
+      $updateRes = $parser->updateRecord($r);
+      if ($updateRes->isFailure()) {
+        Console::print($updateRes->getFailure(), "bundler-exc.txt", __DIR__);
+        $res->error($updateRes->getFailure()->getMessage(), Response::INTERNAL_SERVER_ERROR);
+      }
+    }
+
+    $ftype = $req->body->get("ftype", "js") == "js" ? "source" : "styles";
+    if (isset($r->files[$ftype])) {
+      readfile($r->files[$ftype]->filePath);
+    }
+    echo "\n";
+  }
+
+
+  if ($req->body->get("ftype", "js") == "css") {
+    $res->setHeader("Content-type", "text/css");
+  }
+  $res->generateHeaders();
+
+?>

@@ -1,0 +1,64 @@
+NotUniqueValueExc Object
+(
+    [message:protected] => Class with WColumn name is already defined.
+    [trace:protected] => Array
+        (
+            [0] => Trace Object
+                (
+                    [file] => C:\wamp\www\nocoma\lib\retval\src\Exc.php
+                    [line] => 75
+                )
+
+            [1] => Trace Object
+                (
+                    [file] => C:\wamp\www\nocoma\lib\structure\src\Parser.php
+                    [line] => 121
+                )
+
+            [2] => Trace Object
+                (
+                    [file] => C:\wamp\www\nocoma\lib\structure\src\Parser.php
+                    [line] => 103
+                )
+
+            [3] => Trace Object
+                (
+                    [file] => C:\wamp\www\nocoma\ajax\get\bundler.php
+                    [line] => 15
+                )
+
+        )
+
+)
+NotUniqueValueExc Object
+(
+    [message:protected] => Class with WColumn name is already defined.
+    [trace:protected] => Array
+        (
+            [0] => Trace Object
+                (
+                    [file] => C:\wamp\www\nocoma\lib\retval\src\Exc.php
+                    [line] => 75
+                )
+
+            [1] => Trace Object
+                (
+                    [file] => C:\wamp\www\nocoma\lib\structure\src\Parser.php
+                    [line] => 121
+                )
+
+            [2] => Trace Object
+                (
+                    [file] => C:\wamp\www\nocoma\lib\structure\src\Parser.php
+                    [line] => 103
+                )
+
+            [3] => Trace Object
+                (
+                    [file] => C:\wamp\www\nocoma\ajax\get\bundler.php
+                    [line] => 15
+                )
+
+        )
+
+)

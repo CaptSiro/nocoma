@@ -1,0 +1,10 @@
+.w-paragraph {
+  background-color: crimson;
+  color: whitesmoke;
+  padding: 8px;
+  border: 1px solid whitesmoke;
+}
+
+.w-paragraph.edit {
+  background-color: dodgerblue !important;
+}

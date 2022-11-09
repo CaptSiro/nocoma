@@ -1,6 +1,7 @@
 <?php
 
-  require_once(__DIR__ . "/access.php");
+  require_once __DIR__ . "/../../dotenv/dotenv.php";
+  require_once __DIR__ . "/../../paths.php";
   require_once(__DIR__ . "/DatabaseParam.php");
 
   class SideEffect {
@@ -24,12 +25,13 @@
     }
 
     public function __construct() {
-      $connectionString = "mysql:host=" . HOST . ";port=" . PORT . ";dbname=" . DB_N . ";charset=UTF8";
+      $env = new Env(ENV_FILE);
+      $connectionString = "mysql:host=$env->HOST;port=$env->PORT;dbname=$env->DB_N;charset=UTF8";
       $opt = [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, // errors from MySQL will appear as PHP Exceptions
         PDO::MYSQL_ATTR_MULTI_STATEMENTS => false // SQL injection
       ];
-      $this->con = new PDO($connectionString, USER, PASS, $opt);
+      $this->con = new PDO($connectionString, $env->USER, $env->PASS, $opt);
     }
 
     public function lastInsertId() {

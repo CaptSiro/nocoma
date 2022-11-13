@@ -1,13 +1,13 @@
-var W = class W { // var is used because it creates reference on globalThis (window) object
+var WRichText = class WRichText { // var is used because it creates reference on globalThis (window) object
   /**
-   * @typedef JSONType
+   * @typedef RichTextJSONType
    * @prop {string} text
    * 
-   * @typedef {JSONType & WidgetJSON} JSON
+   * @typedef {JSONType & WidgetJSON} RichTextJSON
    */
 
   /**
-   * @param {JSON} json
+   * @param {RichTextJSON} json
    * @returns {HTMLElement}
    */
   static build (json) {
@@ -17,7 +17,7 @@ var W = class W { // var is used because it creates reference on globalThis (win
   }
 
   /**
-   * @param {JSON} json
+   * @param {RichTextJSON} json
    * @returns {HTMLElement}
    */
   static edit (json) {

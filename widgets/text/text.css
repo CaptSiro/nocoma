@@ -1,0 +1,7 @@
+.w-text {
+  padding: 16px;
+}
+.w-text > * {
+  line-height: 1.1em;
+  height: 1.1em;
+}

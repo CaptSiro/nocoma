@@ -19,9 +19,10 @@
       }
     }
 
-    $ftype = $req->body->get("ftype", "js") == "js" ? "source" : "styles";
-    if (isset($r->files[$ftype])) {
-      readfile($r->files[$ftype]->filePath);
+    if ($req->body->get("ftype", "js") == "js") {
+      readfile($r->properties["cfn"]);
+    } else {
+      readfile($r->files["styles"]->filePath);
     }
     echo "\n";
   }

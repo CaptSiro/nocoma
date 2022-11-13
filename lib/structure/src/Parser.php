@@ -107,6 +107,66 @@
 
 
 
+    private function compile (string $fileName, $class): Result {
+      if (!file_exists($fileName)) {
+        return fail(new NotFoundExc("Could not find 'source' file for $class."));
+      }
+
+      $source = fopen($fileName, "r");
+      $outputFile = __DIR__ . "/compiled-widgets/" . $class . ".comp.js";
+      $output = fopen($outputFile, "w");
+
+
+      $ln = 1;
+      $inComment = false;
+      $inString = false;
+      $closingQuote = "";
+      while (!feof($source)) {
+        $line = fgets($source);
+
+        $out = "";
+        for ($i = 0; $i < strlen($line); $i++) {
+          if ($line[$i] == "'" || $line[$i] == '"' || $line[$i] =="`") {
+            if ($inString && $closingQuote == $line[$i]) {
+              $inString = false;
+            } else {
+              $inString = true;
+              $closingQuote = $line[$i];
+            }
+          }
+
+          if ($inString == false && $line[$i] == "/" && isset($line[$i + 1]) && $line[$i + 1] == "/") {
+            break;
+          }
+
+          if ($inString == false && $line[$i] == "/" && isset($line[$i + 1]) && $line[$i + 1] == "*") {
+            $inComment = true;
+          }
+
+          if ($inString == false && $line[$i] == "*" && isset($line[$i + 1]) && $line[$i + 1] == "/") {
+            $inComment = false;
+            $i += 2;
+          }
+
+          if ($inComment == false) {
+            $out .= $line[$i];
+          }
+        }
+
+        $trimmed = rtrim($out);
+        if (strlen($trimmed) != 0) {
+          fwrite($output, "$trimmed\n");
+        }
+
+        $ln++;
+      }
+
+      return success($outputFile);
+    }
+
+
+
+
 
 
     public function updateRecord (Record $r): Result {
@@ -150,6 +210,19 @@
         return fail (new NullPointerExc("Widget's 'source' file is not defined in 'files' array."));
       }
 
+
+
+      if (!isset($config["properties"]["class"])) {
+        return fail(new NotFoundExc("Could not find 'class' in 'properties' array in '$configFile'."));
+      }
+      
+      $compileRes = $this->compile($files["source"]->filePath, $config["properties"]["class"]);
+
+      if ($compileRes->isFailure()) {
+        return $compileRes;
+      }
+
+      $config["properties"]["cfn"] = $compileRes->getSuccess();
 
 
       $record = new Record($config["properties"], isset($config["imports"]) ? $config["imports"] : [], $files);

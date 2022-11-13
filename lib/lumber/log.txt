@@ -1,0 +1,32 @@
+Array
+(
+    [label] => 
+    [class] => WLink
+    [category] => hidden
+    [dir] => C:\wamp\www\nocoma\ajax\get/../../widgets/link
+)
+
+Array
+(
+    [label] => 
+    [class] => WLink
+    [category] => hidden
+    [dir] => C:\wamp\www\nocoma\ajax\get/../../widgets/link
+)
+
+Array
+(
+    [label] => 
+    [class] => WLink
+    [category] => hidden
+    [dir] => C:\wamp\www\nocoma\ajax\get/../../widgets/link
+)
+
+Array
+(
+    [label] => 
+    [class] => WLink
+    [category] => hidden
+    [dir] => C:\wamp\www\nocoma\ajax\get/../../widgets/link
+)
+

@@ -47,6 +47,8 @@ const $$ = (css) => document.querySelectorAll(css);
  * @prop {(event: ClipboardEvent)=>void=} copy
  * @prop {(event: ClipboardEvent)=>void=} cut
  * @prop {(event: ClipboardEvent)=>void=} paste
+ * @prop {(event: FocusEvent)=>void=} blur
+ * @prop {(event: FocusEvent)=>void=} focus
  * @prop {(event: Event)=>void=} ended
  * @prop {(event: Event)=>void=} error
  * @prop {(event: Event)=>void=} loadeddata
@@ -319,4 +321,6 @@ class AJAX {
  * @typedef WidgetJSON
  * @prop {string} type
  * @prop {Object.<string, string>=} style
+ * @prop {WidgetJSON=} child
+ * @prop {WidgetJSON[]=} children
  */

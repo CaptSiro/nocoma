@@ -46,7 +46,7 @@
     </div>
     
     <div class="wrapper">
-      <button class="link" link-to="forgotten-password">Forgortten password?</button>
+      <button class="link" link-to="forgotten-password">Forgotten password?</button>
     </div>
 
     <div class="divider"></div>
@@ -133,7 +133,7 @@
     </div>
 
     <div class="wrapper">
-      <check-box id="r-tos-pp" cb-border-radius="4px" cb-border="2px solid #ccd" cb-background="#dde">I agree to the <a href="./terms-of-service.html">terms of service</a> and <a href="./privaci-policy.html">privacy policy</a></check-box>
+      <check-box id="r-tos-pp" cb-border-radius="4px" cb-border="2px solid #ccd" cb-background="#dde">I agree to the <a href="./terms-of-service.html">terms of service</a> and <a href="./privacy-policy.html">privacy policy</a></check-box>
     </div>
 
     <div class="divider"></div>
@@ -156,7 +156,7 @@
       <p class="label">We have sent you 6-digit code on your email address to verify your account. Be sure to check spam as well.</p>
     </div>
 
-    <div class="wraper">
+    <div class="wrapper">
       <button class="link request-code">You may request code again in (4:59)</button>
     </div>
 
@@ -173,7 +173,7 @@
       </div>
 
       <script>
-        const getVarificationValue = chainedInputs(document.currentScript.previousElementSibling);
+        const getVerificationValue = chainedInputs(document.currentScript.previousElementSibling);
       </script>
 
       <p class="blockquote error center-text"></p>

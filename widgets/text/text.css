@@ -3,5 +3,5 @@
 }
 .w-text > * {
   line-height: 1.1em;
-  height: 1.1em;
+  min-height: 1.1em;
 }

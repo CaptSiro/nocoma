@@ -20,6 +20,17 @@
   }
 
 
+  function match_char_seq (string $str, int $startIndex, $charSeq): bool {
+    for ($i = 0; $i < strlen($charSeq); $i++) { 
+      if (!(isset($str[$startIndex + $i]) && $str[$startIndex + $i] == $charSeq[$i])) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+
 
 
 
@@ -135,15 +146,15 @@
             }
           }
 
-          if ($inString == false && $line[$i] == "/" && isset($line[$i + 1]) && $line[$i + 1] == "/") {
+          if ($inString == false && match_char_seq($line, $i, "//")) {
             break;
           }
 
-          if ($inString == false && $line[$i] == "/" && isset($line[$i + 1]) && $line[$i + 1] == "*") {
+          if ($inString == false && match_char_seq($line, $i, "/*")) {
             $inComment = true;
           }
 
-          if ($inString == false && $line[$i] == "*" && isset($line[$i + 1]) && $line[$i + 1] == "/") {
+          if ($inString == false && match_char_seq($line, $i, "*/")) {
             $inComment = false;
             $i += 2;
           }

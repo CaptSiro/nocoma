@@ -21,6 +21,23 @@
   --pink: #FFACC9;
 }
 
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--container-opposite-3);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--container-opposite-1);
+}
+
+
+
 .center {
   display: flex;
   justify-content: center;
@@ -63,7 +80,7 @@ p.PHP-Exception.throw {
 p.blockquote {
   font-size: 0.9em;
   width: 100%;
-  border-left: transparent solid 8px;
+  border-left: transparent solid 4px;
   padding: 8px;
   margin-top: 4px;
 }

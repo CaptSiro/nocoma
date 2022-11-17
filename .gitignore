@@ -15,4 +15,5 @@
 
 /.vscode
 
-*/lumber/log.txt
+*/log.txt
+*/*log.txt

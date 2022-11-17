@@ -1,6 +1,7 @@
 <?php
 
   require_once __DIR__ . "/../../dotenv/dotenv.php";
+  require_once __DIR__ . "/../../lumber/Console.php";
   require_once __DIR__ . "/../../paths.php";
   require_once(__DIR__ . "/DatabaseParam.php");
 
@@ -26,12 +27,25 @@
 
     public function __construct() {
       $env = new Env(ENV_FILE);
-      $connectionString = "mysql:host=$env->HOST;port=$env->PORT;dbname=$env->DB_N;charset=UTF8";
+
+      $dbLogin = Result::all($env->get("HOST"), $env->get("PORT"), $env->get("DB_N"), $env->get("USER"), $env->get("PASS"));
+      if ($dbLogin->isFailure()) {
+        $msg = "";
+        foreach ($dbLogin->getFailures() as $exc) {
+          $msg .= $exc->getMessage() . "; ";
+          Console::exc($exc, "db-log.txt", __DIR__);
+        }
+
+        throw new Exception("Invalid login. $msg");
+      }
+      $login = $dbLogin->getSuccess();
+
+      $connectionString = "mysql:host=$login[0];port=$login[1];dbname=$login[2];charset=UTF8";
       $opt = [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION, // errors from MySQL will appear as PHP Exceptions
         PDO::MYSQL_ATTR_MULTI_STATEMENTS => false // SQL injection
       ];
-      $this->con = new PDO($connectionString, $env->USER, $env->PASS, $opt);
+      $this->con = new PDO($connectionString, $login[3], $login[4], $opt);
     }
 
     public function lastInsertId() {

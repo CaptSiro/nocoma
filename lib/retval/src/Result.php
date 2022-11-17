@@ -1,4 +1,39 @@
 <?php
+  //todo finish Result::all()
+
+  class ResultSet {
+    private $success, $failures;
+    public function getSuccess () {
+      return $this->success;
+    }
+    public function getFailures () {
+      return $this->failures;
+    }
+
+    public function __construct (?array $success, ?array $failures) {
+      $this->success = empty($success) ? null : $success;
+      $this->failures = empty($failures) ? null : $failures;
+    }
+
+
+    public function isSuccess (): bool {
+      return isset($this->succ);
+    }
+
+    public function isFailure (): bool {
+      return isset($this->failure);
+    }
+
+
+
+    public function strip (Closure $failFN) {
+      if ($this->isFailure()) {
+        return $failFN($this->failures);
+      }
+
+      return $this->succ;
+    }
+  }
 
   class Result {
     private $succ, $failure;
@@ -53,6 +88,31 @@
       }
 
       return fail($failFN($this->failure));
+    }
+
+    public function strip (Closure $failFN) {
+      if ($this->isFailure()) {
+        return $failFN();
+      }
+
+      return $this->succ;
+    }
+
+    public static function all (...$results): ResultSet {
+      if (empty($results)) return fail(new NullPointerExc("Working with 0 results. You must pass at least one."));
+
+      $failed = [];
+      $succeeded = [];
+
+      foreach ($results as $res) {
+        if ($res->isFailure()) {
+          $failed[] = $res->getFailure();
+        } else {
+          $succeeded[] = $res->getSuccess();
+        }
+      }
+
+      return new ResultSet($succeeded, $failed);
     }
   }
 

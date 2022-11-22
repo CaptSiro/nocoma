@@ -3,6 +3,7 @@
   require_once __DIR__ . "/../lib/rekves/rekves.php";
   require_once __DIR__ . "/../lib/authenticate.php";
 
+
   Auth::redirect($req->session->get("user"), [AUTH_NOT_LOGGED_IN], AUTH_DEFAULT_REDIRECT_MAP);
 ?><!DOCTYPE html>
 <html lang="en">
@@ -25,10 +26,7 @@
   <script src="../public/js/components/CheckBox.js"></script>
 
   <script src="../public/js/forms.js" defer></script>
-  <script src="../public/js/login.js" defer></script>
-  <script src="../public/js/register.js" defer></script>
-  <script src="../public/js/forgotten-password.js" defer></script>
-  <script src="../public/js/verification.js" defer></script>
+  <script src="../public/js/login-register.js" defer></script>
 </head>
 <body class="center">
   <p class="PHP-Exception"></p>

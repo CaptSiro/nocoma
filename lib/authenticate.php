@@ -1,7 +1,7 @@
 <?php
 
-  require_once __DIR__ . "/../rekves/rekves.php";
-  require_once __DIR__ . "/../retval/retval.php";
+  require_once __DIR__ . "/rekves/rekves.php";
+  require_once __DIR__ . "/retval/retval.php";
 
   const AUTH_LOGGED_IN = -1;
   const AUTH_NOT_LOGGED_IN = -2;

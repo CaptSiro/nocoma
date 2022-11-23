@@ -20,3 +20,6 @@
 
 /lib/structure/compiled-widgets/*
 /lib/structure/registry.json
+
+/templates/test-page.json
+/templates/test.*

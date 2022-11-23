@@ -1,3 +1,3 @@
 <?php
 
-  define("ENV_FILE", __DIR__ . "/../.env");
+  const ENV_FILE = __DIR__ . "/../.env";

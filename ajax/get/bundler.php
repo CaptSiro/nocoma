@@ -3,8 +3,13 @@
   require_once __DIR__ . "/../../lib/rekves/rekves.php";
   require_once __DIR__ . "/../../lib/structure/structure.php";
   require_once __DIR__ . "/../../lib/lumber/Console.php";
+  require_once __DIR__ . "/../../lib/dotenv/dotenv.php";
+  require_once __DIR__ . "/../../lib/paths.php";
 
-  $parser = new Parser(__DIR__ . "/../../widgets");
+  $widgetsDirRes = (new Env(ENV_FILE))->get("WIDGETS_DIR");
+  $widgetsDirRes->forwardFailure($res);
+
+  $parser = new Parser($_SERVER["DOCUMENT_ROOT"] . $widgetsDirRes->getSuccess());
   $importOrder = $parser->getClassSet(explode(",", $req->body->w));
 
 

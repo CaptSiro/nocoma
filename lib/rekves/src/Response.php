@@ -87,9 +87,14 @@ class Response {
 
 
 
-  function send ($text) {
+  function send (string $text) {
     $this->generateHeaders();
-    exit("" . $text);
+    exit($text);
+  }
+
+  function flush () {
+    $this->generateHeaders();
+    exit();
   }
   
   function json ($jsonEncodeAble) {

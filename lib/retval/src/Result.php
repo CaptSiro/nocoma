@@ -24,7 +24,11 @@
       return isset($this->failure);
     }
 
-
+    public function forwardFailure (Response $res) {
+      if (isset($this->failure)) {
+        $res->json($this->failure);
+      }
+    }
 
     public function strip (Closure $failFN) {
       if ($this->isFailure()) {

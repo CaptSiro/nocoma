@@ -49,6 +49,28 @@
       }
     }
 
+    public function stripPrivate ($doStripFilePaths = true): Record {
+      $r = new Record($this->properties, $this->imports, $this->files);
+      unset($r->properties["cfn"]);
+      unset($r->properties["dir"]);
+      unset($r->files["source"]);
+      unset($r->files["config"]);
+
+      $f = [];
+      foreach ($r->files as $key => $file) {
+        $f[$key] = $doStripFilePaths ? (str_replace($_SERVER["DOCUMENT_ROOT"], "", $file->filePath)) : $file->filePath;
+      }
+
+      $r->files = $f;
+
+      return $r;
+    }
+
+
+
+
+
+
     static function parse ($plainObject) {
       $files = [];
       foreach ($plainObject->files as $label => $watcher) {

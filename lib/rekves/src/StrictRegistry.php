@@ -10,12 +10,12 @@
       $this->useSerializedValues = false;
     }
 
-    private function optionalySerializeValue ($value) {
+    private function optionallySerializeValue ($value) {
       return ($this->useSerializedValues == true)
         ? serialize($value)
         : $value;
     }
-    private function optionalyUnserializeValue ($value) {
+    private function optionallyUnserializeValue ($value) {
       return ($this->useSerializedValues == true)
         ? unserialize($value)
         : $value;
@@ -28,7 +28,7 @@
 
     public function get ($propName, $default = null) {
       if (isset($this->__map[$propName])) {
-        return $this->optionalyUnserializeValue($this->__map[$propName]);
+        return $this->optionallyUnserializeValue($this->__map[$propName]);
       }
 
       return (isset($default))
@@ -62,7 +62,7 @@
         $this->propNotFound($propName);
       }
 
-      return $this->optionalyUnserializeValue($got);
+      return $this->optionallyUnserializeValue($got);
     }
 
 
@@ -70,7 +70,7 @@
       $modified = $this->setValue($propName, $value);
 
       if ($modified !== null) {
-        return $this->__map[$propName] = $this->optionalySerializeValue($modified);
+        return $this->__map[$propName] = $this->optionallySerializeValue($modified);
       }
 
       return null;

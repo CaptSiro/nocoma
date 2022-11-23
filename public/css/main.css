@@ -115,3 +115,44 @@ a:hover {
   cursor: pointer;
   text-decoration: underline;
 }
+
+
+
+
+
+
+
+.checkbox-container {
+  font-family: Helvetica, sans-serif;
+  font-size: 1em;
+  line-height: 1.1;
+  display: grid;
+  grid-template-columns: 1em auto;
+  gap: 0.5em;
+}
+
+input[type="checkbox"] {
+  position: relative;
+
+  appearance: none;
+  background-color: #fff;
+  margin: 0px;
+
+  font: inherit;
+  color: black;
+  width: 1.15em;
+  height: 1.15em;
+  border: 0.08em solid black;
+  border-radius: 0.15em !important;
+  transform: translateY(-0.075em);
+  transition: background-color 100ms linear;
+}
+
+input[type="checkbox"]:checked {
+  background-color: dodgerblue;
+  transition: background-color 150ms linear;
+}
+
+input[type=checkbox]:focus {
+  outline: 2px solid var(--container-opposite-1);
+}

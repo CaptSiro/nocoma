@@ -17,3 +17,6 @@
 
 */log.txt
 */*log.txt
+
+/lib/structure/compiled-widgets/*
+/lib/structure/registry.json

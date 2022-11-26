@@ -56,6 +56,15 @@
             $this->registry[$r->properties["class"]] = $r;
           }
         }
+
+        $compiledGlob = glob(__DIR__ . "/compiled-widgets/*");
+        foreach ($compiledGlob as $compiled) {
+          $class = str_replace(".comp", "", pathinfo($compiled)["filename"]);
+
+          if (!isset($this->registry[$class])) {
+            unlink($compiled);
+          }
+        }
         
         file_put_contents(__DIR__ . "/" . SAVE_FILE, json_encode($this->registry));
         return;

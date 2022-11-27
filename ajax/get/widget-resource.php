@@ -11,7 +11,7 @@
   $propsRes = $env->get("WIDGETS_DIR");
   $propsRes->forwardFailure($res);
 
-  $parser = new Parser($_SERVER["DOCUMENT_ROOT"] . $propsRes->getSuccess());
+  $parser = new Parser($_SERVER["DOCUMENT_ROOT"] . $propsRes->getSuccess(), Parser::ON_FAIL());
 
   
   $prepared = [];

@@ -36,6 +36,18 @@
 
 
   class Parser {
+    public static function ON_FAIL () {
+      return function (Exc $failure) {
+        global $res;
+        if (!isset($res)) {
+          $res = new Response();
+        }
+
+        $res->error($failure->getMessage(), Response::INTERNAL_SERVER_ERROR);
+        return $failure;
+      };
+    }
+
     public $registry = [];
     private function addRecord (string $class, Record $r) {
       $this->registry[$class] = $r;
@@ -44,13 +56,14 @@
 
 
 
-    public function __construct ($widgetsDirectory, $hardReset = false) {
+    public function __construct (string $widgetsDirectory, Closure $onFail, $hardReset = false) {
       $glob = glob("$widgetsDirectory/**/widget-config.php");
       $decoded = json_decode(file_get_contents(__DIR__ . "/" . SAVE_FILE));
 
       if ($decoded == null || count(get_object_vars($decoded)) != count($glob)) {
         foreach ($glob as $config) {
-          $recordRes = $this->createRecord($config);
+          $recordRes = $this->createRecord($config)->failed($onFail);
+
           if ($recordRes->isSuccess()) {
             $r = $recordRes->getSuccess();
             $this->registry[$r->properties["class"]] = $r;
@@ -75,7 +88,7 @@
         $this->registry[$className] = Record::parse($record);
 
         if (!$this->registry[$className]->isUpToDate()) {
-          $recRes = $this->updateRecord($this->registry[$className]);
+          $recRes = $this->updateRecord($this->registry[$className])->failed($onFail);
 
           if ($recRes->isSuccess()) {
             $modified = true;

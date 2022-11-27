@@ -6,10 +6,10 @@
   require_once __DIR__ . "/../../lib/paths.php";
 
   $env = new Env(ENV_FILE);
-  $propsRes = $env->get("WIDGETS_DIR");
-  $propsRes->forwardFailure($res);
+  $widgetsDirRes = $env->get("WIDGETS_DIR");
+  $widgetsDirRes->forwardFailure($res);
 
-  $parser = new Parser($_SERVER["DOCUMENT_ROOT"] . $propsRes->getSuccess());
+  $parser = new Parser($_SERVER["DOCUMENT_ROOT"] . $widgetsDirRes->getSuccess(), Parser::ON_FAIL());
 
   if (!isset($parser->registry[$req->body->c])) {
     $res->error("Could not find widget by class '" . $req->body->c . "'.", Response::NOT_FOUND);

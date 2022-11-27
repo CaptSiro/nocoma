@@ -62,6 +62,7 @@ const $$ = (css) => document.querySelectorAll(css);
  * @prop {HTMLAttributes=} attributes
  * @prop {HTMLEventListeners=} listeners
  * @prop {String|String[]|HTMLDescription|HTMLDescription[]|HTMLElement|HTMLElement[]=} content
+ * @prop {String=} textContent
  * @prop {(element: HTMLElement)=>void=} modify
  */
 /**
@@ -106,7 +107,11 @@ const html = function (description) {
     }
   }
 
-  if (description.content) {
+  if (description.textContent) {
+    element.textContent = description.textContent;
+  }
+
+  if (description.content && description.textContent == undefined) {
     if (typeof description.content === "string") {
       element.appendChild(document.createTextNode(description.content));
     } else if (description.content instanceof HTMLElement) {
@@ -315,12 +320,3 @@ class AJAX {
     return this.#fetch(this.POST_DIR + "/" + address, handler, Object.assign(options, {body}, {method: "POST"}), errorHandler);
   }
 }
-
-
-/**
- * @typedef WidgetJSON
- * @prop {string} type
- * @prop {Object.<string, string>=} style
- * @prop {WidgetJSON=} child
- * @prop {WidgetJSON[]=} children
- */

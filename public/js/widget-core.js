@@ -246,7 +246,7 @@ class ContainerWidget extends Widget {
       return;
     }
 
-    this.childSupport = value;
+    super.childSupport = value;
   }
 
   /**

@@ -3,6 +3,41 @@ body {
   height: 100vh;
 }
 
+.edit-gui {
+  visibility: hidden;
+  position: absolute;
+  display: flex;
+  top: 100%;
+  right: 0px;
+  z-index: 2;
+  padding: 0px 16px 16px 16px;
+}
+
+.widget:hover > .edit-gui,
+.widget:focus > .edit-gui {
+  visibility: visible;
+}
+
+.widget.edit:hover,
+.widget.edit:focus {
+  outline: 2px solid black;
+}
+
+.edit-gui button {
+  padding: 4px;
+  color: white;
+  background-color: var(--container-opposite-2);
+  border: 2px solid var(--container-opposite-3);
+  
+  transition: background-color 250ms linear;
+}
+.edit-gui button:hover {
+  cursor: pointer;
+  background-color: var(--container-opposite-0);
+
+  transition: background-color 0ms linear;
+}
+
 .w-root {
   width: 100%;
   height: 100%;

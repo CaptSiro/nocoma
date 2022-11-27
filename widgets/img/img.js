@@ -1,4 +1,4 @@
-var WImage = class WImage { // var is used because it creates reference on globalThis (window) object
+var WImage = class WImage extends Widget { // var is used because it creates reference on globalThis (window) object
 
   // use json.child for single child widget like Center
   // or json.children for array of widgets
@@ -13,11 +13,32 @@ var WImage = class WImage { // var is used because it creates reference on globa
    */
 
   /**
-   * @param {ImageJSON} json
-   * @returns {HTMLElement}
+   * @param {HTMLElement} root
+   * @param {Widget} parent
    */
-  static build (json) {
-    return html({
+  constructor (root, parent) {
+    super(root, parent);
+    this.childSupport = "none";
+  }
+
+  /**
+   * @override
+   * @param {Widget} parent
+   * @returns {WImage}
+   */
+  static default (parent) {
+    return this.build({ src: "", alt: "Unnamed image" }, parent, true);
+  }
+
+  /**
+   * @override
+   * @param {ImageJSON} json
+   * @param {Widget} parent
+   * @param {boolean} editable
+   * @returns {WImage}
+   */
+  static build (json, parent, editable = false) {
+    const img =  new WImage(html({
       className: "w-image-container",
       content: {
         name: "img",
@@ -39,32 +60,35 @@ var WImage = class WImage { // var is used because it creates reference on globa
           container.style.height = json.height ?? container.style.height;
         }
       },
-    });
-  }
-  
-  /**
-   * @param {ImageJSON} json
-   * @returns {HTMLElement}
-   */
-  static edit (json) {
-    return html ({
-      className: "w-image-container",
-      content: {
-        name: "img",
-        className: "w-image",
-        attributes: {
-          src: json.src,
-          alt: json.alt ?? "Unnamed image",
-        }
-      }
-    });
+    }), parent);
+
+    if (editable == true) {
+      img.appendEditGui();
+    }
+
+    return img;
   }
 
   /**
-   * @param {HTMLElement} element
-   * @returns {JSON}
+   * @override
+   * @returns {InspectorJSON}
    */
-  static destruct (element) {
+  get inspectorJSON () {
+    return {
+      elements: [{
+        type: "Label",
+        content: "Image"
+      }]
+    };
+  }
 
+  /**
+   * @override
+   * @returns {WidgetJSON}
+   */
+  save () {
+    return {
+      type: "WImage"
+    };
   }
 };

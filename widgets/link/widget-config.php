@@ -2,7 +2,7 @@
   "properties" => [
     "label" => "", // label for editor
     "class" => "WLink", // name of exported class
-    "category" => "hidden", // editor category
+    "category" => "Hidden", // editor category
   ],
   "imports" => [
     // widget->class, widget->class, ... (in order)

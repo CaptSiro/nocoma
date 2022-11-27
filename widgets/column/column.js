@@ -1,4 +1,7 @@
-var WColumn = class WColumn { // var is used because it creates reference on globalThis (window) object
+var WColumn = class WColumn extends ContainerWidget { // var is used because it creates reference on globalThis (window) object
+
+  // use json.child for single child widget like Center
+  // or json.children for array of widgets
   /**
    * @typedef ColumnJSONType
    * @prop {{type: string}[]} children
@@ -7,32 +10,64 @@ var WColumn = class WColumn { // var is used because it creates reference on glo
    */
 
   /**
-   * @param {ColumnJSON} json
-   * @returns {HTMLElement}
+   * @param {HTMLElement} root
+   * @param {Widget} parent
    */
-  static build (json) {
-    return html ({
-      className: "w-column",
-      content: json.children.map(c => window[c.type].build(c))
-    });
+  constructor (root, parent) {
+    super(root, parent);
+    this.childSupport = "multiple";
   }
 
   /**
-   * @param {ColumnJSON} json
-   * @returns {HTMLElement}
+   * @override
+   * @param {Widget} parent
+   * @returns {WColumn}
    */
-  static edit (json) {
-    return html ({
-      className: "w-column",
-      content: json.children.map(c => window[c.type].edit(c))
-    });
+  static default (parent) {
+    return new WColumn(html({
+      className: "w-column"
+    }), parent);
   }
 
   /**
-   * @param {HTMLElement} element
-   * @returns {ColumnJSON}
+   * @override
+   * @param {ColumnJSON} json
+   * @param {Widget} parent
+   * @param {boolean} editable
+   * @returns {WColumn}
    */
-  static destruct (element) {
+  static build (json, parent, editable = false) {
+    const col = new WColumn(html({
+      className: "w-column"
+    }), parent);
 
+    for (const o of json.children) {
+      col.appendWidget(window[o.type].build(o, col, editable));
+    }
+
+    return col;
+  }
+
+  /**
+   * @override
+   * @returns {InspectorJSON}
+   */
+  get inspectorJSON () {
+    return {
+      elements: [{
+        type: "Label",
+        content: "Column"
+      }]
+    };
+  }
+
+  /**
+   * @override
+   * @returns {WidgetJSON}
+   */
+  save () {
+    return {
+      type: "WColumn"
+    };
   }
 };

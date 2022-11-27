@@ -1,4 +1,7 @@
-var WHeading = class WHeading { // var is used because it creates reference on globalThis (window) object
+var WHeading = class WHeading extends Widget { // var is used because it creates reference on globalThis (window) object
+
+  // use json.child for single child widget like Center
+  // or json.children for array of widgets
   /**
    * @typedef HeadingJSONType
    * @prop {string} text
@@ -8,30 +11,58 @@ var WHeading = class WHeading { // var is used because it creates reference on g
    */
 
   /**
-   * @param {HeadingJSON} json
-   * @returns {HTMLElement}
+   * @param {HTMLElement} root
+   * @param {Widget} parent
    */
-  static build (json) {
-    return html ({
-      name: "h" + Math.min(Math.max(0, json.level), 6),
-      content: json.text,
+  constructor (root, parent) {
+    super(root, parent);
+    this.childSupport = "none";
+  }
+
+  /**
+   * @override
+   * @param {Widget} parent
+   * @returns {WHeading}
+   */
+  static default (parent) {
+    return this.build({ level: 3, text: "Lorem" }, parent);
+  }
+
+  /**
+   * @override
+   * @param {HeadingJSON} json
+   * @param {Widget} parent
+   * @param {boolean} editable
+   * @returns {WHeading}
+   */
+  static build (json, parent, editable = false) {
+    return new WHeading(html({
+      name: "h" + Math.min(Math.max(1, json.level ?? 3), 6),
+      textContent: json.text,
       className: "w-heading"
-    });
+    }), parent);
   }
 
   /**
-   * @param {HeadingJSON} json
-   * @returns {HTMLElement}
+   * @override
+   * @returns {InspectorJSON}
    */
-  static edit (json) {
-
+  get inspectorJSON () {
+    return {
+      elements: [{
+        type: "Label",
+        content: "Heading"
+      }]
+    };
   }
 
   /**
-   * @param {HTMLElement} element
-   * @returns {JSON}
+   * @override
+   * @returns {WidgetJSON}
    */
-  static destruct (element) {
-
+  save () {
+    return {
+      type: "WHeading"
+    };
   }
 };

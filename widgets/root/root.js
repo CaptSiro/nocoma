@@ -1,17 +1,37 @@
-var WRoot = class WRoot { // var is used because it creates reference on globalThis (window) object
+var WRoot = class WRoot extends ContainerWidget { // var is used because it creates reference on globalThis (window) object
+
+  // use json.child for single child widget like Center
+  // or json.children for array of widgets
   /**
    * @typedef RootJSONType
-   * @prop {WidgetJSON[]} children
+   * @prop {string} text
    * 
    * @typedef {RootJSONType & WidgetJSON} RootJSON
    */
-  
+
+  /**
+   * @param {HTMLElement} root 
+   * @param {Widget} parent 
+   * @param {boolean} editable
+   */
+  constructor (root, parent, editable = false) {
+    super(root, parent);
+    this.editable = editable;
+  }
+
   /**
    * @param {RootJSON} json
-   * @param {"build"|"edit"} childFunction
-   * @returns {HTMLElement}
+   * @returns {Promise<HTMLElement>}
    */
-  static async #createRoot (json, childFunction = "build") {
+  static async #createRoot (json, editable = false) {
+    if (editable == true) {
+      const root = new WRoot(html({className: "w-root"}), null, editable);
+      for (const child of json.children) {
+        root.appendWidget(window[child.type].build(child, root, editable));
+      }
+      return root;
+    }
+
     const script = document.createElement("script");
     const set = this.#walkWStructure(json, new Set());
     set.delete("WRoot");
@@ -29,17 +49,17 @@ var WRoot = class WRoot { // var is used because it creates reference on globalT
     css.rel = "stylesheet";
     css.type = "text/css";
     css.href = AJAX.GET_DIR + "/bundler.php?w=WRoot," + imports + "&ftype=css";
-    document.head.appendChild(css);
     document.head.appendChild(script);
+    document.head.appendChild(css);
 
 
-    const root = html({className: "w-root"});
+    const root = new WRoot(html({className: "w-root"}), null, editable);
 
 
     await Promise.all([new Promise(resolve => {
       script.addEventListener("load", async _ => {
         for (const child of json.children) {
-          root.appendChild(window[child.type][childFunction](child));
+          root.appendWidget(window[child.type].build(child, root, editable));
         }
         resolve();
       });
@@ -51,6 +71,8 @@ var WRoot = class WRoot { // var is used because it creates reference on globalT
     
     return root;
   }
+
+
 
   /**
    * @param {WidgetJSON} widget 
@@ -72,27 +94,52 @@ var WRoot = class WRoot { // var is used because it creates reference on globalT
     return importSet;
   }
 
+
+
   /**
+   * @override
    * @param {RootJSON} json
    * @returns {HTMLElement}
    */
-  static async build (json) {
-    return this.#createRoot(json);
+  static async build (json, editable) {
+    return await this.#createRoot(json, editable);
   }
 
   /**
-   * @param {RootJSON} json
+   * @override
+   * @param {Widget} parent
    * @returns {HTMLElement}
    */
-  static edit (json) {
-    return this.#createRoot(json, "edit");
+  static default (parent) {
+    new WRoot(document.createElement("div"), parent);
   }
 
   /**
-   * @param {HTMLElement} element
-   * @returns {JSON}
+   * @override
+   * @returns {InspectorJSON}
    */
-  static destruct (element) {
+  get inspectorJSON () {
+    return {
+      elements: [{
+        type: "Label",
+        content: "#Root"
+      }]
+    };
+  }
 
+  /**
+   * @override
+   * @returns {RootJSON}
+   */
+  save () {
+    return {
+      type: "WRoot",
+      children: this.saveChildren()
+    };
+  }
+
+  /** @override */
+  remove () {
+    console.error("WRoot cannot be removed.");
   }
 };

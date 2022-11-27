@@ -1,42 +1,94 @@
-var WText = class WText { // var is used because it creates reference on globalThis (window) object
+var WText = class WText extends Widget { // var is used because it creates reference on globalThis (window) object
+
+  // use json.child for single child widget like Center
+  // or json.children for array of widgets
   /**
    * @typedef TextJSONType
    * @prop {string[]} lines
-   * @prop {boolean=} forceSingleLine
+   * @prop {boolean=} forceSingleLine force whole content into single line
    * 
    * @typedef {TextJSONType & WidgetJSON} TextJSON
    */
 
+  
   /**
    * @param {string[]} lines
    * @returns {HTMLElement}
    */
   static #parseLines (lines, forceSingleLine = false) {
     if (forceSingleLine) {
-      return html({ content: lines.reduce((acc, cur) => acc + cur, "") })
+      return html({ content: lines.reduce((acc, cur) => acc + cur, "")})
     }
 
-    return lines.map(str => html({ content: str }))
+    return lines.length != 0 ? lines.map(str => html({ content: str })) : document.createElement("div");
+  }
+
+
+
+  /**
+   * @param {HTMLElement} root
+   * @param {Widget} parent
+   */
+  constructor (root, parent) {
+    super(root, parent);
+    this.childSupport = "none";
   }
 
   /**
-   * @param {TextJSON} json
-   * @returns {HTMLElement}
+   * @override
+   * @param {Widget} parent
+   * @returns {WText}
    */
-  static build (json) {
-    return html ({
+  static default (parent) {
+    return new WText(html({}), parent);
+  }
+
+  /**
+   * @override
+   * @param {TextJSON} json
+   * @param {Widget} parent
+   * @returns {WText}
+   */
+  static build (json, parent, editable = false) {
+    const text = new WText(html({
       name: "p",
       content: this.#parseLines(json.lines, json.forceSingleLine),
-      className: "w-text"
-    });
+      className: "w-text",
+    }), parent);
+
+    if (editable == true) {
+      text.appendEditGui();
+      text.rootElement.setAttribute("contenteditable", true);
+      text.rootElement.setAttribute("spellcheck", false);
+      text.rootElement.classList.add("edit");
+
+      if (text.rootElement.textContent == "") {
+        text.rootElement.classList.add("show-hint");
+      }
+
+      text.rootElement.addEventListener("input", function (evt) {
+        if (this.textContent == "") {
+          this.classList.add("show-hint");
+          if (this.children.length == 0) {
+            this.append(document.createElement('div'));
+          }
+        } else {
+          this.classList.remove("show-hint");
+        }
+      });
+    }
+
+    return text;
   }
 
   /**
+   * @override
    * @param {TextJSON} json
-   * @returns {HTMLElement}
+   * @param {Widget} parent
+   * @returns {WText}
    */
-  static edit (json) {
-    return html({
+  static edit (json, parent) {
+    return new WText(html({
       name: "p",
       content: this.#parseLines(json.lines, json.forceSingleLine),
       attributes: {
@@ -51,14 +103,29 @@ var WText = class WText { // var is used because it creates reference on globalT
           console.dir(this);
         }
       }
-    });
+    }), parent);
   }
 
   /**
-   * @param {HTMLElement} element
-   * @returns {JSON}
+   * @override
+   * @returns {InspectorJSON}
    */
-  static destruct (element) {
+  get inspectorJSON () {
+    return {
+      elements: [{
+        type: "Label",
+        content: "Text"
+      }]
+    };
+  }
 
+  /**
+   * @override
+   * @returns {WidgetJSON}
+   */
+  save () {
+    return {
+      type: "WText"
+    };
   }
 };

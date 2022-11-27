@@ -22,4 +22,4 @@
 /lib/structure/registry.json
 
 /templates/test-page.json
-/templates/test.*
+/templates/test*.*

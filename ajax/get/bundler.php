@@ -9,7 +9,7 @@
   $widgetsDirRes = (new Env(ENV_FILE))->get("WIDGETS_DIR");
   $widgetsDirRes->forwardFailure($res);
 
-  $parser = new Parser($_SERVER["DOCUMENT_ROOT"] . $widgetsDirRes->getSuccess());
+  $parser = new Parser($_SERVER["DOCUMENT_ROOT"] . $widgetsDirRes->getSuccess(), Parser::ON_FAIL());
   $importOrder = $parser->getClassSet(explode(",", $req->body->w));
 
 

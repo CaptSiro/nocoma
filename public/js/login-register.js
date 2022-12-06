@@ -136,11 +136,11 @@ registerSubmit.addEventListener("click", evt => {
     }
   }
 
-  if (!tosCheckBox.isChecked()) {
-    registerSubmit.nextElementSibling.innerHTML = "You must agree with terms of service and privacy policy.";
-    registerSubmit.nextElementSibling.classList.add("show");
-    return;
-  }
+  // if (!tosCheckBox.isChecked()) {
+  //   registerSubmit.nextElementSibling.innerHTML = "You must agree with terms of service and privacy policy.";
+  //   registerSubmit.nextElementSibling.classList.add("show");
+  //   return;
+  // }
 
   registerSubmit.nextElementSibling.classList.remove("show");
 

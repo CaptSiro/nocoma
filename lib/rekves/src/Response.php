@@ -50,32 +50,32 @@ class Response {
     const HTTP_VERSION_NOT_SUPPORTED = 505;
 
   
-  function __construct ($headers = []) {
+  function __construct (array $headers = []) {
     $this->headers = $headers;
   }
   private $headers = [];
 
 
 
-  function setHeader ($hName, $hValue) {
+  function setHeader (string $hName, string $hValue) {
     $this->headers[$hName] = $hValue;
   }
 
-  function setHeaders ($headers) {
+  function setHeaders (array $headers) {
     foreach ($headers as $header) {
       $this->headers[$header[0]] = $header[1];
     }
   }
 
-  function hasHeader ($hName) {
+  function hasHeader (string $hName) {
     return isset($this->headers[$hName]);
   }
 
-  function removeHeader ($hName) {
+  function removeHeader (string $hName) {
     unset($this->headers[$hName]);
   }
 
-  function setStatusCode ($code) {
+  function setStatusCode (int $code) {
     http_response_code($code);
   }
 
@@ -87,22 +87,50 @@ class Response {
 
 
 
+  /**
+   * Exits the execution.
+   * 
+   * Sends string data to user.
+   */
   function send (string $text) {
     $this->generateHeaders();
     exit($text);
   }
 
+  /**
+   * Exits the execution without sending any data but headers will be sent.
+   */
   function flush () {
     $this->generateHeaders();
     exit();
   }
+
+  function readFile (string $file) {
+    if (!file_exists($file)) {
+      $this->setStatusCode(self::NOT_FOUND);
+      $this->error("File not found: $file");
+    }
+
+    readfile($file);
+    exit;
+  }
   
+  /**
+   * Exits the execution.
+   * 
+   * Parses object into JSON text representation and sends it to the user.
+   */
   function json ($jsonEncodeAble) {
     $this->generateHeaders();
     exit(json_encode($jsonEncodeAble));
   }
 
-  function download ($file) {
+  /**
+   * Exits the execution.
+   * 
+   * Checks for valid file path and sets headers to download it.
+   */
+  function download (string $file) {
     if (!file_exists($file)) {
       $this->setStatusCode(self::NOT_FOUND);
       $this->error("File not found: $file");
@@ -122,6 +150,10 @@ class Response {
     exit();
   }
 
+
+  /**
+   * Exits the execution with error code and message.
+   */
   function error (string $errorMessage, int $statusCode = -1) {
     if ($statusCode !== -1) {
       $this->setStatusCode($statusCode);
@@ -133,7 +165,7 @@ class Response {
 
   
   static function propNotFound () {
-    return function ($HTTPMethod, $propName) {
+    return function (string $HTTPMethod, string $propName) {
       $response = new Response();
       $response->setStatusCode(Response::NOT_FOUND);
       $response->error("$propName is required for this operation. (method: $HTTPMethod)");

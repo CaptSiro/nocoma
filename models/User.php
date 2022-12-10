@@ -5,7 +5,7 @@
   require_once __DIR__ . "/../lib/retval/retval.php";
 
   class User extends StrictModel {
-    protected $ID, $themesID, $profileSRC, $email, $password, $level, $website, $isVerified;
+    public $ID, $themesID, $profileSRC, $email, $password, $level, $website, $isVerified;
 
     public function comparePassword (string $password): Result {
       if ($password == "") {
@@ -82,12 +82,12 @@
 
       return success(self::parseProps($optUser));
     }
-
-
-
-
-
-
+  
+  
+    /**
+     * @param string $email
+     * @return Result<bool|null>
+     */
     static function isEmailTaken (string $email): Result {
       if ($email == "") {
         return fail(new InvalidArgumentExc("Email is not defined"));

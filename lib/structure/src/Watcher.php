@@ -1,6 +1,6 @@
 <?php
 
-  require_once __DIR__ . "/JSONEncodeAble.php";
+  require_once __DIR__ . "/../../jsonEncodeAble/jsonEncodeAble.php";
 
   class Watcher extends JSONEncodeAble {
     public $filePath, $mtime;

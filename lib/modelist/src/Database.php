@@ -1,7 +1,7 @@
 <?php
 
   require_once __DIR__ . "/../../dotenv/dotenv.php";
-  require_once __DIR__ . "/../../lumber/Console.php";
+  require_once __DIR__ . "/../../lumber/lumber.php";
   require_once __DIR__ . "/../../paths.php";
   require_once(__DIR__ . "/DatabaseParam.php");
 
@@ -17,12 +17,12 @@
   class Database {
     private $con;
     private static $instance;
-    public static function get () {
+    public static function get (): Database {
       if (!isset($instance)) {
-        $instance = new Database();
+        self::$instance = new Database();
       }
 
-      return $instance;
+      return self::$instance;
     }
 
     public function __construct() {

@@ -20,6 +20,7 @@
 
 /lib/structure/compiled-widgets/*
 /lib/structure/registry.json
+/lib/rekves.zip
 
 /templates/test-page.json
 /templates/test*.*

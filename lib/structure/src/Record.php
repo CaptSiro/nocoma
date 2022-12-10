@@ -1,6 +1,6 @@
 <?php
 
-  require_once __DIR__ . "/JSONEncodeAble.php";
+  require_once __DIR__ . "/../../jsonEncodeAble/jsonEncodeAble.php";
   require_once __DIR__ . "/Watcher.php";
   require_once __DIR__ . "/xToArray.php";
 

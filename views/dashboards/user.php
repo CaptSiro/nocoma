@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport"
+        content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Nocoma</title>
+  
+  <script src="<?=$GLOBALS["__HOME__"]?>/public/js/main.js"></script>
+</head>
+<body>
+  Hello
+  <button id="logout">Logout</button>
+  <script>
+    $("#logout").addEventListener("click", evt => {
+      AJAX.delete("/auth/logout", new JSONHandler(json => {
+        window.location.replace(json.redirect);
+      }));
+    });
+  </script>
+</body>
+</html>

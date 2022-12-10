@@ -1,12 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NoComa</title>
-</head>
-<body>
-  <a href="./templates/login-register.php">Login</a>
-</body>
-</html>
+<?php
+  
+  /** @var HomeRouter $router */
+  $router = require __DIR__ . "/lib/routepass/routepass.php";
+  $router->setBodyParser(HomeRouter::BODY_PARSER_JSON());
+  $router->setViewDirectory(__DIR__ . "/views");
+  $router->static("/public", __DIR__ . "/static");
+  
+  $router->onErrorEvent(function ($message, Request $request, Response $response) {
+    $response->render("error", ["message" => $message]);
+  });
+  
+  $router->get("/", [function (Request $request, Response $response) {
+    $response->render("index");
+  }]);
+  
+  
+  
+  
+  $router->get("/hash", [function (Request $request, Response $response) {
+    $response->send(password_hash($request->query->get("value"), PASSWORD_DEFAULT));
+  }]);
+  
+  
+  
+  
+  $router->use("/auth", require __DIR__ . "/routes/auth-router.php");
+  $router->use("/dashboard", require __DIR__ . "/routes/dashboard-router.php");
+  $router->use("/editor", require __DIR__ . "/routes/editor-router.php");
+  $router->use("/bundler", require __DIR__ . "/routes/bundler-router.php");
+  
+//  $router->showTrace();
+  $router->serve();

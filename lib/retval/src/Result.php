@@ -38,16 +38,30 @@
       return $this->succ;
     }
   }
-
+  
+  /**
+   * @template T
+   */
   class Result {
+    /**
+     * @var T $succ
+     */
     private $succ, $failure;
+  
+    /**
+     * @return T
+     */
     public function getSuccess () {
       return $this->succ;
     }
     public function getFailure () {
       return $this->failure;
     }
-
+  
+    /**
+     * @param T|null $success
+     * @param Exc|null $failure
+     */
     public function __construct ($success, ?Exc $failure) {
       $this->succ = $success;
       $this->failure = $failure;
@@ -61,73 +75,100 @@
     public function isFailure (): bool {
       return isset($this->failure);
     }
-
-
-
-    public function succeeded (Closure $fn): Result {
+  
+  
+    /**
+     * @param Closure $function (T $success)->Result
+     * @return Result
+     */
+    public function succeeded (Closure $function): Result {
       if ($this->isSuccess()) {
-        return success($fn($this->succ));
+        return success($function($this->succ));
       }
 
       return fail($this->failure);
     }
-
-    public function failed (Closure $fn): Result {
+  
+    /**
+     * @param Closure $function (Exc $exception)->Result
+     * @return Result
+     */
+    public function failed (Closure $function): Result {
       if ($this->isFailure()) {
-        return fail($fn($this->failure));
+        return fail($function($this->failure));
       }
 
       return success($this->succ);
     }
 
-    public function forwardFailure (Response $res) {
+    public function forwardFailure (Response $response) {
       if (isset($this->failure)) {
-        $res->json($this->failure);
+        $response->json($this->failure);
       }
     }
-
-    public function either (Closure $successFN, Closure $failFN): Result {
+  
+    /**
+     * @param Closure $successFunction (T $success)->Result
+     * @param Closure $failFunction (Exc $exception)->Result
+     * @return Result
+     */
+    public function either (Closure $successFunction, Closure $failFunction): Result {
       if ($this->isSuccess()) {
-        return success($successFN($this->succ));
+        return success($successFunction($this->succ));
       }
 
-      return fail($failFN($this->failure));
+      return fail($failFunction($this->failure));
     }
-
-    public function strip (Closure $failFN) {
+  
+    /**
+     * @param Closure $failFunction
+     * @return T|mixed|null
+     */
+    public function strip (Closure $failFunction) {
       if ($this->isFailure()) {
-        return $failFN();
+        return $failFunction();
       }
 
       return $this->succ;
     }
-
-    public static function all (...$results): ResultSet {
-      if (empty($results)) return fail(new NullPointerExc("Working with 0 results. You must pass at least one."));
+  
+    /**
+     * @param Result ...$results
+     * @return ResultSet
+     */
+    public static function all (Result ...$results): ResultSet {
+      if (empty($results)) return new ResultSet(null, [new NullPointerExc("Working with 0 results. You must pass at least one.")]);
 
       $failed = [];
       $succeeded = [];
 
-      foreach ($results as $res) {
-        if ($res->isFailure()) {
-          $failed[] = $res->getFailure();
+      foreach ($results as $result) {
+        if ($result->isFailure()) {
+          $failed[] = $result->getFailure();
         } else {
-          $succeeded[] = $res->getSuccess();
+          $succeeded[] = $result->getSuccess();
         }
       }
 
       return new ResultSet($succeeded, $failed);
     }
   }
-
-
-
+  
+  
+  /**
+   * @template R
+   * @param R $value
+   * @return Result<R>
+   */
   function success ($value): Result {
     return new Result($value, null);
   }
-
-
-
+  
+  
+  /**
+   * @param Exc $exception
+   * @return Result<null>
+   */
   function fail (Exc $exception): Result {
     return new Result(null, $exception);
   }

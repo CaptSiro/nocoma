@@ -3,17 +3,15 @@
   require_once __DIR__ . "/Mail.php";
 
   class MailTemplate {
-    public const PASSWORD_RECOVERY_GATEWAY = "http://localhost/nocoma/templates/password-recovery.php";
-
-    static function passwordRecovery ($user, $urlArg): MailTemplate {
+    static function passwordRecovery ($user, $url): MailTemplate {
       return new MailTemplate($user, "Password Recovery", "
         Hello,<br><br>
         
-        We are reaching to you in case of password recovery. If you are interested please continue here: <a href=\"" . self::PASSWORD_RECOVERY_GATEWAY . "?prid=$urlArg\" target=\"_blank\">Reset Password.</a><br><br>
+        We are reaching to you in case of password recovery. If you are interested please continue here: <a href=\"$url\" target=\"_blank\">Reset Password.</a><br><br>
         
         If you are not interested, just ignore or delete this email.
 
-        Do not forward this email to anyone. It may put your account in danger.
+        Do NOT share this email to anyone. It may put your account in danger.
       ");
     }
 

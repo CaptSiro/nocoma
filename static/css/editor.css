@@ -237,7 +237,7 @@ input[type=text] {
 
 input[type=text]:focus {
   outline: 2px solid var(--container-opposite-1);
-  background-color: var(--container);
+  background-color: var(--container-0);
 }
 
 input[type=text].invalid {

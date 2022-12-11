@@ -4,6 +4,7 @@
   require_once __DIR__ . "/../lib/paths.php";
   require_once __DIR__ . "/../lib/dotenv/dotenv.php";
   require_once __DIR__ . "/../lib/retval/retval.php";
+  require_once __DIR__ . "/../lib/newgen/newgen.php";
   require_once __DIR__ . "/../lib/susmail/susmail.php";
   
   
@@ -164,7 +165,7 @@
     $user = $userResult->getSuccess();
     TimeoutMail::removeCodesFor($user->ID);
     
-    $codeResult = TimeoutMail::generate(TimeoutMail::codeGenerator(), TimeoutMail::isCodeTaken());
+    $codeResult = Generate::valid(Generate::string(Generate::CHARSET_NUMBERS, 6), TimeoutMail::isCodeTaken());
     $codeResult->forwardFailure($response);
     
     $insertCodeResult = TimeoutMail::insertCode($codeResult->getSuccess(), $user->ID);
@@ -182,7 +183,7 @@
     $userResult = User::getByEmail($request->body->get("email"));
     $userResult->forwardFailure($response);
     
-    $argumentResult = TimeoutMail::generate(TimeoutMail::argumentGenerator(), TimeoutMail::isURLArgumentTaken());
+    $argumentResult = Generate::valid(Generate::string(Generate::CHARSET_URL, 32), TimeoutMail::isURLArgumentTaken());
     $argumentResult->forwardFailure($response);
     
     $argument = $argumentResult->getSuccess();

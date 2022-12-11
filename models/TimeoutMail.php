@@ -95,20 +95,7 @@
 
 
 
-
-    private static function codeMapper (): Closure {
-      return function () {
-        return random_int(0, 9);
-      };
-    }
-    public static function codeGenerator (): Closure {
-      return function () {
-        return join("", array_map(
-          self::codeMapper(),
-          array_fill(0, 6, null)
-        ));
-      };
-    }
+    
     public static function isCodeTaken (): Closure {
       return function ($code): Result {
         if ($code == "") {
@@ -254,42 +241,6 @@
 
 
     
-    private const URL_ARG_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
-    private static function argumentMapper (): Closure {
-      return function () {
-        return self::URL_ARG_CHARS[random_int(0, 63)];
-      };
-    }
-    public static function argumentGenerator (): Closure {
-      return function () {
-        return join("", array_map(
-          self::argumentMapper(),
-          array_fill(0, 32, null)
-        ));
-      };
-    }
-    
-    
-    public static function generate (Closure $generator, Closure $validator, int $retries = 1000): Result {
-      $value = null;
-      while ($value == null && $retries > 0) {
-        $rawValue = $generator();
-        $validatorResult = $validator($rawValue);
-        $validatorResult->succeeded(function ($isTaken) use ($rawValue, &$value) {
-          if (!$isTaken) $value = $rawValue;
-        });
-    
-        $retries++;
-      }
-  
-      if ($value == null) {
-        return fail(new Exc("Could not generate appropriate value for validator."));
-      }
-      
-      return success($value);
-    }
-
-
     public static function isURLArgumentTaken (): Closure {
       return function ($urlArgument) {
         if ($urlArgument == "") {

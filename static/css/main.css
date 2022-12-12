@@ -8,6 +8,8 @@
 :root {
   --text-color: #223;
   --text-color-2: #556;
+  --text-color-3: #778;
+  --text-color-opposite: #eef;
   --container-0: #fff;
   --container-1: #eef;
   --container-2: #dde;
@@ -62,6 +64,11 @@
 /* Firefox */
 .chained-inputs input[type=number] {
   -moz-appearance: textfield;
+}
+
+
+.text-icon {
+  color: var(--text-color);
 }
 
 

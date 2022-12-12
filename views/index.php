@@ -8,6 +8,6 @@
   <title>Nocoma - home</title>
 </head>
 <body>
-  <a href="<?= $GLOBALS["__HOME__"] ?>/auth">login</a>
+  <a href="<?= $GLOBALS["__SERVER_HOME__"] ?>/auth">login</a>
 </body>
 </html>

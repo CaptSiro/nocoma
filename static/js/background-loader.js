@@ -1,5 +1,5 @@
-window.addEventListener("load", evt => {
-  AJAX.get("/auth/background", new JSONHandler((images) => {
-    document.body.style.backgroundImage = `url(${AJAX.HOME}/public/images/login-register-bgs/${images[flatRNG(0, images.length - 1)]})`;
-  }));
+window.addEventListener("load", () => {
+  AJAX.get("/auth/background", new TextHandler((image) => {
+    document.body.style.backgroundImage = `url(${AJAX.SERVER_HOME}/public/images/login-register-bgs/${image})`;
+  }), {}, AJAX.SERVER_HOME);
 });

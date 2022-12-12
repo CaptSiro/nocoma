@@ -1,8 +1,13 @@
 <?php
   
   require_once __DIR__ . "/../lib/routepass/routers.php";
+  require_once __DIR__ . "/../lib/newgen/newgen.php";
+  require_once __DIR__ . "/../lib/paths.php";
   
   require_once __DIR__ . "/Middleware.php";
+  
+  require_once __DIR__ . "/../models/User.php";
+  require_once __DIR__ . "/../models/Website.php";
   
   $dashboardRouter = new Router();
   
@@ -30,7 +35,7 @@
     Middleware::requireToBeLoggedIn(Middleware::RESPONSE_REDIRECT),
     Middleware::authorize(Middleware::LEVEL_USER, Middleware::RESPONSE_REDIRECT, Middleware::RESPONSE_REDIRECT_DASHBOARD_MAP),
     function (Request $request, Response $response) {
-      $response->render("dashboards/user");
+      $response->render("dashboards/user", ["website" => $request->session->get("user")->website]);
     }
   ]);
   

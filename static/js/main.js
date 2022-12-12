@@ -273,7 +273,8 @@ class NonHTMLTextHandler extends Handler {
 }
 
 class AJAX {
-  static HOME = "/nocoma";
+  static DOMAIN_HOME = "";
+  static SERVER_HOME = "";
   
   static #logResponseError (response) {
     return (text) => {
@@ -317,71 +318,79 @@ class AJAX {
    * @param {string} url
    * @param {Handler} handler
    * @param {RequestInit=} options
+   * @param {string} home
    */
-  static get (url, handler, options = {}) {
-    this.#request("GET", (AJAX.HOME + url), handler, options);
+  static get (url, handler, options = {}, home = undefined) {
+    this.#request("GET", ((home ?? AJAX.DOMAIN_HOME) + url), handler, options);
   }
   
   /**
    * @param {string} url
    * @param {Handler} handler
    * @param {RequestInit=} options
+   * @param {string} home
    */
-  static head (url, handler, options = {}) {
-    this.#request("HEAD", (AJAX.HOME + url), handler, options);
+  static head (url, handler, options = {}, home = undefined) {
+    this.#request("HEAD", ((home ?? AJAX.DOMAIN_HOME) + url), handler, options);
   }
   
   /**
    * @param {string} url
    * @param {Handler} handler
    * @param {RequestInit=} options
+   * @param {string} home
    */
-  static post (url, handler, options = {}) {
-    this.#request("POST", (AJAX.HOME + url), handler, options);
+  static post (url, handler, options = {}, home = undefined) {
+    this.#request("POST", ((home ?? AJAX.DOMAIN_HOME) + url), handler, options);
   }
   
   /**
    * @param {string} url
    * @param {Handler} handler
    * @param {RequestInit=} options
+   * @param {string} home
    */
-  static put (url, handler, options = {}) {
-    this.#request("PUT", (AJAX.HOME + url), handler, options);
+  static put (url, handler, options = {}, home = undefined) {
+    this.#request("PUT", ((home ?? AJAX.DOMAIN_HOME) + url), handler, options);
   }
   
   /**
    * @param {string} url
    * @param {Handler} handler
    * @param {RequestInit=} options
+   * @param {string} home
    */
-  static delete (url, handler, options = {}) {
-    this.#request("DELETE", (AJAX.HOME + url), handler, options);
+  static delete (url, handler, options = {}, home = undefined) {
+    this.#request("DELETE", ((home ?? AJAX.DOMAIN_HOME) + url), handler, options);
   }
   
   /**
    * @param {string} url
    * @param {Handler} handler
    * @param {RequestInit=} options
+   * @param {string} home
    */
-  static connect (url, handler, options = {}) {
-    this.#request("CONNECT", (AJAX.HOME + url), handler, options);
+  static connect (url, handler, options = {}, home = undefined) {
+    this.#request("CONNECT", ((home ?? AJAX.DOMAIN_HOME) + url), handler, options);
   }
   
   /**
    * @param {string} url
    * @param {Handler} handler
    * @param {RequestInit=} options
+   * @param {string} home
    */
-  static trace (url, handler, options = {}) {
-    this.#request("TRACE", (AJAX.HOME + url), handler, options);
+  static trace (url, handler, options = {}, home = undefined) {
+    this.#request("TRACE", ((home ?? AJAX.DOMAIN_HOME) + url), handler, options);
   }
   
   /**
    * @param {string} url
    * @param {Handler} handler
    * @param {RequestInit=} options
+   * @param {string} home
    */
-  static patch (url, handler, options = {}) {
-    this.#request("PATCH", (AJAX.HOME + url), handler, options);
+  static patch (url, handler, options = {}, home = undefined) {
+    this.#request("PATCH", ((home ?? AJAX.DOMAIN_HOME) + url), handler, options);
   }
 }

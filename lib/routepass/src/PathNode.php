@@ -215,7 +215,7 @@
     
     
     
-    private static function extractEndpoints (array $array) {
+    private static function extractEndpoints (array $array): array {
       $accumulator = [];
       
       foreach ($array as $key => $value) {
@@ -224,7 +224,7 @@
           continue;
         }
   
-        $accumulator[$key] = null;
+        $accumulator[$key] = join("; ", array_keys($value->handles));
       }
       
       return $accumulator;
@@ -233,8 +233,9 @@
       if ($this->redirectAllToHome) return [];
       
       return [
+        "handles" => join(", ", array_keys($this->handles)),
         "static" => self::extractEndpoints($this->static),
-        "parametric" => self::extractEndpoints($this->parametric)
+        "parametric" => self::extractEndpoints($this->parametric),
       ];
     }
   

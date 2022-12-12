@@ -340,6 +340,9 @@
       }
       
       $locals["__HOME__"] = $_SERVER["HOME_DIR"];
+      if (isset($_SERVER["SERVER_HOME"])) {
+        $locals["__SERVER_HOME__"] = $_SERVER["SERVER_HOME"];
+      }
   
       $predefined = [];
       $predefinedGlobal = [];

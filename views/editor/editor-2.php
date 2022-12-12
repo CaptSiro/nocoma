@@ -1,26 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nocoma - edit</title>
-
-  <script src="<?= $GLOBALS["__HOME__"] ?>/public/js/main.js"></script>
-  <script src="<?= $GLOBALS["__HOME__"] ?>/public/js/editor.js" defer></script>
-  <script src="<?= $GLOBALS["__HOME__"] ?>/public/js/widget-core.js"></script>
-  <script src="<?= $GLOBALS["__HOME__"] ?>/bundler/js/*" id="widgets-scripts"></script>
-  <link rel="stylesheet" href="<?= $GLOBALS["__HOME__"] ?>/bundler/css/*" id="widgets-styles">
-  <script src="<?= $GLOBALS["__HOME__"] ?>/static/widgets/root/root.js"></script>
-
-  <link rel="stylesheet" href="<?= $GLOBALS["__HOME__"] ?>/public/css/main.css">
-  <link rel="stylesheet" href="<?= $GLOBALS["__HOME__"] ?>/public/css/editor.css">
-
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
-</head>
-<body>
+</div>
   <nav>
     <div class="settings-bar">
       <div class="settings-drop">

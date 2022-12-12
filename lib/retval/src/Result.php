@@ -35,7 +35,7 @@
         return $failFN($this->failures);
       }
 
-      return $this->succ;
+      return $this->success;
     }
   }
   
@@ -101,10 +101,13 @@
       return success($this->succ);
     }
 
-    public function forwardFailure (Response $response) {
+    public function forwardFailure (Response $response): Result {
       if (isset($this->failure)) {
         $response->json($this->failure);
+        return fail($this->failure);
       }
+      
+      return success($this->succ);
     }
   
     /**

@@ -15,7 +15,7 @@ var WRoot = class WRoot extends ContainerWidget { // var is used because it crea
    * @param {boolean} editable
    */
   constructor (root, parent, editable = false) {
-    super(root, parent);
+    super(root, parent, editable);
     this.editable = editable;
   }
 
@@ -43,13 +43,13 @@ var WRoot = class WRoot extends ContainerWidget { // var is used because it crea
       imports += cls + ",";
     }
     imports = imports.substring(0, imports.length - 1);
-    script.src = AJAX.HOME + "/bundler/js/" + imports;
+    script.src = AJAX.SERVER_HOME + "/bundler/js/" + imports;
 
 
     const css = document.createElement('link');
     css.rel = "stylesheet";
     css.type = "text/css";
-    css.href = AJAX.HOME + "/bundler/css/WRoot," + imports;
+    css.href = AJAX.SERVER_HOME + "/bundler/css/WRoot," + imports;
     document.head.appendChild(script);
     document.head.appendChild(css);
     
@@ -100,9 +100,9 @@ var WRoot = class WRoot extends ContainerWidget { // var is used because it crea
    * @param {RootJSON} json
    * @param {Widget} parent
    * @param {boolean} editable
-   * @returns {Widget}
+   * @returns {Promise<Widget>}
    */
-  static async build (json, parent, editable) {
+  static async build (json, parent = null, editable = false) {
     return await this.#createRoot(json, editable);
   }
 

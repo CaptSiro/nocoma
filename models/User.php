@@ -82,6 +82,33 @@
 
       return success(self::parseProps($optUser));
     }
+    
+    static function getByWebsite (string $website): Result {
+      if ($website == "") {
+        return fail(new InvalidArgumentExc("Website is not defined"));
+      }
+  
+      $optionalUser = Database::get()->fetch(
+        "SELECT
+          users.ID ID,
+          users.profileSRC profileSRC,
+          users.email email,
+          users.password \"password\",
+          users.level \"level\",
+          users.website website,
+          users.isVerified isVerified
+        FROM users
+        WHERE users.website = :website",
+        self::class,
+        [new DatabaseParam("website", $website, PDO::PARAM_STR)]
+      );
+  
+      if ($optionalUser === false) {
+        return fail(new NotFoundExc("Could not find user."));
+      }
+  
+      return success(self::parseProps($optionalUser));
+    }
   
   
     /**

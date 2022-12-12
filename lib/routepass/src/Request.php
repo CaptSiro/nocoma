@@ -70,6 +70,7 @@
     }
     
     public $httpMethod,
+      $protocol,
       $host,
       $uri,
       $fullURI,
@@ -100,12 +101,12 @@
       $this->response = $response;
       $this->homeRouter = $homeRouter;
       $this->httpMethod = $_SERVER["REQUEST_METHOD"];
-      $this->host = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')
-          ? "https"
-          : "http")
-        . "://" . $_SERVER['HTTP_HOST'];
+      $this->protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')
+        ? "https"
+        : "http";
+      $this->host = $_SERVER["HTTP_HOST"];
       $this->uri = substr($_SERVER["REQUEST_URI"], strlen($_SERVER["HOME_DIR"]));
-      $this->fullURI = "$this->host$this->uri";
+      $this->fullURI = "$this->protocol://$this->host$this->uri";
   
       $temp = apache_request_headers();
       array_walk($temp, function ($value, $key) {

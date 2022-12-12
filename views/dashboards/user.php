@@ -8,10 +8,13 @@
   <title>Nocoma</title>
   
   <script src="<?=$GLOBALS["__HOME__"]?>/public/js/main.js"></script>
+  <script>
+    AJAX.DOMAIN_HOME = "<?=$GLOBALS["__HOME__"]?>";
+    AJAX.SERVER_HOME = "<?=$GLOBALS["SERVER_HOME"] ?? $GLOBALS["__HOME__"]?>";
+  </script>
 </head>
 <body>
-  Hello
-  <button id="logout">Logout</button>
+  Hello <?= $GLOBALS["website"] ?> <button id="logout">Logout</button>
   <script>
     $("#logout").addEventListener("click", evt => {
       AJAX.delete("/auth/logout", new JSONHandler(json => {

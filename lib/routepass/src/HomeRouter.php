@@ -59,7 +59,7 @@
         $format = "/^";
         $registerDomain = function () use (&$format, &$domain, &$domainCaptureGroupMap, &$dict, &$dictI) {
           if ($domain !== "") {
-            $format .= $domainCaptureGroupMap[$domain] ?? "([^-.~]+)";
+            $format .= $domainCaptureGroupMap[$domain] ?? "([^.]+)";
             $dict[$dictI++] = $domain;
             $domain = "";
           }
@@ -117,6 +117,12 @@
         $mimeTypeResult->forwardFailure($response);
         
         $response->setHeader("Content-Type", $mimeTypeResult->getSuccess());
+        
+        if (preg_match("/\.php$/", $filePath)) {
+          $response->generateHeaders();
+          $response->renderFile($filePath);
+        }
+        
         $response->readFile($filePath);
       }], ["filePath" => Router::REGEX_ANY]);
       
@@ -137,6 +143,11 @@
       
       $res = new Response();
       $req = new Request($res, $this);
+  
+      if ($this->getFlag(HomeRouter::FLAG_MAIN_SERVER_HOST_NAME) !== null) {
+        $_SERVER["SERVER_HOME"] = "$req->protocol://" . $this->getFlag(HomeRouter::FLAG_MAIN_SERVER_HOST_NAME) . "$_SERVER[HOME_DIR]";
+      }
+      
       $this->bodyParser->call($this, file_get_contents('php://input'), $req);
     
       $req->trimQueries();
@@ -161,18 +172,39 @@
       $this->home->execute($uri, $req, $res);
     }
     private function displayTrace ($trace, $indent = "  ") {
-      foreach ($trace as $arrayOfEndpoints) {
+      foreach ($trace as $key => $arrayOfEndpoints) {
+        if (is_string($arrayOfEndpoints)) {
+          echo " <span style='color: crimson'>$arrayOfEndpoints</span>";
+          continue;
+        }
+        
         if (count($arrayOfEndpoints) !== 0) {
           foreach ($arrayOfEndpoints as $endpoint => $nodesTrace) {
-            echo "$indent$endpoint:<br>";
+            echo "<br>";
+            if ($key === "static") {
+              echo "$indent/$endpoint";
+            } else {
+              echo "$indent$endpoint:";
+            }
             $this->displayTrace($nodesTrace, $indent . "  ");
           }
         }
       }
     }
+    private function routerMapper (): Closure {
+      return function (Router $router) {
+        return $router->getEndpoints();
+      };
+    }
     public function showTrace () {
       echo "<pre>";
+      echo "\n/";
       $this->displayTrace($this->getEndpoints());
+      echo "\nDomains:";
+      $this->displayTrace([
+        "static" => array_map($this->routerMapper(), $this->staticDomains),
+        "parametric" => array_map($this->routerMapper(), $this->parametricDomains)
+      ]);
       echo "</pre>";
     }
     
@@ -214,7 +246,7 @@
     }
     
     private $flags = [
-      self::FLAG_RESPONSE_AUTO_FLUSH => true
+      self::FLAG_RESPONSE_AUTO_FLUSH => true,
     ];
     
     
@@ -226,13 +258,28 @@
      * Default: true
      */
     public const FLAG_RESPONSE_AUTO_FLUSH = "DO_RESPONSE_AUTO_FLUSH";
-    
-    
-    public function setFlag ($flag, $value) {
+  
+    /**
+     * Set host name for main server, which will be used to create `__SERVER_HOME__` for views
+     *
+     * example: (value set to "localhost")
+     *
+     * http://`localhost`/test-directory/index.php
+     */
+    public const FLAG_MAIN_SERVER_HOST_NAME = "CREATE_SERVER_HOME_VARIABLE";
+  
+    /**
+     * @param $flag
+     * @param mixed|null $value requires not null value. If null is passed this method is skipped.
+     * @return void
+     */
+    public function setFlag ($flag, $value = null) {
+      if ($value === null) return;
+      
       $this->flags[$flag] = $value;
     }
     public function getFlag ($flag) {
-      return $this->flags[$flag] ?: null;
+      return $this->flags[$flag] ?? null;
     }
   
     /**

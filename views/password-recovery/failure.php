@@ -11,6 +11,10 @@
   <link rel="stylesheet" href="<?=$GLOBALS["__HOME__"]?>/public/css/login-register.css">
   
   <script src="<?=$GLOBALS["__HOME__"]?>/public/js/main.js"></script>
+  <script>
+    AJAX.DOMAIN_HOME = "<?=$GLOBALS["__HOME__"]?>";
+    AJAX.SERVER_HOME = "<?=$GLOBALS["SERVER_HOME"] ?? $GLOBALS["__HOME__"]?>";
+  </script>
   <script src="<?=$GLOBALS["__HOME__"]?>/public/js/background-loader.js"></script>
   <script src="<?=$GLOBALS["__HOME__"]?>/public/js/forms.js" defer></script>
 </head>

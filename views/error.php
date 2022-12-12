@@ -7,9 +7,13 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Error - <?= $GLOBALS["message"] ?></title>
   
-  <script src="<?=$GLOBALS["__HOME__"]?>/public/js/main.js"></script>
-  <script src="<?=$GLOBALS["__HOME__"]?>/public/js/background-loader.js"></script>
-  <link rel="stylesheet" href="<?= $GLOBALS["__HOME__"] ?>/public/css/main.css">
+  <script src="<?=$GLOBALS["__SERVER_HOME__"]?>/public/js/main.js"></script>
+  <script>
+    AJAX.DOMAIN_HOME = "<?=$GLOBALS["__HOME__"]?>";
+    AJAX.SERVER_HOME = "<?=$GLOBALS["__SERVER_HOME__"] ?? $GLOBALS["__HOME__"]?>";
+  </script>
+  <script src="<?=$GLOBALS["__SERVER_HOME__"]?>/public/js/background-loader.js"></script>
+  <link rel="stylesheet" href="<?= $GLOBALS["__SERVER_HOME__"] ?>/public/css/main.css">
   
   <style>
     body {

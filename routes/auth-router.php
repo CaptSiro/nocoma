@@ -21,6 +21,7 @@
   
   
   
+  
   $authRouter->get("/", [
     Middleware::requireToBeLoggedOut(Middleware::RESPONSE_REDIRECT),
     function (Request $request, Response $response) use ($env) {
@@ -31,16 +32,15 @@
   
   
   
+  
+  //TODO: move from /auth/background => /background-images
   $authRouter->get("/background", [function (Request $request, Response $response) {
-    $response->json(
-      array_values(
-        array_diff(
-          scandir(__DIR__ . "/../static/images/login-register-bgs"),
-          ['.', '..']
-        )
-      )
-    );
+    $response->setHeader("Access-Control-Allow-Origin", "*");
+    $names = array_values(array_diff(scandir(__DIR__ . "/../static/images/login-register-bgs"), ['.', '..']));
+    
+    $response->send($names[random_int(0, count($names) - 1)]);
   }]);
+  
   
   
   
@@ -64,12 +64,13 @@
           return;
         }
         
-        $request->session->set("user", $user);
-        
         if (!$user->isVerified) {
+          $request->session->set("unauthorized_user", $user);
           $response->json((object)["next" => "code-verification"]);
         }
-        
+  
+        $request->session->set("user", $user);
+  
         $redirectURL = Response::createRedirectURL("/dashboard/user");
         
         if ($user->level === Middleware::LEVEL_ADMIN) {
@@ -80,6 +81,7 @@
       });
     }
   ]);
+  
   
   
   
@@ -128,16 +130,14 @@
         $request->body->get("website"),
         password_hash($request->body->get("password"), PASSWORD_DEFAULT)
       );
-      $userResult = User::get($registerSideEffect->lastInsertedID);
       
-      $userResult->either(
-        function (User $user) use ($request) {
-          $request->session->set("user", $user);
-        },
-        function (Exception $exception) use ($response) {
-          $response->json($exception);
-        }
-      );
+      $userResult = User::get($registerSideEffect->lastInsertedID);
+      $userResult->either(function (User $user) use ($request) {
+        $request->session->set("unauthorized_user", $user);
+      }, function (Exc $exception) use ($response) {
+        $response->setStatusCode(Response::SERVICE_UNAVAILABLE);
+        $response->json($exception);
+      });
       
       $response->json((object) ["next" => "code-verification"]);
     }
@@ -146,19 +146,21 @@
   
   
   
+  
   $authRouter->delete("/logout", [
     Middleware::requireToBeLoggedIn(Middleware::RESPONSE_JSON),
     function (Request $request, Response $response) {
       $request->session->unset("user");
-      $response->json((object) ["redirect" => Response::createRedirectURL("/")]);
+      $response->json((object) ["redirect" => Response::createRedirectURL("/auth/")]);
     }
   ]);
   
   
   
   
+  
   $authRouter->get("/verification-code", [function (Request $request, Response $response) {
-    $userResult = User::get(intval($request->session->get("user")->ID));
+    $userResult = User::get(intval($request->session->get("unauthorized_user")->ID));
     $userResult->forwardFailure($response);
     
     /** @var User $user */
@@ -175,6 +177,29 @@
     
     $response->json((object) ["message" => "Code has been sent."]);
   }]);
+  
+  
+  
+  
+  
+  $authRouter->patch("/verification", [function (Request $request, Response $response) {
+    $userResult = TimeoutMail::getUserWithCode($request->body->get("code"));
+    $userResult->forwardFailure($response);
+    
+    $user = $userResult->getSuccess();
+    User::verify($user->ID);
+    
+    mkdir(HOSTS_DIR . "/$user->website");
+    
+    $request->session->unset("unauthorized_user");
+    $request->session->set("user", $user);
+    
+    $removalResult = TimeoutMail::removeCode($request->body->get("code"));
+    $removalResult->forwardFailure($response);
+    
+    $response->json((object)["redirect" => Response::createRedirectURL("/dashboard/user")]);
+  }]);
+  
   
   
   
@@ -204,6 +229,8 @@
   
   
   
+  
+  
   $authRouter->get("/password-recovery", [function (Request $request, Response $response) {
     $response->render("password-recovery/failure", [
       "message" => "You need to use link specially created for you.",
@@ -227,6 +254,7 @@
   
   
   
+  
   $authRouter->patch("/password", [function (Request $request, Response $response) use ($passwordRegex) {
     if (!preg_match($passwordRegex, $request->body->get("password"))) {
       $response->json(new InvalidArgumentExc("Password is not strong enough."));
@@ -245,24 +273,6 @@
     $request->session->unset("passwordRecoveryUser");
   
     $response->json((object)["next" => "success"]);
-  }]);
-  
-  
-  
-  
-  $authRouter->patch("/verification", [function (Request $request, Response $response) {
-    $userResult = TimeoutMail::getUserWithCode($request->body->get("code"));
-    $userResult->forwardFailure($response);
-  
-    $user = $userResult->getSuccess();
-    User::verify($user->ID);
-    //TODO: users personal 'domain'
-//    mkdir(__DIR__ . "/../../hosts/" . $user->website);
-  
-    $removalResult = TimeoutMail::removeCode($request->body->get("code"));
-    $removalResult->forwardFailure($response);
-  
-    $response->json((object)["redirect" => Response::createRedirectURL("/dashboard/user")]);
   }]);
   
   

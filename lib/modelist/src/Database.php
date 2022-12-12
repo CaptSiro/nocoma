@@ -67,8 +67,15 @@
       $stmt->execute();
       return new SideEffect($this->con->lastInsertId(), $stmt->rowCount());
     }
-
-    public function fetch($sql, $className, $params = []) {
+  
+    /**
+     * @template T
+     * @param string $sql
+     * @param T $className
+     * @param DatabaseParam[] $params
+     * @return T|false
+     */
+    public function fetch(string $sql, $className, array $params = []) {
       $stmt = $this->con->prepare($sql);
       foreach($params as $param) {
         $stmt->bindValue($param->name, $param->value, $param->type);

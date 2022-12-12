@@ -75,3 +75,9 @@
       parent::__construct($msg);
     }
   }
+  
+  class IllegalArgumentExc extends Exc {
+    public function __construct ($msg) {
+      parent::__construct($msg);
+    }
+  }

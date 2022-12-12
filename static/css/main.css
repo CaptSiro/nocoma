@@ -1,6 +1,6 @@
 * {
-  padding: 0px;
-  margin: 0px;
+  padding: 0;
+  margin: 0;
   box-sizing: border-box;
   font-family: 'Inter', sans-serif;
 }
@@ -136,7 +136,7 @@ input[type="checkbox"] {
 
   appearance: none;
   background-color: #fff;
-  margin: 0px;
+  margin: 0;
 
   font: inherit;
   color: black;
@@ -155,4 +155,20 @@ input[type="checkbox"]:checked {
 
 input[type=checkbox]:focus {
   outline: 2px solid var(--container-opposite-1);
+}
+
+
+
+
+
+.default-container {
+  display: flex;
+  overflow: auto;
+  flex-direction: column;
+  width: 350px;
+  max-height: 100%;
+  padding: 50px;
+  background-color: var(--container-0);
+  border-radius: 8px;
+  box-shadow: rgba(100, 100, 111, 0.2) 0 7px 29px 0;
 }

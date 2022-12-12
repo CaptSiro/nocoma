@@ -1,6 +1,6 @@
 */access.php
 
-/test/*
+/static/test/*
 
 /media/*
 
@@ -22,5 +22,5 @@
 /lib/structure/registry.json
 /lib/rekves.zip
 
-/templates/test-page.json
+/static/test/test-page.json
 /templates/test*.*

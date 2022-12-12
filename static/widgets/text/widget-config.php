@@ -14,4 +14,4 @@
   ]
 
   // available libraries: html(HTMLDescription) -> HTML, widgetBuilder(WidgetDescription) -> HTML representation of widget
-]; ?>
+];?>

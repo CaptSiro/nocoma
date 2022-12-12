@@ -1,0 +1,15 @@
+Error code structure:
+  [prefix]x[identifier]
+
+
+
+.env error
+  prefix: 0x
+    000001 - WIDGETS_DIR does not exist
+    000002 - ROOT_DIR does not exist
+    000003 - HOST_NAME does not exist
+    000004 - HOST does not exist
+    000005 - PORT does not exist
+    000006 - USER does not exist
+    000007 - PASS does not exist
+    000008 - DB_N does not exist

@@ -229,11 +229,15 @@ class ContainerWidget extends Widget {
   /**
    * @param {HTMLElement} root 
    * @param {Widget} parent 
+   * @param {boolean} editable
    */
-  constructor (root, parent) {
+  constructor (root, parent, editable = false) {
     super(root, parent);
-    this.appendWidget(WCommand.default(this));
-    this.#doRemoveDefaultCommand = true;
+    
+    if (editable) {
+      this.appendWidget(WCommand.default(this));
+      this.#doRemoveDefaultCommand = true;
+    }
   }
   
   /**

@@ -14,4 +14,4 @@
   ]
 
   // available libraries: html(HTMLDescription) -> HTML, widget-core
-]; ?>
+];?>

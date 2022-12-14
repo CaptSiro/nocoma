@@ -87,6 +87,7 @@
   
   
   $emailRegex = "/^[\w\-\.]+@([\w\-]+\.)+[\w\-]{2,4}$/";
+  $usernameRegex = "/^[a-zA-Z0-9][a-zA-Z0-9 #$%&'()*+,-.:;^_~]+$/";
   $websiteRegex = "/^[a-zA-Z0-9-_]{1,64}$/";
   $passwordRegex = "/(?=.{8,})(?=.*[a-zA-Z]+)(?=.*[0-9]+)(?=.*[!\"#$%&'()*+,-.\/:;<=>?@\\^_\[\]`{|}~]+)^[a-zA-Z0-9!\"#$%&'()*+,-.\/:;<=>?@\\^_\[\]`{|}~]+$/";
   
@@ -101,9 +102,13 @@
   };
   $authRouter->post("/register", [
     Middleware::requireToBeLoggedOut(Middleware::RESPONSE_JSON),
-    function (Request $request, Response $response) use ($emailRegex, $websiteRegex, $passwordRegex, $isTakenFunctionFactory) {
+    function (Request $request, Response $response) use ($emailRegex, $websiteRegex, $passwordRegex, $usernameRegex, $isTakenFunctionFactory) {
       if (!preg_match($emailRegex, $request->body->get("email"))) {
         $response->json((object)["error" => "Not a valid email."]);
+      }
+      
+      if (!preg_match($usernameRegex, $request->body->get("username"))) {
+        $response->json((object)["error" => "Not a valid username."]);
       }
     
       if (!preg_match($websiteRegex, $request->body->get("website"))) {
@@ -127,6 +132,7 @@
       
       $registerSideEffect = User::register(
         $request->body->get("email"),
+        $request->body->get("username"),
         $request->body->get("website"),
         password_hash($request->body->get("password"), PASSWORD_DEFAULT)
       );

@@ -8,6 +8,7 @@
 
   <link rel="stylesheet" href="<?=$GLOBALS["__HOME__"]?>/public/css/main.css">
   <link rel="stylesheet" href="<?=$GLOBALS["__HOME__"]?>/public/css/login-register.css">
+  <link rel="stylesheet" href="<?=$GLOBALS["__HOME__"]?>/public/css/forms.css">
 
   <script src="<?=$GLOBALS["__HOME__"]?>/public/js/main.js"></script>
   <script>
@@ -105,6 +106,12 @@
     <div class="wrapper">
       <p class="label">Email:</p>
       <input type="text" name="r-email" id="r-email" regex="email">
+      <p class="blockquote error"></p>
+    </div>
+  
+    <div class="wrapper">
+      <p class="label">Username:</p>
+      <input type="text" name="r-username" id="r-username" regex="username">
       <p class="blockquote error"></p>
     </div>
 

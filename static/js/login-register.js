@@ -63,6 +63,10 @@ const regexes = {
   password: {
     r: /(?=.{8,})(?=.*[a-zA-Z]+)(?=.*[0-9]+)(?=.*[!"#$%&'()*+,-./:;<=>?@\\^_\[\]`{|}~]+)^[a-zA-Z0-9!"#$%&'()*+,-./:;<=>?@\\^_\[\]`{|}~]+$/,
     err: "Password is not strong enough. At least 8 characters long, must contain capital/lowercase letters, numbers and at least one special character."
+  },
+  username: {
+    r: /^[a-zA-Z0-9][a-zA-Z0-9 #$%&'()*+,-.:;^_~]+$/,
+    err: "Not a valid username."
   }
 };
 $$(".form.register input[regex]").forEach(element => {
@@ -113,7 +117,8 @@ const inputs = {
   email: $("#r-email"),
   website: $("#r-website"),
   password: $("#r-password"),
-  passwordAgain: $("#r-password-again")
+  passwordAgain: $("#r-password-again"),
+  username: $("#r-username")
 }
 
 registerSubmit.addEventListener("click", evt => {
@@ -133,6 +138,8 @@ registerSubmit.addEventListener("click", evt => {
   }
 
   registerErrorView.classList.remove("show");
+  
+  console.log(body);
 
   AJAX.post("/auth/register", new JSONHandler(json => {
     if (json.error !== undefined) {

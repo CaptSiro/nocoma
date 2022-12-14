@@ -17,8 +17,8 @@
   $router->static("/public", __DIR__ . "/static");
   
   
-  $router->onErrorEvent(function ($message, Request $request, Response $response) {
-    $response->render("error", ["message" => $message]);
+  $router->onAnyErrorEvent(function (RequestError $requestError) {
+    $requestError->response->render("error", ["message" => htmlspecialchars($requestError->message)]);
   });
   
   

@@ -2,6 +2,7 @@
   require_once __DIR__ . "/Router.php";
   require_once __DIR__ . "/Response.php";
   require_once __DIR__ . "/Request.php";
+  require_once __DIR__ . "/RequestError.php";
   
   class HomeRouter extends Router {
     private static $instance;
@@ -22,9 +23,10 @@
     public function __construct () {
       parent::__construct();
       
-      $this->onErrorEvent(function ($message) {
-        exit($message);
+      $this->onAnyErrorEvent(function (RequestError $requestError) {
+        exit($requestError->message);
       });
+      
       $this->setBodyParser(self::BODY_PARSER_URLENCODED());
     }
   
@@ -91,9 +93,19 @@
       $router->setParent($this);
     }
     public function static (string $urlPattern, string $absoluteDirectoryPath, array $paramCaptureGroupMap = []) {
+      $realAbsoluteDirectoryPath = realpath($absoluteDirectoryPath);
+      
       $staticRouter = new Router();
-      $staticRouter->get("/*", [function (Request $request, Response $response) use ($absoluteDirectoryPath) {
-        $filePath = "$absoluteDirectoryPath/$request->remainingURI";
+      $staticRouter->get("/*", [function (Request $request, Response $response) use ($absoluteDirectoryPath, $realAbsoluteDirectoryPath) {
+        $filePath = realpath("$absoluteDirectoryPath/$request->remainingURI");
+        
+        if (strpos($filePath, $realAbsoluteDirectoryPath) === false) {
+          $request->homeRouter->dispathError(
+            self::ERROR_REQUEST_OUT_OF_STATIC_DIRECTORY,
+            new RequestError("Request '$request->fullURI' is referencing outside of static folder: '$realAbsoluteDirectoryPath'", $request, $response)
+          );
+          return;
+        }
         
         if (is_dir($filePath)) {
           $basenameMapper = function ($item) {
@@ -209,35 +221,27 @@
     }
     
     
-    private $httpMethodNotImplementedHandler;
-    private $endpointDoesNotExistsHandler;
-    private $propertyNotFoundHandler;
+    const ERROR_HTTP_METHOD_NOT_IMPLEMENTED = "http-method-is-not-implemented";
+    const ERROR_ENDPOINT_DOES_NOT_EXISTS = "endpoint-does-not-exists";
+    const ERROR_PROPERTY_NOT_FOUND = "property-not-found";
+    const ERROR_REQUEST_OUT_OF_STATIC_DIRECTORY = "request-out-of-static-directory";
     
-    public function onHTTPMethodNotImplemented (Closure $handler) {
-      $this->httpMethodNotImplementedHandler = $handler;
+    /** @var Closure[] $errorHandlers */
+    private $errorHandlers = [];
+    
+    public function dispathError ($errorID, $errorEvent) {
+      $this->errorHandlers[$errorID]->call($errorEvent, $errorEvent);
     }
-    public function onEndpointDoesNotExists (Closure $handler) {
-      $this->endpointDoesNotExistsHandler = $handler;
+    
+    public function onErrorEvent ($errorID, Closure $handler) {
+      $this->errorHandlers[$errorID] = $handler;
     }
-    public function onPropertyNotFound (Closure $handler) {
-      $this->propertyNotFoundHandler = $handler;
-    }
-    public function onErrorEvent (Closure $handler) {
-      $this->onHTTPMethodNotImplemented($handler);
-      $this->onEndpointDoesNotExists($handler);
-      $this->onPropertyNotFound($handler);
-    }
-    public function httpMethodNotImplemented (Request $request, Response $response) {
-      $this->httpMethodNotImplementedHandler->call($this, "HTTP method: '$_SERVER[REQUEST_METHOD]' is not implemented for '$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]'", $request, $response);
-      exit;
-    }
-    public function endpointDoesNotExists (Request $request, Response $response) {
-      $this->endpointDoesNotExistsHandler->call($this, "Endpoint does not exist for '$_SERVER[HTTP_HOST]$_SERVER[REQUEST_URI]'", $request, $response);
-      exit;
-    }
-    public function propertyNotFound (string $message, Request $request, Response $response) {
-      $this->propertyNotFoundHandler->call($this, $message, $request, $response);
-      exit;
+    
+    public function onAnyErrorEvent (Closure $handler) {
+      $this->onErrorEvent(self::ERROR_HTTP_METHOD_NOT_IMPLEMENTED, $handler);
+      $this->onErrorEvent(self::ERROR_ENDPOINT_DOES_NOT_EXISTS, $handler);
+      $this->onErrorEvent(self::ERROR_PROPERTY_NOT_FOUND, $handler);
+      $this->onErrorEvent(self::ERROR_REQUEST_OUT_OF_STATIC_DIRECTORY, $handler);
     }
     
     

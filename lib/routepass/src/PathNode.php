@@ -1,6 +1,7 @@
 <?php
 
   require_once __DIR__ . "/Node.php";
+  require_once __DIR__ . "/RequestError.php";
 
   class PathNode extends Node {
     // breaking chars -.~
@@ -209,8 +210,11 @@
         $request->remainingURI = "$part" . (count($uri) == 0 ? "" : ("/" . join("/", $uri)));
         $this->callHandlesClosures($request, $response);
       }
-  
-      $request->homeRouter->endpointDoesNotExists($request, $response);
+    
+      $request->homeRouter->dispathError(
+        HomeRouter::ERROR_ENDPOINT_DOES_NOT_EXISTS,
+        new RequestError("Endpoint does not exist for '$request->fullURI'", $request, $response)
+      );
     }
     
     
@@ -242,7 +246,10 @@
   
     private function callHandlesClosures (Request $request, Response $response) {
       if (!isset($this->handles[$_SERVER["REQUEST_METHOD"]])) {
-        $request->homeRouter->httpMethodNotImplemented($request, $response);
+        $request->homeRouter->dispathError(
+          HomeRouter::ERROR_HTTP_METHOD_NOT_IMPLEMENTED,
+          new RequestError("HTTP method: '$_SERVER[REQUEST_METHOD]' is not implemented for '$request->fullURI'", $request, $response)
+        );
         return;
       }
   

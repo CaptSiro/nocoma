@@ -5,20 +5,26 @@
 
   class Website extends StrictModel {
     protected $ID, $src, $usersID, $thumbnailSRC, $timeCreated, $title,
-      $description, $isTemplate, $isPublic, $areCommentsAvailable, $isHomePage, $isTakenDown;
+      $isTemplate, $isPublic, $areCommentsAvailable, $isHomePage, $isTakenDown;
+    const ALL_COLUMNS = ["ID", "src", "usersID", "thumbnailSRC", "timeCreated", "title",
+      "isTemplate", "isPublic", "areCommentsAvailable", "isHomePage", "isTakenDown"];
 
     protected static function getNumberProps (): array { return ["ID", "userID", "templateStyle"]; }
     protected static function getBooleanProps (): array { return ["isPublic", "areCommentsEnabled", "isHomepage"]; }
     
     
     
-    public static function create (int $userID, string $title, string $src): SideEffect {
+    public static function create (int $userID, string $title, string $src, int $isPublic, int $isHomePage, $areCommentsAvailable): SideEffect {
       return Database::get()->statement(
-        "INSERT INTO websites (`usersID`, `title`, `src`) VALUE (:userID, :title, :src)",
+        "INSERT INTO websites (`usersID`, `title`, `src`, `isPublic`, `isHomePage`, `areCommentsAvailable`)
+        VALUE (:userID, :title, :src, :isPublic, :isHomePage, :areCommentsAvailable)",
         [
           new DatabaseParam("userID", $userID),
           new DatabaseParam("title", $title, PDO::PARAM_STR),
           new DatabaseParam("src", $src, PDO::PARAM_STR),
+          new DatabaseParam("isPublic", $isPublic),
+          new DatabaseParam("isHomePage", $isHomePage),
+          new DatabaseParam("areCommentsAvailable", $areCommentsAvailable),
         ]
       );
     }
@@ -54,6 +60,24 @@
       return 1;
     }
   
+    public static function getByID (int $id): Result {
+      $post = Database::get()->fetch(
+        "SELECT
+            " . self::generateSelectColumns("websites", self::ALL_COLUMNS) . "
+        FROM
+          `websites`
+        WHERE websites.ID = :id",
+        self::class,
+        [new DatabaseParam("id", $id)]
+      );
+    
+      if (!isset($post->ID)) {
+        return fail(new NotFoundExc("Could not find website by given ID."));
+      }
+    
+      return success(self::parseProps($post));
+    }
+  
     /**
      * @param string $website
      * @return Result<Website>
@@ -61,17 +85,7 @@
     public static function getHomePage (string $website): Result {
       $post = Database::get()->fetch(
         "SELECT
-          websites.ID ID,
-          websites.usersID usersID,
-          websites.src src,
-          websites.thumbnailSRC thumbnailSRC,
-          websites.timeCreated timeCreated,
-          websites.title title,
-          websites.description description,
-          websites.isTemplate isTemplate,
-          websites.isPublic isPublic,
-          websites.areCommentsAvailable areCommentsAvailable,
-          websites.isHomePage isHomePage
+          " . self::generateSelectColumns("websites", self::ALL_COLUMNS) . "
         FROM
           websites
           JOIN users ON users.ID = websites.usersID
@@ -95,18 +109,7 @@
     public static function getOldestPage (string $website): Result {
       $post = Database::get()->fetch(
         "SELECT
-          websites.ID,
-          websites.usersID,
-          websites.thumbnailSRC,
-          MIN(websites.timeCreated) timeCreated,
-          websites.src,
-          websites.title,
-          websites.description,
-          websites.isTemplate,
-          websites.isPublic,
-          websites.areCommentsAvailable,
-          websites.isHomePage,
-          websites.isTakenDown
+          " . self::generateSelectColumns("websites", self::ALL_COLUMNS) . "
         FROM
           `websites`
           JOIN users ON users.ID = websites.usersID
@@ -124,21 +127,11 @@
       return success(self::parseProps($post));
     }
     
-    public static function getBySource (string $website, string $source): Result {
+    public static function getBySource (string $website, string $source, bool $bypassPublicConstraint = false): Result {
       $post = Database::get()->fetch(
         "SELECT
-          websites.ID,
-          websites.usersID,
-          websites.thumbnailSRC,
-          MIN(websites.timeCreated) timeCreated,
-          websites.src,
-          websites.title,
-          websites.description,
-          websites.isTemplate,
-          websites.isPublic,
-          websites.areCommentsAvailable,
-          websites.isHomePage,
-          websites.isTakenDown
+          " . self::generateSelectColumns("websites", array_diff(self::ALL_COLUMNS, ["timeCreated"]), true) . "
+          MIN(websites.timeCreated) timeCreated
         FROM
           `websites`
           JOIN users ON users.ID = websites.usersID
@@ -151,7 +144,10 @@
         ]
       );
   
-      if (!isset($post->ID) || (isset($post->isPublic) && $post->isPublic == "0")) {
+      $postDoesNotExists = !isset($post->ID);
+      $postIsNotAccessible = !((isset($post->isPublic) && $post->isPublic == "1") || ($bypassPublicConstraint));
+      
+      if ($postDoesNotExists || $postIsNotAccessible) {
         return fail(new NotFoundExc("This website does not exist."));
       }
   
@@ -163,7 +159,26 @@
     }
     
     
-    public static function isSrcValid (): Closure {
+    private const SET_SIZE = 20;
+    public static function getSet (int $userID, int $offset) {
+      return self::parseProps(Database::get()->fetchAll(
+        "SELECT
+          " . self::generateSelectColumns("websites", self::ALL_COLUMNS) . "
+        FROM `websites`
+        WHERE websites.usersID = :userID
+        ORDER BY timeCreated DESC
+        LIMIT :offset, " . self::SET_SIZE,
+        self::class,
+        [
+          new DatabaseParam("offset", $offset * self::SET_SIZE),
+          new DatabaseParam("userID", $userID),
+        ]
+      ));
+    }
+    
+    
+    
+    public static function isSRCValid (): Closure {
       return function ($src): Result {
         if ($src == "") {
           return fail(new InvalidArgumentExc("Source is not defined."));

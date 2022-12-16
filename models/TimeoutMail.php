@@ -161,7 +161,7 @@
         [new DatabaseParam("code", $code, PDO::PARAM_STR)]
       );
 
-      if ($optionalUser == false) {
+      if ($optionalUser === false) {
         return fail(new NotFoundExc("Could not found user."));
       }
 

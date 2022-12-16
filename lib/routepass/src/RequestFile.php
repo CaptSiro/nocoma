@@ -14,23 +14,24 @@
       $this->size = $file["size"];
     }
     
-    public function move (string $destination) {
+    public function moveTo (string $destination) {
       move_uploaded_file($this->temporaryName, $destination);
     }
     
     public function getExt (): array {
-      $index = 0;
-      $len = strlen($this->fullName);
-  
-      for ($i = ($len - 1); $i >= 0; $i--) {
-        if ($this->fullName[$i] == ".") {
-          $index = $i;
-          break;
+      $ext = "";
+      $name = "";
+      $switch = false;
+      
+      for ($i = (strlen($this->fullName) - 1); $i >= 0; $i--) {
+        $var = &${$switch ? "name" : "ext"};
+        $var = $this->fullName[$i] . $var;
+        
+        if ($this->fullName[$i] == "." && !$switch) {
+          $switch = true;
         }
       }
   
-      $end = ($index == $len) ? $index : $index + 1;
-  
-      return [substr($this->fullName, 0, $index), substr($this->fullName, $end)];
+      return [$name, $ext];
     }
   }

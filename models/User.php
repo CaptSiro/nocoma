@@ -5,7 +5,8 @@
   require_once __DIR__ . "/../lib/retval/retval.php";
 
   class User extends StrictModel {
-    public $ID, $themesID, $profileSRC, $email, $password, $level, $website, $isVerified;
+    public $ID, $themesID, $profileSRC, $email, $password, $username, $level, $website, $isVerified;
+    const ALL_COLUMNS = ["ID", "themesID", "profileSRC", "email", "password", "username", "level", "website", "isVerified"];
 
     public function comparePassword (string $password): Result {
       if ($password == "") {
@@ -36,12 +37,7 @@
     static function get (int $userID): Result {
       $optionalUser = Database::get()->fetch(
         "SELECT
-          users.ID ID,
-          users.profileSRC profileSRC,
-          users.email email,
-          users.password \"password\",
-          users.level \"level\",
-          users.website website
+          " . self::generateSelectColumns("users", self::ALL_COLUMNS) . "
         FROM users
         WHERE users.ID = :userID",
         self::class,
@@ -63,13 +59,7 @@
 
       $optUser = Database::get()->fetch(
         "SELECT
-          users.ID ID,
-          users.profileSRC profileSRC,
-          users.email email,
-          users.password \"password\",
-          users.level \"level\",
-          users.website website,
-          users.isVerified isVerified
+          " . self::generateSelectColumns("users", self::ALL_COLUMNS) . "
         FROM users
         WHERE users.email = :email",
         self::class,
@@ -90,13 +80,7 @@
   
       $optionalUser = Database::get()->fetch(
         "SELECT
-          users.ID ID,
-          users.profileSRC profileSRC,
-          users.email email,
-          users.password \"password\",
-          users.level \"level\",
-          users.website website,
-          users.isVerified isVerified
+          " . self::generateSelectColumns("users", self::ALL_COLUMNS) . "
         FROM users
         WHERE users.website = :website",
         self::class,
@@ -151,12 +135,13 @@
 
 
 
-    static function register (string $email, string $website, string $password): SideEffect {
+    static function register (string $email, string $username, string $website, string $password): SideEffect {
       return Database::get()->statement(
-        "INSERT INTO `users`(`themesID`, `email`, `password`, `level`, `website`, `isVerified`)
-        VALUES (1, :email, :password, 1, :website, 0)",
+        "INSERT INTO `users`(`themesID`, `email`, `username`, `password`, `level`, `website`, `isVerified`)
+        VALUES (1, :email, :username, :password, 1, :website, 0)",
         [
           new DatabaseParam("email", $email, PDO::PARAM_STR),
+          new DatabaseParam("username", $username, PDO::PARAM_STR),
           new DatabaseParam("website", $website, PDO::PARAM_STR),
           new DatabaseParam("password", $password, PDO::PARAM_STR),
         ]

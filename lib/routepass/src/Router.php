@@ -13,6 +13,7 @@
     const REGEX_SENTENCE = "([a-zA-Z_]+)";
     const REGEX_SENTENCE_UPPER = "([A-Z_]+)";
     const REGEX_SENTENCE_LOWER = "([a-z_]+)";
+    const REGEX_BASE64_URL_SAFE = "([a-zA-Z0-9_-]+)";
   
     protected static function filterEmpty (array $toBeFiltered): array {
       $return = [];

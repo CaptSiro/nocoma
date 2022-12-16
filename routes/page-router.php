@@ -13,11 +13,19 @@
   
   
   
-  //TODO: set to POST
-  $pageRouter->get("/create", [
-    Middleware::requireToBeLoggedIn(Middleware::RESPONSE_JSON),
+  $pageRouter->get("/:offset", [
+    Middleware::requireToBeLoggedIn(),
     function (Request $request, Response $response) {
-      $sourceResult = Generate::valid(Generate::string(Generate::CHARSET_URL, 10), Website::isSrcValid());
+      $response->json(Website::getSet($request->session->get("user")->ID, intval($request->param->get("offset"))));
+    }
+  ], ["offset" => Router::REGEX_NUMBER]);
+  
+  
+  
+  $pageRouter->post("/create", [
+    Middleware::requireToBeLoggedIn(),
+    function (Request $request, Response $response) {
+      $sourceResult = Generate::valid(Generate::string(Generate::CHARSET_URL, 10), Website::isSRCValid());
       $sourceResult->forwardFailure($response);
       $source = $sourceResult->getSuccess();
       
@@ -25,17 +33,43 @@
       $user = $request->session->get("user");
       
       file_put_contents(HOSTS_DIR . "/$user->website/$source.json", '{"type": "WRoot","children": []}');
-      Website::create($user->ID, "Untitled website.", $source);
+      $created = Website::getByID(Website::create(
+        $user->ID,
+        $request->body->get("title"),
+        $source,
+        intval($request->body->get("isPublic")),
+        intval($request->body->get("isHomePage")),
+        intval($request->body->get("areCommentsAvailable"))
+      )->lastInsertedID)
+        ->forwardFailure($response)
+        ->getSuccess();
       
-      $response->json((object)["document" => $source]);
+      $response->json($created);
     }
   ]);
   
-  //TODO: set to DELETE
-  $pageRouter->get("/delete/:source", [
-    Middleware::requireToBeLoggedIn(Middleware::RESPONSE_JSON),
+  $pageRouter->delete("/delete/:source", [
+    Middleware::requireToBeLoggedIn(),
     function (Request $request, Response $response) {
-      $response->json(Website::delete($request->param->get("source")));
+      /** @var User $user */
+      $user = $request->session->get("user");
+      
+      $sourceFile = HOSTS_DIR . "/$user->website/" . $request->param->get("source") . ".json";
+    
+      if (!file_exists($sourceFile)) {
+        $response->setStatusCode(Response::NOT_FOUND);
+        $response->json((object) ["error" => "Could not find website to delete."]);
+      }
+
+      unlink($sourceFile);
+      
+      $deleteSideEffect = Website::delete($request->param->get("source"));
+      if ($deleteSideEffect->rowCount === 0) {
+        $response->setStatusCode(Response::NOT_FOUND);
+        $response->json((object) ["error" => "Could not find website to delete."]);
+      }
+      
+      $response->json(["message" => "ok"]);
     }
   ], ["source" => "([0-9a-zA-Z_-]+)"]);
   

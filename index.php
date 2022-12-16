@@ -1,5 +1,9 @@
 <?php
   
+  require_once __DIR__ . "/routes/Middleware.php";
+  Middleware::setDefaultResponseType(Middleware::RESPONSE_JSON);
+  
+  
   require_once __DIR__ . "/lib/dotenv/dotenv.php";
   $env = new Env(__DIR__ . "/.env");
   $hostName = $env->get("HOST_NAME")->failed(function () {
@@ -41,6 +45,7 @@
   $router->use("/editor", require __DIR__ . "/routes/editor-router.php");
   $router->use("/bundler", require __DIR__ . "/routes/bundler-router.php");
   $router->use("/page", require __DIR__ . "/routes/page-router.php");
+  $router->use("/file", require __DIR__ . "/routes/file-router.php");
   
   
   

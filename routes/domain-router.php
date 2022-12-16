@@ -15,7 +15,7 @@
   $domainRouter->get("/", [function (Request $request, Response $response) use ($env) {
     $website = $request->domain->get("website");
     
-    /** @var Website $renderedPage */
+    /** @var Website $webpage */
     $webpage = Website::getHomePage($website)->failed(function () use ($website, $response) {
       return Website::getOldestPage($website)->failed(function (Exc $exception) use ($response) {
         $response->render("error", ["message" => $exception->getMessage()]);

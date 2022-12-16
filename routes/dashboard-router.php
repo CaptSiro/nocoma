@@ -15,7 +15,7 @@
   
   
   $dashboardRouter->get("/", [
-    Middleware::requireToBeLoggedIn(Middleware::RESPONSE_REDIRECT),
+    Middleware::requireToBeLoggedIn(),
     function (Request $request, Response $response) {
       /** @var User $user */
       $user = $request->session->get("user");
@@ -32,7 +32,7 @@
   
   
   $dashboardRouter->get("/user", [
-    Middleware::requireToBeLoggedIn(Middleware::RESPONSE_REDIRECT),
+    Middleware::requireToBeLoggedIn(),
     Middleware::authorize(Middleware::LEVEL_USER, Middleware::RESPONSE_REDIRECT, Middleware::RESPONSE_REDIRECT_DASHBOARD_MAP),
     function (Request $request, Response $response) {
       $response->render("dashboards/user", ["website" => $request->session->get("user")->website]);
@@ -44,10 +44,10 @@
   
   
   $dashboardRouter->get("/admin", [
-    Middleware::requireToBeLoggedIn(Middleware::RESPONSE_REDIRECT),
+    Middleware::requireToBeLoggedIn(),
     Middleware::authorize(Middleware::LEVEL_ADMIN, Middleware::RESPONSE_REDIRECT, Middleware::RESPONSE_REDIRECT_DASHBOARD_MAP),
     function (Request $request, Response $response) {
-      $response->send("dashboards/admin");
+      $response->render("dashboards/admin");
     }
   ]);
   

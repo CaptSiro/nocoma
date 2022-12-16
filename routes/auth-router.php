@@ -23,7 +23,7 @@
   
   
   $authRouter->get("/", [
-    Middleware::requireToBeLoggedOut(Middleware::RESPONSE_REDIRECT),
+    Middleware::requireToBeLoggedOut(),
     function (Request $request, Response $response) use ($env) {
       $response->render("login-register", ["host" => $env->HOST_NAME]);
     }
@@ -46,7 +46,7 @@
   
   
   $authRouter->post("/login", [
-    Middleware::requireToBeLoggedOut(Middleware::RESPONSE_JSON),
+    Middleware::requireToBeLoggedOut(),
     function (Request $request, Response $response) {
       $userRes = User::getByEmail($request->body->get("email"));
       $userRes->failed(function () use ($response) {
@@ -101,7 +101,7 @@
     };
   };
   $authRouter->post("/register", [
-    Middleware::requireToBeLoggedOut(Middleware::RESPONSE_JSON),
+    Middleware::requireToBeLoggedOut(),
     function (Request $request, Response $response) use ($emailRegex, $websiteRegex, $passwordRegex, $usernameRegex, $isTakenFunctionFactory) {
       if (!preg_match($emailRegex, $request->body->get("email"))) {
         $response->json((object)["error" => "Not a valid email."]);
@@ -154,7 +154,7 @@
   
   
   $authRouter->delete("/logout", [
-    Middleware::requireToBeLoggedIn(Middleware::RESPONSE_JSON),
+    Middleware::requireToBeLoggedIn(),
     function (Request $request, Response $response) {
       $request->session->unset("user");
       $response->json((object) ["redirect" => Response::createRedirectURL("/auth/")]);
@@ -195,7 +195,7 @@
     $user = $userResult->getSuccess();
     User::verify($user->ID);
     
-    mkdir(HOSTS_DIR . "/$user->website");
+    mkdir(HOSTS_DIR . "/$user->website/media", 0777, true);
     
     $request->session->unset("unauthorized_user");
     $request->session->set("user", $user);

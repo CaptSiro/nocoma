@@ -1621,7 +1621,7 @@ class Renderer3D extends HTMLElement {
    */
   async objFileParser (src) {
     const lines = (await (await fetch(src)).text()).split("\n");
-
+  
     let current = "";
 
     let v = 1;
@@ -1702,6 +1702,7 @@ class Renderer3D extends HTMLElement {
    */
   objRegisterObject (id, vtable, ltable) {
     this.objectTable[id] = new Object3D(id, vtable, ltable);
+    this.objectTable[id].setColor("rgb(0, 0, 0)");
     this.objectTable[id].scale(40);
     this.objectTable[id].setWireFrameSize(1);
   }

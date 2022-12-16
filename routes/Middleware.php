@@ -12,7 +12,15 @@
       Middleware::LEVEL_USER => "/dashboard/user"
     ];
     
-    public static function requireToBeLoggedIn (int $middlewareResponseType = 0): Closure {
+    private static $defaultResponseType = self::RESPONSE_TEXT;
+    /**
+     * @param int $defaultResponseType
+     */
+    public static function setDefaultResponseType(int $defaultResponseType): void {
+      self::$defaultResponseType = $defaultResponseType;
+    }
+    
+    public static function requireToBeLoggedIn (int $middlewareResponseType = -1): Closure {
       return function (Request $request, Response $response, Closure $next) use ($middlewareResponseType) {
         $isUserLoggedIn = $request->session->looselyGet("user") !== null;
         
@@ -20,8 +28,10 @@
           $next();
           return;
         }
+        
+        $responseType = $middlewareResponseType !== -1 ? $middlewareResponseType : self::$defaultResponseType;
   
-        switch ($middlewareResponseType) {
+        switch ($responseType) {
           case Middleware::RESPONSE_TEXT: {
             //TODO: change to rendering an error view
             $response->error("You must log in first.", Response::UNAUTHORIZED);
@@ -39,7 +49,7 @@
       };
     }
   
-    public static function requireToBeLoggedOut (int $middlewareResponseType = 0, string $redirectURL = "/dashboard"): Closure {
+    public static function requireToBeLoggedOut (int $middlewareResponseType = -1, string $redirectURL = "/dashboard"): Closure {
       return function (Request $request, Response $response, Closure $next) use ($middlewareResponseType, $redirectURL) {
         $isUserLoggedOut = $request->session->looselyGet("user") === null;
       
@@ -47,8 +57,10 @@
           $next();
           return;
         }
-      
-        switch ($middlewareResponseType) {
+  
+        $responseType = $middlewareResponseType !== -1 ? $middlewareResponseType : self::$defaultResponseType;
+  
+        switch ($responseType) {
           case Middleware::RESPONSE_TEXT: {
             //TODO: change to rendering an error view
             $response->error("You must not be logged in.", Response::UNAUTHORIZED);
@@ -69,7 +81,7 @@
     const LEVEL_ADMIN = 0;
     const LEVEL_USER = 1;
     
-    public static function authorize ($requiredLevel, int $middlewareResponseType = 0, array $redirectMap = []): Closure {
+    public static function authorize ($requiredLevel, int $middlewareResponseType = -1, array $redirectMap = []): Closure {
       return function (Request $request, Response $response, Closure $next) use ($requiredLevel, $middlewareResponseType, $redirectMap) {
         /** @var User $user */
         $user = $request->session->get("user");
@@ -80,7 +92,9 @@
           return;
         }
   
-        switch ($middlewareResponseType) {
+        $responseType = $middlewareResponseType !== -1 ? $middlewareResponseType : self::$defaultResponseType;
+  
+        switch ($responseType) {
           case Middleware::RESPONSE_TEXT: {
             //TODO: change to rendering an error view
             $response->error("You don't have the permission to access this website.", Response::UNAUTHORIZED);

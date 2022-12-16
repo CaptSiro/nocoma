@@ -1,0 +1,140 @@
+.user-view > *:last-child .u-head {
+  border-bottom: unset;
+}
+.u-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  background-color: var(--container-1);
+  border-bottom: 1px solid var(--container-3);
+}
+.u-head.default,
+.user.expanded .u-head {
+  background-color: var(--container-0);
+  border-bottom: 1px solid var(--container-2);
+}
+.u-head .start {
+  display: flex;
+  gap: 1em;
+  align-items: center;
+}
+.u-head .start img {
+  width: 3em;
+  height: 3em;
+  object-fit: cover;
+  border-radius: 10px;
+}
+.u-head img.expand {
+  width: 1.5em;
+  height: 1.5em;
+}
+.u-head img.expand:hover {
+  cursor: pointer;
+}
+.user.expanded .u-head img.expand {
+  transform: rotate(90deg);
+}
+.u-column {
+  display: flex;
+  flex-direction: column;
+}
+.u-column span {
+  font-size: smaller;
+  color: var(--text-color-3);
+  text-transform: uppercase;
+}
+.u-column span::before {
+  content: "/";
+}
+
+
+
+
+.u-posts {
+  display: none;
+  flex-direction: column;
+}
+.user.expanded .u-posts {
+  display: flex;
+}
+.post {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  color: white;
+}
+.post .absolute {
+  position: absolute;
+  width: calc(100% + 10px);
+  height: 100%;
+  top: 0px;
+  left: -10px;
+}
+.post .absolute img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.post .absolute .darken {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  background-color: rgba(0, 0, 0, 0.3);
+  width: 100%;
+  height: 100%;
+}
+.post .content {
+  flex: 1;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+}
+.post .content > div {
+  display: flex;
+  flex-direction: column;
+}
+.post .content .date {
+  font-size: 0.70em;
+}
+.post .options {
+  margin-left: 10px;
+  margin-right: 10px;
+  z-index: 2;
+}
+
+
+
+
+
+
+
+
+
+.appeals-view > * {
+  border-bottom: 1px solid inherit;
+}
+.appeals-view > *:nth-child(even) {
+  background-color: var(--container-1);
+  border-color: var(--container-3);
+}
+.appeals-view > .appeal:first-child {
+  margin-top: unset;
+}
+.appeals-view > *:last-child {
+  border-bottom: unset;
+}
+.appeal .u-head {
+  background-color: inherit;
+}
+.a-body {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px
+}
+.a-msg {
+  border-bottom: 1px solid inherit;
+}

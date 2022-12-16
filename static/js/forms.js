@@ -1,8 +1,21 @@
 /** @type {Map<string, HTMLDivElement>} */
 const forms = new Map();
 
-$$(".form").forEach(e => {
-  forms.set(e.classList.item(1), e);
+$$(".form").forEach(form => {
+  forms.set(form.classList.item(1), form);
+  
+  const submitter = form.querySelector("button[type=submit]");
+  form.addEventListener("keydown", evt => {
+    if (
+      evt.key !== "Enter"
+      || (evt.altKey || evt.ctrlKey || evt.shiftKey)
+      || evt.target.getAttribute("do-submit") === "never"
+    ) return;
+    
+    submitter.dispatchEvent(new CustomEvent("submit"));
+    submitter.dispatchEvent(new CustomEvent("click"));
+    submitter.dispatchEvent(new CustomEvent("pointerdown"));
+  });
 });
 
 $$("button[link-to]").forEach(e => {

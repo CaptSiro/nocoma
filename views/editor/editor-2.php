@@ -18,6 +18,7 @@
           <div class="dropdown-item next-section"><span class="content">New</span></div>
           <div class="dropdown-item"><span class="content">Delete</span></div>
           <div class="dropdown-item"><span class="content">Open</span></div>
+          <div class="dropdown-item" onclick="window.location.replace(AJAX.SERVER_HOME + '/dashboard')"><span class="content">Exit</span></div>
         </div>
       </div>
       <div class="settings-drop">
@@ -97,7 +98,7 @@
       </div>
       <button class="toggle-viewport">mobile/PC</button>
 
-      <div id="widget-select-mount"></div>
+      <div id="widget-select-mount" style="display: none"></div>
     </div>
 
     <div class="controls">

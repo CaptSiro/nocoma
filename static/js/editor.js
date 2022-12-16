@@ -223,3 +223,10 @@ AJAX.get("/bundler/resource/*", new JSONHandler(json => {
     }));
   }
 }));
+window.addEventListener("load", () => {
+  WRoot.build(JSON.parse(document.querySelector("#page-data").textContent), null, true).then(root => {
+    window.page.pageWidget = root;
+    document.widgetElement = root;
+    document.querySelector("#viewport").appendChild(root.rootElement);
+  });
+});

@@ -6,6 +6,7 @@
   require_once __DIR__ . "/Middleware.php";
   
   require_once __DIR__ . "/../models/User.php";
+  require_once __DIR__ . "/../models/Website.php";
   
   $editorRouter = new Router();
   
@@ -25,12 +26,16 @@
         $response->error("Requested page does not exists.", Response::NOT_FOUND);
       }
       
+      $webpage = Website::getBySource($user->website, $request->param->get("file"), true)
+        ->forwardFailure($response)
+        ->getSuccess();
+      
       $response->generateHeaders();
-      $response->render("editor/editor-1", [], "php", false);
+      $response->render("editor/editor-1", ["webpage" => $webpage], "php", false);
       $response->readFile($filePath, false);
       $response->render("editor/editor-2");
     }
-  ], ["file" => "([a-zA-Z0-9_-]+)"]);
+  ], ["file" => Router::REGEX_BASE64_URL_SAFE]);
   
   
   

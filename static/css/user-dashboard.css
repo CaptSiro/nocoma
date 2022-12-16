@@ -1,0 +1,311 @@
+.post-view {
+  display: flex;
+  flex-direction: column;
+}
+.post {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  color: white;
+}
+
+.post .absolute {
+  position: absolute;
+  width: calc(100% + 10px);
+  height: 100%;
+  top: 0;
+  left: -10px;
+}
+
+.post .absolute img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.post .absolute .darken {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: rgba(0, 0, 0, 0.3);
+  width: 100%;
+  height: 100%;
+}
+
+.post .content {
+  flex: 1;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+}
+
+.post .content > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.post .content .date {
+  font-size: 0.70em;
+}
+
+.post .content h3:hover {
+  cursor: pointer;
+}
+
+.post .options {
+  margin-left: 10px;
+  margin-right: 10px;
+  z-index: 2;
+}
+
+
+
+
+
+
+
+
+
+
+
+.comment {
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--container-1);
+  border-bottom: 1px solid var(--container-3);
+}
+.comment.new {
+  background-color: var(--container-0);
+  border-bottom: 1px solid var(--container-2);
+}
+.comment-view > *:last-child {
+  border-bottom: unset;
+}
+.comment .c-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 8px;
+}
+.comment .c-msg {
+  text-align: justify;
+}
+.comment .c-controls {
+  padding-top: 8px;
+}
+.comment .c-reply {
+  padding: 16px;
+  padding-bottom: unset;
+}
+
+.comment-view .system-msg {
+  padding: 32px;
+  background-color: var(--container-1);
+  border-bottom: 1px solid var(--container-3);
+}
+.comment-view .system-msg * {
+  color: var(--text-color-3);
+}
+
+
+
+
+
+
+
+
+
+#themes {
+  container: theme-grid / inline-size;
+}
+@container theme-grid (inline-size > 1000px) {
+  .theme-view {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+}
+@container theme-grid (inline-size > 1350px) {
+  .theme-view {
+    grid-template-columns: repeat(5, 1fr) !important;
+  }
+}
+
+.theme-view {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-auto-rows: 250px;
+  padding: 32px;
+  gap: 16px;
+  place-items: center;
+}
+.theme {
+  border-radius: 10px;
+  overflow: hidden;
+  width: 200px;
+  height: 250px;
+  position: relative;
+  outline: 4px solid transparent;
+
+  transition: outline-color 250ms linear;
+}
+.theme:hover {
+  outline: 4px solid var(--container-opposite-2);
+  cursor: pointer;
+
+  transition: outline-color 0ms linear;
+}
+.theme.selected {
+  outline: 4px solid var(--container-opposite-0) !important;
+
+  transition: outline-color 0ms linear;
+}
+.theme img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.theme .gradient {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(0deg, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0) 100%);
+}
+.theme .label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  color: white;
+  width: 100%;
+  padding: 4px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+
+
+
+
+
+
+
+
+
+
+.f-v-control {
+  display: flex;
+  padding: 16px;
+  background-color: var(--container-opposite-2);
+  gap: 0.5em;
+  align-items: center;
+  color: white;
+}
+.files-view {
+  padding-bottom: 4px;
+}
+.files-view > *:last-child {
+  border-bottom: unset;
+}
+.file {
+  padding: 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: var(--container-0);
+  border-bottom: 1px solid var(--container-2);
+}
+.file:has(input[checked]) {
+  background-color: var(--container-1);
+  border-bottom: 1px solid var(--container-3);
+}
+.file > div {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+}
+.file span.size {
+  white-space: pre;
+  padding-left: 0.5em;
+}
+
+
+
+
+
+
+
+
+
+
+
+.info {
+  display: flex;
+  flex-direction: row;
+  gap: 32px;
+  padding: 32px;
+  overflow: hidden;
+}
+.pfp {
+  position: relative;
+  height: 100%;
+  aspect-ratio: 1/1;
+}
+.pfp > img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 10px;
+}
+.pfp .edit {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 50px;
+  height: 50px;
+}
+.pfp .edit img {
+  border-radius: 10px;
+}
+.pfp .edit:hover {
+  cursor: pointer;
+}
+.pfp .edit img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.info > * {
+  margin: unset;
+}
+.info .i-column {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding: 16px;
+  background-color: var(--container-1);
+  border-radius: 10px;
+  gap: 16px;
+  overflow: auto;
+}
+.i-column .field {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.i-column .field.end {
+  justify-content: flex-end;
+}
+.info > button {
+  width: min-content;
+} 
+.info .website {
+  font-size: small;
+  color: var(--text-color-3);
+  text-transform: uppercase;
+}
+.info .website::before {
+  content: "/";
+}

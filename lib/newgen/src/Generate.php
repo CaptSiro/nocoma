@@ -28,7 +28,7 @@
      * @param Closure $generator
      * @param Closure $validator (mixed $value): Result
      * @param int $retries
-     * @return void
+     * @return Result
      */
     public static function valid (Closure $generator, Closure $validator, int $retries = 1000): Result {
       $value = null;

@@ -29,6 +29,8 @@
 <body class="center">
   <p class="PHP-Exception"></p>
 
+  
+  
 
   <div class="form login">
     <div class="wrapper">
@@ -48,7 +50,7 @@
     <div class="divider"></div>
 
     <div class="wrapper">
-      <button class="submit">Login</button>
+      <button class="submit" type="submit">Login</button>
     </div>
 
     <div class="wrapper">
@@ -63,6 +65,8 @@
   </div>
 
 
+  
+  
   <div class="form forgotten-password hide">
     <div class="wrapper">
       <p class="label">Please enter your email you used for registration:</p>
@@ -77,7 +81,7 @@
     <div class="divider"></div>
 
     <div class="wrapper">
-      <button class="submit">Submit</button>
+      <button class="submit" type="submit">Submit</button>
       <p class="blockquote error"></p>
     </div>
 
@@ -88,6 +92,8 @@
     </div>
   </div>
 
+  
+  
 
   <div class="form forgotten-password-2 hide">
     <div class="wrapper">
@@ -101,6 +107,8 @@
     </div>
   </div>
 
+  
+  
 
   <div class="form register hide">
     <div class="wrapper">
@@ -144,7 +152,7 @@
     <div class="divider"></div>
 
     <div class="wrapper">
-      <button class="submit">Register</button>
+      <button class="submit" type="submit">Register</button>
       <p class="blockquote error"></p>
     </div>
 
@@ -156,6 +164,8 @@
   </div>
 
 
+  
+  
   <div class="form code-verification hide">
     <div class="wrapper">
       <p class="label">We have sent you 6-digit code on your email address to verify your account. Be sure to check spam as well.</p>
@@ -187,7 +197,7 @@
     <div class="divider"></div>
 
     <div class="wrapper">
-      <button class="submit">Submit code</button>
+      <button class="submit" type="submit">Submit code</button>
     </div>
   </div>
 </body>

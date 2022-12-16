@@ -1,12 +1,12 @@
 /** @type {Renderer3D} */
-const renederer = document.querySelector("#animator-3d");
+const renderer = document.querySelector("#animator-3d");
 new IntersectionObserver(entries => {
   if (entries[0].isIntersecting === true) {
-    renederer.resumeRender();
+    renderer.resumeRender();
   } else {
-    renederer.stopRender();
+    renderer.stopRender();
   }
-}, { threshold: 0 }).observe(renederer);
+}, { threshold: 0 }).observe(renderer);
 
 
 
@@ -41,10 +41,12 @@ for (const cube of cubes) {
   i++;
 }
 
-renederer.addEventListener("load", _ => {
-  renederer.addObjects(...cubes);
-  renederer.mainCamera.lockMovement();
-  renederer.mainCamera.moveBy(-30, 40, 0);
+renderer.addEventListener("load", _ => {
+  renderer.addObjects(...cubes);
+  renderer.mainCamera.lockMovement();
+  
+  // renderer.load("http://localhost/nocoma/public/megumin.obj");
+  renderer.mainCamera.moveBy(-30, 40, 0);
 });
 
 

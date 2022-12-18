@@ -7,6 +7,7 @@
   <title>Document</title>
   
   <link rel="stylesheet" href="<?=$GLOBALS["__HOME__"]?>/public/css/main.css">
+  <link rel="stylesheet" href="<?=$GLOBALS["__HOME__"]?>/public/css/forms.css">
   <link rel="stylesheet" href="<?=$GLOBALS["__HOME__"]?>/public/css/login-register.css">
   
   <script src="<?=$GLOBALS["__HOME__"]?>/public/js/main.js"></script>
@@ -51,7 +52,11 @@
     
     <div class="form success hide">
       <div class="wrapper">
-        <p>Your password has been reset. You may <a href="<?= $GLOBALS["replenishLink"] ?>">login here</a> with your new password.</p>
+        <?php if ($GLOBALS["displayDashboardMessage"]) { ?>
+          <p>Your password has been reset.<br><br>You may close this page and return to <a href="<?= $GLOBALS["__SERVER_HOME__"] ?>/dashboard">dashboard</a>.</p>
+        <?php } else { ?>
+          <p>Your password has been reset.<br><br>You may <a href="<?= $GLOBALS["replenishLink"] ?>">login here</a> with your new password.</p>
+        <?php } ?>
       </div>
     </div>
 </body>

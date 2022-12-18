@@ -185,10 +185,10 @@
   
   
   $authRouter->patch("/verification", [function (Request $request, Response $response) {
-    $userResult = TimeoutMail::getUserWithCode($request->body->get("code"));
-    $userResult->forwardFailure($response);
+    $user = TimeoutMail::getUserWithCode($request->body->get("code"))
+      ->forwardFailure($response)
+      ->getSuccess();
     
-    $user = $userResult->getSuccess();
     User::verify($user->ID);
     
     mkdir(HOSTS_DIR . "/$user->website/media", 0777, true);
@@ -207,17 +207,18 @@
   
   
   $authRouter->post("/password-recovery-email", [function (Request $request, Response $response) {
-    $userResult = User::getByEmail($request->body->get("email"));
-    $userResult->forwardFailure($response);
+    $user = $request->session->isset("user")
+      ? $request->session->get("user")
+      : User::getByEmail($request->body->get("email"))
+          ->forwardFailure($response)
+          ->getSuccess();
     
-    $argumentResult = Generate::valid(Generate::string(Generate::CHARSET_URL, 32), TimeoutMail::isURLArgumentTaken());
-    $argumentResult->forwardFailure($response);
+    $argument = Generate::valid(Generate::string(Generate::CHARSET_URL, 32), TimeoutMail::isURLArgumentTaken())
+      ->forwardFailure($response)
+      ->getSuccess();
     
-    $argument = $argumentResult->getSuccess();
-    $user = $userResult->getSuccess();
-  
-    $insertRes = TimeoutMail::insertUrlArg($argument, $user->ID);
-    $insertRes->forwardFailure($response);
+    TimeoutMail::insertUrlArg($argument, $user->ID)
+      ->forwardFailure($response);
   
     MailTemplate::passwordRecovery(
       $user,
@@ -236,21 +237,33 @@
   $authRouter->get("/password-recovery", [function (Request $request, Response $response) {
     $response->render("password-recovery/failure", [
       "message" => "You need to use link specially created for you.",
-      "replenishLink" => Response::createRedirectURL("/auth")
+      "replenishLink" => Response::createRedirectURL(
+        $request->session->isset("user")
+          ? "/dashboard"
+          : "/auth"
+      )
     ]);
   }]);
   
   $authRouter->get("/password-recovery/:argument", [function (Request $request, Response $response) {
-    $userResult = TimeoutMail::getUserWithUA($request->param->get("argument"));
-    $userResult->failed(function (Exc $exception) use ($response) {
-      $response->render("password-recovery/failure", [
-        "message" => $exception->getMessage(),
-        "replenishLink" => Response::createRedirectURL("/auth")
-      ]);
-    });
+    $user = TimeoutMail::getUserWithUA($request->param->get("argument"))
+      ->failed(function (Exc $exception) use ($request, $response) {
+        $response->render("password-recovery/failure", [
+          "message" => $exception->getMessage(),
+          "replenishLink" => Response::createRedirectURL(
+            $request->session->isset("user")
+              ? "/dashboard"
+              : "/auth"
+          )
+        ]);
+      })
+      ->getSuccess();
     
-    $request->session->set("passwordRecoveryUser", $userResult->getSuccess());
-    $response->render("password-recovery/success", ["replenishLink" => Response::createRedirectURL("/auth")]);
+    $request->session->set("passwordRecoveryUser", $user);
+    $response->render("password-recovery/success", [
+      "replenishLink" => Response::createRedirectURL("/auth"),
+      "displayDashboardMessage" => $request->session->isset("user")
+    ]);
   }], ["argument" => "([0-9a-zA-Z_-]+)"]);
   
   

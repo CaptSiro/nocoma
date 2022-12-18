@@ -8,6 +8,7 @@
   <title>Password recovery failure - Nocoma</title>
   
   <link rel="stylesheet" href="<?=$GLOBALS["__HOME__"]?>/public/css/main.css">
+  <link rel="stylesheet" href="<?=$GLOBALS["__HOME__"]?>/public/css/forms.css">
   <link rel="stylesheet" href="<?=$GLOBALS["__HOME__"]?>/public/css/login-register.css">
   
   <script src="<?=$GLOBALS["__HOME__"]?>/public/js/main.js"></script>

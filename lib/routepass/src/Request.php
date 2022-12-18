@@ -136,6 +136,23 @@
       
       $this->files = new RequestRegistry($this);
       foreach ($_FILES as $key => $file) {
+        if (is_array($file["error"])) {
+          $fileArray = [];
+          
+          for ($i = 0; $i < count($file["error"]); $i++) {
+            $fileArray[] = new RequestFile([
+              "name" => $file["name"][$i],
+              "type" => $file["type"][$i],
+              "tmp_name" => $file["tmp_name"][$i],
+              "error" => $file["error"][$i],
+              "size" => $file["size"][$i],
+            ]);
+          }
+          
+          $this->files->set($key, $fileArray);
+          continue;
+        }
+        
         $this->files->set($key, new RequestFile($file));
       }
       

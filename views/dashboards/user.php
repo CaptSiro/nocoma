@@ -55,7 +55,33 @@
       </div>
   
       <div class="wrapper">
-        <p class="blockquote error"></p>
+        <p class="blockquote error error-modal"></p>
+      </div>
+    </div>
+  
+    <div class="window form large" id="upload-files">
+      <div class="drop-area">
+        <div class="hint">
+          <span>Drag and drop your files here.</span>
+          <label for="upload-files-input" class="button-like-main">
+            Or select files
+          </label>
+          <input type="file" name="uploaded[]" id="upload-files-input" multiple>
+        </div>
+      </div>
+      
+      <div class="wrapper">
+        <p class="label">Selected files:</p>
+        <div class="selected-files"></div>
+      </div>
+    
+      <div class="wrapper sideways-end">
+        <button class="cancel-modal">Cancel</button>
+        <button class="submit" type="submit">Upload</button>
+      </div>
+    
+      <div class="wrapper">
+        <p class="blockquote error error-modal"></p>
       </div>
     </div>
   </div>
@@ -65,7 +91,7 @@
       <button reference-to="posts" class="link-pointer active" title="Posts"><span>1</span></button>
       <button reference-to="comments" class="link-pointer" title="Comments"><span>2</span></button>
       <button reference-to="themes" class="link-pointer" title="Themes"><span>3</span></button>
-      <button reference-to="gallery" class="link-pointer" title="Galery"><span>4</span></button>
+      <button reference-to="gallery" class="link-pointer" title="Gallery"><span>4</span></button>
       <button reference-to="profile" class="link-pointer" title="Profile"><span>5</span></button>
     </section>
     <section>
@@ -396,9 +422,16 @@
     <div columns="4" class="c-grid link-element" auto-fill="true" id="gallery">
       <section column="0-4" row="0-4">
         <header class="no-mg">
-          <section>
-            <button>Add</button>
-            <button>Sort by</button>
+          <section class="controls no-user-select">
+            <button id="upload-files-button">Add</button>
+            <div class="dropdown">
+              <button>Sort by</button>
+              <div class="items">
+                <div class="change-order" data-order="0">Date added</div>
+                <div class="change-order" data-order="1">Name</div>
+                <div class="change-order" data-order="2">Size</div>
+              </div>
+            </div>
           </section>
           <section class="search-mount">
             <img src="<?= $GLOBALS["__HOME__"] ?>/public/images/search-white.svg" alt="search">
@@ -406,87 +439,12 @@
           </section>
         </header>
         
-        <div class="f-v-control no-mg">
-          <check-box cb-border-radius="4px" cb-border="2px solid var(--container-3)" cb-background="var(--container-0)" cb-background-checked="var(--container-opposite-0)">Select all</check-box>
-          <button class="inverse">Remove selected</button>
-        </div>
+<!--        <div class="f-v-control no-mg">-->
+<!--          <check-box cb-border-radius="4px" cb-border="2px solid var(--container-3)" cb-background="var(--container-0)" cb-background-checked="var(--container-opposite-0)">Select all</check-box>-->
+<!--          <button class="inverse">Remove selected</button>-->
+<!--        </div>-->
         
-        <div class="scrollable files-view no-mg">
-          <div class="file">
-            <div class="start">
-              <label class="checkbox-container">
-                <input type="checkbox" name="checkbox" id="checkbox-0">
-                <span></span>
-              </label>
-              <span class="label">Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda minus neque non maiores veniam ipsam vel perspiciatis aut consequuntur officiis.txt</span>
-            </div>
-            <div class="end">
-              <span class="size">6.9 GB</span>
-              <button class="remove">Remove</button>
-              <button class="rename">Rename</button>
-            </div>
-          </div>
-          
-          <div class="file">
-            <div class="start">
-              <label class="checkbox-container">
-                <input type="checkbox" name="checkbox" id="checkbox-0">
-                <span></span>
-              </label>
-              <span class="label">Lorem ipsum dolor sit amet.mp4</span>
-            </div>
-            <div class="end">
-              <span class="size">420 GB</span>
-              <button class="remove">Remove</button>
-              <button class="rename">Rename</button>
-            </div>
-          </div>
-          
-          <div class="file">
-            <div class="start">
-              <label class="checkbox-container">
-                <input type="checkbox" name="checkbox" id="checkbox-0">
-                <span></span>
-              </label>
-              <span class="label">Lorem ipsum dolor sit.pdf</span>
-            </div>
-            <div class="end">
-              <span class="size">12 GB</span>
-              <button class="remove">Remove</button>
-              <button class="rename">Rename</button>
-            </div>
-          </div>
-          
-          <div class="file">
-            <div class="start">
-              <label class="checkbox-container">
-                <input type="checkbox" name="checkbox" id="checkbox-0">
-                <span></span>
-              </label>
-              <span class="label">Lorem ipsum dolor sit amet consectetur adipisicing.png</span>
-            </div>
-            <div class="end">
-              <span class="size">12 GB</span>
-              <button class="remove">Remove</button>
-              <button class="rename">Rename</button>
-            </div>
-          </div>
-          
-          <div class="file">
-            <div class="start">
-              <label class="checkbox-container">
-                <input type="checkbox" name="checkbox" id="checkbox-0">
-                <span></span>
-              </label>
-              <span class="label">Lorem ipsum dolor.osu</span>
-            </div>
-            <div class="end">
-              <span class="size">1 GB</span>
-              <button class="remove">Remove</button>
-              <button class="rename">Rename</button>
-            </div>
-          </div>
-        </div>
+        <div class="scrollable files-view no-mg"></div>
       </section>
     </div>
     
@@ -500,15 +458,15 @@
           </div>
         </div>
         <div class="i-column">
-          <div class="field">
-            <h3>Username</h3>
+          <div class="field username">
+            <h3><?= $GLOBALS["user"]->username ?></h3>
             <button>Edit</button>
           </div>
           <div class="field">
-            <span class="website">website-name</span>
+            <span class="website"><?= $GLOBALS["user"]->website ?>.<?= $GLOBALS["env_home"] ?></span>
           </div>
           <div class="field">
-            <span>example@mail.com</span>
+            <span><?= $GLOBALS["user"]->email ?></span>
             <!-- <button>Edit</button> -->
           </div>
           <div class="field end">

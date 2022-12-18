@@ -4,7 +4,16 @@ const windows = new Map();
 const container = $(".modals");
 for (const win of container.children) {
   windows.set(win.id, win);
-  win.querySelectorAll(".cancel-modal").forEach(button => button.addEventListener("click", () => clearWindows()))
+  const errors = win.querySelectorAll(".error-modal");
+  win.querySelectorAll(".cancel-modal").forEach(button => {
+    button.addEventListener("click", () => {
+      clearWindows();
+      errors.forEach(error => {
+        error.textContent = "";
+        error.classList.remove("show");
+      });
+    });
+  })
 }
 
 /**

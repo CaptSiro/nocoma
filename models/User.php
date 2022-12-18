@@ -159,13 +159,27 @@
     }
 
 
-    static function updatePassword (string $hashedPassword, int $userID) {
-      Database::get()->statement(
+    static function updatePassword (string $hashedPassword, int $userID): SideEffect {
+      return Database::get()->statement(
         "UPDATE `users`
         SET `password` = :newPassword
         WHERE ID = :userID",
         [
           new DatabaseParam("newPassword", $hashedPassword, PDO::PARAM_STR),
+          new DatabaseParam("userID", $userID),
+        ]
+      );
+    }
+    
+    
+    
+    static function updateUsername (string $username, int $userID) {
+      return Database::get()->statement(
+        "UPDATE `users`
+        SET `username` = :username
+        WHERE ID = :userID",
+        [
+          new DatabaseParam("username", $username, PDO::PARAM_STR),
           new DatabaseParam("userID", $userID),
         ]
       );

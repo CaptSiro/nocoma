@@ -32,6 +32,10 @@
         }
       }
   
+      if ($name === "") {
+        return [$ext, $name];
+      }
+  
       return [$name, $ext];
     }
   }

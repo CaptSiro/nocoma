@@ -210,21 +210,30 @@ const toFormData = obj => {
 
 /**
  * @param {HTMLElement} element
+ * @param {string[]} classes
+ * @returns {number} timeoutID
+ */
+function pulse (element, classes) {
+  element.classList.add("transition-background", ...classes);
+  
+  return setTimeout(() => {
+    element.classList.remove(...classes);
+    
+    setTimeout(() => {
+      element.classList.remove("transition-background");
+    }, 500);
+  }, 1000);
+}
+/**
+ * @param {HTMLElement} element
  * @param {boolean} dark
  * @returns {number} timeoutID
  */
 function validated (element, dark = false) {
-  element.classList.add("validated");
-  if (dark) {
-    element.classList.add("darken");
-  }
-  
-  return setTimeout(() => {
-    element.classList.remove("validated");
-    if (dark) {
-      element.classList.remove("darken");
-    }
-  }, 2500);
+  return pulse(element, ["validated", ...(dark ? ["darken"] : [])]);
+}
+function rejected (element, dark = false) {
+  return pulse(element, ["rejected", ...(dark ? ["darken"] : [])]);
 }
 
 

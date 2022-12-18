@@ -24,7 +24,7 @@
   <script src="<?=$GLOBALS["__HOME__"]?>/public/js/forms.js" defer></script>
   <script src="<?=$GLOBALS["__HOME__"]?>/public/js/dashboard-user.js" defer></script>
 </head>
-<body>
+<body class="no-user-select">
   <div class="modals">
     <div class="window form" id="create-post">
       <div class="wrapper">
@@ -459,7 +459,7 @@
         </div>
         <div class="i-column">
           <div class="field username">
-            <h3><?= $GLOBALS["user"]->username ?></h3>
+            <h3 class="selectable"><?= $GLOBALS["user"]->username ?></h3>
             <button>Edit</button>
           </div>
           <div class="field">
@@ -470,7 +470,7 @@
             <!-- <button>Edit</button> -->
           </div>
           <div class="field end">
-            <button>Reset password</button>
+            <button id="reset-password">Reset password</button>
           </div>
         </div>
       </section>

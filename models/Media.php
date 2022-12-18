@@ -8,10 +8,10 @@
   require_once __DIR__ . "/Count.php";
 
   class Media extends StrictModel {
-    protected $src, $extension, $basename, $usersID, $hash, $timeCreated;
-    const ALL_COLUMNS = ["src", "extension", "basename", "usersID", "hash", "timeCreated"];
+    protected $src, $extension, $basename, $usersID, $hash, $timeCreated, $mimeContentType, $size;
+    const ALL_COLUMNS = ["src", "extension", "basename", "usersID", "hash", "timeCreated", "mimeContentType", "size"];
     
-    protected static function getNumberProps (): array { return []; }
+    protected static function getNumberProps (): array { return ["size", "usersID"]; }
     protected static function getBooleanProps (): array { return []; }
     
     
@@ -36,21 +36,29 @@
       }
       
       $source = $sourceResult->getSuccess();
-      $file->moveTo(HOSTS_DIR . "/$user->website/media/$source" . ((($file->ext ?? "!")[0] === ".") ? $file->ext : ""));
+      $mimeTypeResult = Response::getMimeType($file->temporaryName);
+      if ($mimeTypeResult->isFailure()) {
+        return $mimeTypeResult;
+      }
+      
+      $mimeType = $mimeTypeResult->getSuccess();
+      $file->moveTo(HOSTS_DIR . "/$user->website/media/$source$file->ext");
       
       return success(Database::get()->statement(
-        "INSERT INTO `media` (`src`, `extension`, `basename`, `usersID`, `hash`)
-        VALUE (:src, :ext, :basename, :userID, :hash)",
+        "INSERT INTO `media` (`src`, `extension`, `basename`, `usersID`, `hash`, `size`, `mimeContentType`)
+        VALUE (:src, :ext, :basename, :userID, :hash, :size, :mimeType)",
         [
           new DatabaseParam("src", $source, PDO::PARAM_STR),
           new DatabaseParam("ext", $file->ext, PDO::PARAM_STR),
           new DatabaseParam("basename", $file->name, PDO::PARAM_STR),
           new DatabaseParam("userID", $user->ID),
           new DatabaseParam("hash", $footprint, PDO::PARAM_STR),
+          new DatabaseParam("size", $file->size),
+          new DatabaseParam("mimeType", $mimeType, PDO::PARAM_STR),
         ]
       ));
     }
-    public static function throwout (string $source, User $user): Result {
+    public static function throwOut (string $source, User $user): Result {
       $fileResult = self::getBySource($source);
       if ($fileResult->isFailure()) {
         return $fileResult;
@@ -58,22 +66,34 @@
       
       /** @var Media $file */
       $file = $fileResult->getSuccess();
-      $path = HOSTS_DIR . "/$user->website/media/$file->basename$file->extension";
+      $path = HOSTS_DIR . "/$user->website/media/$file->src$file->extension";
       if (!file_exists($path)) {
         return fail(new NotFoundExc("File does not exist."));
       }
       
       unlink($path);
       return success(Database::get()->statement(
-        "DELETE FROM media WHERE src = :src LIMIT 1",
-        [new DatabaseParam("src", $source, PDO::PARAM_STR)]
+        "DELETE FROM media WHERE src = :src AND usersID = :userID LIMIT 1",
+        [
+          new DatabaseParam("src", $source, PDO::PARAM_STR),
+          new DatabaseParam("userID", $user->ID)
+        ]
       ));
+    }
+    public static function rename (string $source, string $value) {
+      return Database::get()->statement(
+        "UPDATE `media` SET `basename` = :value WHERE `media`.`src` = :src",
+        [
+          new DatabaseParam("src", $source, PDO::PARAM_STR),
+          new DatabaseParam("value", htmlspecialchars($value), PDO::PARAM_STR),
+        ]
+      );
     }
     
     
     
     public static function getBySource (string $source): Result {
-      $post = Database::get()->fetch(
+      $file = Database::get()->fetch(
         "SELECT
             " . self::generateSelectColumns("media", self::ALL_COLUMNS) . "
         FROM
@@ -83,21 +103,41 @@
         [new DatabaseParam("src", $source, PDO::PARAM_STR)]
       );
   
-      if (!isset($post->ID)) {
+      if (!isset($file->src)) {
         return fail(new NotFoundExc("Could not find file by given source."));
       }
   
-      return success(self::parseProps($post));
+      return success(self::parseProps($file));
     }
     
     private const SET_SIZE = 20;
-    public static function getSet (int $userID, int $offset) {
+  
+    const ORDER_BY_DATE_ACCEPTED = "0";
+    const ORDER_BY_NAME = "1";
+    const ORDER_BY_SIZE = "2";
+    
+    public static function getSet (int $userID, int $offset, string $orderBy = self::ORDER_BY_DATE_ACCEPTED) {
+      switch ($orderBy) {
+        case self::ORDER_BY_NAME: {
+          $order = "basename ASC, extension ASC";
+          break;
+        }
+        case self::ORDER_BY_SIZE: {
+          $order = "size ASC";
+          break;
+        }
+        default: {
+          $order = "timeCreated DESC";
+          break;
+        }
+      }
+      
       return self::parseProps(Database::get()->fetchAll(
         "SELECT
           " . self::generateSelectColumns("media", self::ALL_COLUMNS) . "
         FROM `media`
         WHERE media.usersID = :userID
-        ORDER BY timeCreated DESC
+        ORDER BY $order
         LIMIT :offset, " . self::SET_SIZE,
         self::class,
         [

@@ -378,16 +378,26 @@
   display: flex;
   flex: 1;
   flex-direction: column;
-  padding: 16px;
   background-color: var(--container-1);
   border-radius: 10px;
-  gap: 16px;
   overflow: auto;
+}
+.info .i-column > *:first-child {
+  padding-top: 16px;
+}
+.info .i-column > * {
+  padding: 8px 16px;
+}
+.info .i-column > *:last-child {
+  padding-bottom: 16px;
 }
 .i-column .field {
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+.field h3:focus {
+  outline: unset;
 }
 .i-column .field.end {
   justify-content: flex-end;

@@ -46,6 +46,7 @@
   $router->use("/bundler", require __DIR__ . "/routes/bundler-router.php");
   $router->use("/page", require __DIR__ . "/routes/page-router.php");
   $router->use("/file", require __DIR__ . "/routes/file-router.php");
+  $router->use("/profile", require __DIR__ . "/routes/profile-router.php");
   
   
   

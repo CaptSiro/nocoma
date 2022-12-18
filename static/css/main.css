@@ -24,8 +24,21 @@
 }
 
 
+::selection {
+  color: var(--text-color-opposite);
+  background-color: var(--container-opposite-3);
+}
+.no-user-select {
+  user-select: none;
+}
+.selectable {
+  user-select: text;
+}
+
+
 ::-webkit-scrollbar {
   width: 8px;
+  height: 8px;
 }
 ::-webkit-scrollbar-track {
   background: transparent;
@@ -136,7 +149,6 @@ a:hover {
   display: grid;
   grid-template-columns: 1em auto;
   gap: 0.5em;
-  margin-top: 4px;
 }
 
 input[type="checkbox"] {
@@ -179,4 +191,38 @@ input[type=checkbox]:focus {
   background-color: var(--container-0);
   border-radius: 8px;
   box-shadow: rgba(100, 100, 111, 0.2) 0 7px 29px 0;
+}
+
+
+.button-like-main {
+  all: unset;
+  padding: 4px;
+  color: white;
+  border-radius: 5px;
+  background-color: var(--container-opposite-2);
+  border: 2px solid var(--container-opposite-3);
+
+  transition: background-color 250ms linear;
+}
+.button-like-main:hover {
+  cursor: pointer;
+  background-color: var(--container-opposite-0);
+
+  transition: background-color 0ms linear;
+}
+
+.transition-background {
+  transition: background-color 500ms linear;
+}
+.validated {
+  background-color: #A5F0C5 !important;
+}
+.validated.darken {
+  background-color: #035956 !important;
+}
+.rejected {
+  background-color: #FFBABA !important;
+}
+.rejected.darken {
+  background-color: #900C3E !important;
 }

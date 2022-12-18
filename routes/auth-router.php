@@ -2,6 +2,7 @@
   
   require_once __DIR__ . "/../lib/routepass/routers.php";
   require_once __DIR__ . "/../lib/paths.php";
+  require_once __DIR__ . "/../lib/regular-expressions.php";
   require_once __DIR__ . "/../lib/dotenv/dotenv.php";
   require_once __DIR__ . "/../lib/retval/retval.php";
   require_once __DIR__ . "/../lib/newgen/newgen.php";
@@ -86,11 +87,6 @@
   
   
   
-  $emailRegex = "/^[\w\-\.]+@([\w\-]+\.)+[\w\-]{2,4}$/";
-  $usernameRegex = "/^[a-zA-Z0-9][a-zA-Z0-9 #$%&'()*+,-.:;^_~]+$/";
-  $websiteRegex = "/^[a-zA-Z0-9-_]{1,64}$/";
-  $passwordRegex = "/(?=.{8,})(?=.*[a-zA-Z]+)(?=.*[0-9]+)(?=.*[!\"#$%&'()*+,-.\/:;<=>?@\\^_\[\]`{|}~]+)^[a-zA-Z0-9!\"#$%&'()*+,-.\/:;<=>?@\\^_\[\]`{|}~]+$/";
-  
   $isTakenFunctionFactory = function (string $propertyName, Response $response) {
     return function (bool $isTaken) use ($response, $propertyName) {
       if ($isTaken) {
@@ -102,20 +98,20 @@
   };
   $authRouter->post("/register", [
     Middleware::requireToBeLoggedOut(),
-    function (Request $request, Response $response) use ($emailRegex, $websiteRegex, $passwordRegex, $usernameRegex, $isTakenFunctionFactory) {
-      if (!preg_match($emailRegex, $request->body->get("email"))) {
+    function (Request $request, Response $response) use ($isTakenFunctionFactory) {
+      if (!preg_match(REGEX_EMAIL, $request->body->get("email"))) {
         $response->json((object)["error" => "Not a valid email."]);
       }
       
-      if (!preg_match($usernameRegex, $request->body->get("username"))) {
+      if (!preg_match(REGEX_USERNAME, $request->body->get("username"))) {
         $response->json((object)["error" => "Not a valid username."]);
       }
     
-      if (!preg_match($websiteRegex, $request->body->get("website"))) {
+      if (!preg_match(REGEX_WEBSITE, $request->body->get("website"))) {
         $response->json((object)["error" => "Not a valid website domain."]);
       }
     
-      if (!preg_match($passwordRegex, $request->body->get("password"))) {
+      if (!preg_match(REGEX_PASSWORD, $request->body->get("password"))) {
         $response->json((object)["error" => "Password is not strong enough."]);
       }
       
@@ -261,8 +257,8 @@
   
   
   
-  $authRouter->patch("/password", [function (Request $request, Response $response) use ($passwordRegex) {
-    if (!preg_match($passwordRegex, $request->body->get("password"))) {
+  $authRouter->patch("/password", [function (Request $request, Response $response) {
+    if (!preg_match(REGEX_PASSWORD, $request->body->get("password"))) {
       $response->json(new InvalidArgumentExc("Password is not strong enough."));
     }
   

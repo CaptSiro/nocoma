@@ -206,6 +206,25 @@ const toFormData = obj => {
     fd.append(k, obj[k]);
   }
   return fd;
+};
+
+/**
+ * @param {HTMLElement} element
+ * @param {boolean} dark
+ * @returns {number} timeoutID
+ */
+function validated (element, dark = false) {
+  element.classList.add("validated");
+  if (dark) {
+    element.classList.add("darken");
+  }
+  
+  return setTimeout(() => {
+    element.classList.remove("validated");
+    if (dark) {
+      element.classList.remove("darken");
+    }
+  }, 2500);
 }
 
 
@@ -232,6 +251,11 @@ class Handler {
   }
 }
 
+class NoHandler extends Handler {
+  constructor() {
+    super(() => {});
+  }
+}
 class JSONHandler extends Handler {
   constructor(fun) {
     super((response) => {

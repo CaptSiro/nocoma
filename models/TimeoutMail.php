@@ -145,7 +145,7 @@
 
       $optionalUser = Database::get()->fetch(
         "SELECT
-          " . User::generateSelectColumns("users", User::ALL_COLUMNS, true) . "
+          " . User::generateSelectColumns(User::TABLE_NAME, User::ALL_COLUMNS, true) . "
           timeoutmails.expires as expires
         FROM
           `timeoutmails`

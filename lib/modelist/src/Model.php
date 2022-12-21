@@ -5,13 +5,13 @@
 
 
   class Model extends JSONEncodeAble {
-    public static function generateSelectColumns (string $table, array $columns, bool $isNotLast = false): string {
+    public static function generateSelectColumns (string $table, array $columns, bool $addTrailingComa = false): string {
       $string = "";
       
       $length = count($columns);
       $index = 0;
       foreach ($columns as $name) {
-        $string .= "$table.`$name` \"$name\"" . ($length - 1 != $index++ || $isNotLast ? "," : "") . "\n";
+        $string .= "$table.`$name` \"$name\"" . ($length - 1 != $index++ || $addTrailingComa ? "," : "") . "\n";
       }
       
       return $string;

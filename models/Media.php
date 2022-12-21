@@ -10,6 +10,7 @@
   class Media extends StrictModel {
     protected $src, $usersID, $basename, $extension, $mimeContentType, $timeCreated, $hash, $size;
     const ALL_COLUMNS = ["src", "usersID", "basename", "extension", "mimeContentType", "timeCreated", "hash", "size"];
+    const TABLE_NAME = "media";
     
     protected static function getNumberProps (): array { return ["usersID", "size"]; }
     protected static function getBooleanProps (): array { return []; }
@@ -80,7 +81,7 @@
         ]
       ));
     }
-    public static function rename (string $source, string $value) {
+    public static function rename (string $source, string $value): SideEffect {
       return Database::get()->statement(
         "UPDATE `media` SET `basename` = :value WHERE `media`.`src` = :src",
         [
@@ -95,7 +96,7 @@
     public static function getBySource (string $source): Result {
       $file = Database::get()->fetch(
         "SELECT
-            " . self::generateSelectColumns("media", self::ALL_COLUMNS) . "
+            " . self::generateSelectColumns(self::TABLE_NAME, self::ALL_COLUMNS) . "
         FROM
           `media`
         WHERE media.src = :src",
@@ -134,7 +135,7 @@
       
       return self::parseProps(Database::get()->fetchAll(
         "SELECT
-          " . self::generateSelectColumns("media", self::ALL_COLUMNS) . "
+          " . self::generateSelectColumns(self::TABLE_NAME, self::ALL_COLUMNS) . "
         FROM `media`
         WHERE media.usersID = :userID
         ORDER BY $order

@@ -8,6 +8,7 @@
       $isTemplate, $isPublic, $areCommentsAvailable, $isHomePage, $isTakenDown;
     const ALL_COLUMNS = ["ID", "usersID", "thumbnailSRC", "src", "timeCreated", "title",
       "isTemplate", "isPublic", "areCommentsAvailable", "isHomePage", "isTakenDown"];
+    const TABLE_NAME = "websites";
 
     protected static function getNumberProps (): array { return ["ID", "userID"]; }
     protected static function getBooleanProps (): array { return [
@@ -65,7 +66,7 @@
     public static function getByID (int $id): Result {
       $post = Database::get()->fetch(
         "SELECT
-            " . self::generateSelectColumns("websites", self::ALL_COLUMNS) . "
+            " . self::generateSelectColumns(self::TABLE_NAME, self::ALL_COLUMNS) . "
         FROM
           `websites`
         WHERE websites.ID = :id",
@@ -87,7 +88,7 @@
     public static function getHomePage (string $website): Result {
       $post = Database::get()->fetch(
         "SELECT
-          " . self::generateSelectColumns("websites", self::ALL_COLUMNS) . "
+          " . self::generateSelectColumns(self::TABLE_NAME, self::ALL_COLUMNS) . "
         FROM
           websites
           JOIN users ON users.ID = websites.usersID
@@ -111,7 +112,7 @@
     public static function getOldestPage (string $website): Result {
       $post = Database::get()->fetch(
         "SELECT
-          " . self::generateSelectColumns("websites", self::ALL_COLUMNS) . "
+          " . self::generateSelectColumns(self::TABLE_NAME, self::ALL_COLUMNS) . "
         FROM
           `websites`
           JOIN users ON users.ID = websites.usersID
@@ -132,7 +133,7 @@
     public static function getBySource (string $website, string $source, bool $bypassPublicConstraint = false): Result {
       $post = Database::get()->fetch(
         "SELECT
-          " . self::generateSelectColumns("websites", array_diff(self::ALL_COLUMNS, ["timeCreated"]), true) . "
+          " . self::generateSelectColumns(self::TABLE_NAME, array_diff(self::ALL_COLUMNS, ["timeCreated"]), true) . "
           MIN(websites.timeCreated) timeCreated
         FROM
           `websites`
@@ -165,7 +166,7 @@
     public static function getSet (int $userID, int $offset) {
       return self::parseProps(Database::get()->fetchAll(
         "SELECT
-          " . self::generateSelectColumns("websites", self::ALL_COLUMNS) . "
+          " . self::generateSelectColumns(self::TABLE_NAME, self::ALL_COLUMNS) . "
         FROM `websites`
         WHERE websites.usersID = :userID
         ORDER BY timeCreated DESC

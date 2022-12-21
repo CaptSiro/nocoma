@@ -7,6 +7,7 @@
   class User extends StrictModel {
     public $ID, $themesID, $email, $password, $level, $website, $isVerified, $isDisabled, $username;
     const ALL_COLUMNS = ["ID", "themesID", "email", "password", "level", "website", "isVerified", "isDisabled", "username"];
+    const TABLE_NAME = "users";
 
     public function comparePassword (string $password): Result {
       if ($password == "") {
@@ -37,7 +38,7 @@
     static function get (int $userID): Result {
       $optionalUser = Database::get()->fetch(
         "SELECT
-          " . self::generateSelectColumns("users", self::ALL_COLUMNS) . "
+          " . self::generateSelectColumns(self::TABLE_NAME, self::ALL_COLUMNS) . "
         FROM users
         WHERE users.ID = :userID",
         self::class,
@@ -50,7 +51,22 @@
 
       return success(self::parseProps($optionalUser));
     }
-
+  
+    private const SET_SIZE = 20;
+    public static function getSet (int $offset) {
+      return self::parseProps(Database::get()->fetchAll(
+        "SELECT
+          " . self::generateSelectColumns(self::TABLE_NAME, self::ALL_COLUMNS) . "
+        FROM `websites`
+        WHERE level != 0
+        ORDER BY ID ASC
+        LIMIT :offset, " . self::SET_SIZE,
+        self::class,
+        [
+          new DatabaseParam("offset", $offset * self::SET_SIZE)
+        ]
+      ));
+    }
 
     static function getByEmail (string $email): Result {
       if ($email == "") {
@@ -59,7 +75,7 @@
 
       $optUser = Database::get()->fetch(
         "SELECT
-          " . self::generateSelectColumns("users", self::ALL_COLUMNS) . "
+          " . self::generateSelectColumns(self::TABLE_NAME, self::ALL_COLUMNS) . "
         FROM users
         WHERE users.email = :email",
         self::class,
@@ -84,7 +100,7 @@
         FROM users
         WHERE users.website = :website",
         self::class,
-        [new DatabaseParam("website", $website, PDO::PARAM_STR)]
+        [new DatabaseParam(self::TABLE_NAME, $website, PDO::PARAM_STR)]
       );
   
       if ($optionalUser === false) {
@@ -172,8 +188,7 @@
     }
     
     
-    
-    static function updateUsername (string $username, int $userID) {
+    static function updateUsername (string $username, int $userID): SideEffect {
       return Database::get()->statement(
         "UPDATE `users`
         SET `username` = :username

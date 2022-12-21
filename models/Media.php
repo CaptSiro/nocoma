@@ -8,10 +8,10 @@
   require_once __DIR__ . "/Count.php";
 
   class Media extends StrictModel {
-    protected $src, $extension, $basename, $usersID, $hash, $timeCreated, $mimeContentType, $size;
-    const ALL_COLUMNS = ["src", "extension", "basename", "usersID", "hash", "timeCreated", "mimeContentType", "size"];
+    protected $src, $usersID, $basename, $extension, $mimeContentType, $timeCreated, $hash, $size;
+    const ALL_COLUMNS = ["src", "usersID", "basename", "extension", "mimeContentType", "timeCreated", "hash", "size"];
     
-    protected static function getNumberProps (): array { return ["size", "usersID"]; }
+    protected static function getNumberProps (): array { return ["usersID", "size"]; }
     protected static function getBooleanProps (): array { return []; }
     
     

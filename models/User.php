@@ -5,8 +5,8 @@
   require_once __DIR__ . "/../lib/retval/retval.php";
 
   class User extends StrictModel {
-    public $ID, $themesID, $profileSRC, $email, $password, $username, $level, $website, $isVerified;
-    const ALL_COLUMNS = ["ID", "themesID", "profileSRC", "email", "password", "username", "level", "website", "isVerified"];
+    public $ID, $themesID, $email, $password, $level, $website, $isVerified, $isDisabled, $username;
+    const ALL_COLUMNS = ["ID", "themesID", "email", "password", "level", "website", "isVerified", "isDisabled", "username"];
 
     public function comparePassword (string $password): Result {
       if ($password == "") {
@@ -26,7 +26,7 @@
     }
 
 
-    protected static function getBooleanProps (): array { return ["isVerified"]; }
+    protected static function getBooleanProps (): array { return ["isVerified", "isDisabled"]; }
 
 
 

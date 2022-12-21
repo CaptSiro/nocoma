@@ -4,13 +4,15 @@
   require_once __DIR__ . "/../lib/retval/retval.php";
 
   class Website extends StrictModel {
-    protected $ID, $src, $usersID, $thumbnailSRC, $timeCreated, $title,
+    protected $ID, $usersID, $thumbnailSRC, $src, $timeCreated, $title,
       $isTemplate, $isPublic, $areCommentsAvailable, $isHomePage, $isTakenDown;
-    const ALL_COLUMNS = ["ID", "src", "usersID", "thumbnailSRC", "timeCreated", "title",
+    const ALL_COLUMNS = ["ID", "usersID", "thumbnailSRC", "src", "timeCreated", "title",
       "isTemplate", "isPublic", "areCommentsAvailable", "isHomePage", "isTakenDown"];
 
-    protected static function getNumberProps (): array { return ["ID", "userID", "templateStyle"]; }
-    protected static function getBooleanProps (): array { return ["isPublic", "areCommentsEnabled", "isHomepage"]; }
+    protected static function getNumberProps (): array { return ["ID", "userID"]; }
+    protected static function getBooleanProps (): array { return [
+      "isTemplate", "isPublic", "areCommentsAvailable", "isHomePage", "isTakenDown"
+    ]; }
     
     
     

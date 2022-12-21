@@ -135,7 +135,7 @@
       }
       
       [$regex, $dict] = self::createParamFormat($part, $paramCaptureGroupMap);
-      if (isset($this->parametric[$regex])) {
+      if (isset($this->parametric[$regex]) && $this->parametric[$regex]->paramDictionary === $dict) {
         $this->parametric[$regex]->assign($httpMethod, $uriParts, $callbacks, $paramCaptureGroupMap);
         return;
       }

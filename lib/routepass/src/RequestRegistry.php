@@ -11,7 +11,7 @@
     }
   
     protected function propNotFound($propertyName) {
-      $this->request->homeRouter->dispathError(
+      $this->request->homeRouter->dispatchError(
         HomeRouter::ERROR_PROPERTY_NOT_FOUND,
         new RequestError("'$propertyName' is required for this operation.", $this->request, $this->request->response)
       );

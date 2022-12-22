@@ -48,8 +48,8 @@
     protected function setMethod (string &$httpMethod, array &$callbacks) {
       $this->home->setMethod($httpMethod, $callbacks);
     }
-    protected function execute (array &$uri, Request &$request, Response &$response) {
-      $this->home->execute($uri, $request, $response);
+    protected function execute (array &$uri, int $uriIndex, Request &$request, Response &$response) {
+      $this->home->execute($uri, $uriIndex, $request, $response);
     }
     public function getEndpoints(): array {
       return $this->home->getEndpoints();

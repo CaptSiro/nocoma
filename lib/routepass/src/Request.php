@@ -91,8 +91,25 @@
       /** @var RequestRegistry $body */
       $body,
       $session,
-      $cookies;
-    private $headers;
+      $cookies, $trace;
+      
+    private $headers,
+      $state = null;
+  
+    /**
+     * @param mixed $state
+     */
+    public function setState($state): void {
+      $this->state = $state;
+    }
+  
+    /**
+     * @return mixed
+     */
+    public function getState() {
+      return $this->state;
+    }
+    
     public function getHeader ($header): string {
       return $this->headers[strtolower($header)] ?? "";
     }

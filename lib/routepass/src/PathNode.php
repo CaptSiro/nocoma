@@ -65,9 +65,6 @@
      * @var Node[]
      */
     public $static = [];
-    /**
-     * @var ParametricPathNode[]|Node[]
-     */
     public $parametric = [];
     /**
      * @var Closure[][]
@@ -95,9 +92,14 @@
       }
   
       [$regex, $dict] = self::createParamFormat($part, $paramCaptureGroupMap);
-      if (isset($this->parametric[$regex])) {
-        return $this->parametric[$regex]->createPath($uriParts, $paramCaptureGroupMap);
+      foreach ($this->parametric as [$reg, $node]) {
+        if ($reg === $regex) {
+          $node->createPath($uriParts, $paramCaptureGroupMap);
+        }
       }
+//      if (isset($this->parametric[$regex])) {
+//        return $this->parametric[$regex]->createPath($uriParts, $paramCaptureGroupMap);
+//      }
   
       //* create new end point
       if (strpos($part, ":") === false) {
@@ -109,7 +111,7 @@
   
       //* parametric
       $node = new ParametricPathNode($regex, $this);
-      $this->parametric[$regex] = $node;
+      $this->parametric[] = [$regex, $node];
       $node->paramDictionary = $dict;
       return $node->createPath($uriParts, $paramCaptureGroupMap);
     }
@@ -135,10 +137,15 @@
       }
       
       [$regex, $dict] = self::createParamFormat($part, $paramCaptureGroupMap);
-      if (isset($this->parametric[$regex]) && $this->parametric[$regex]->paramDictionary === $dict) {
-        $this->parametric[$regex]->assign($httpMethod, $uriParts, $callbacks, $paramCaptureGroupMap);
-        return;
+      foreach ($this->parametric as [$reg, $node]) {
+        if ($reg === $regex  && $node->paramDictionary === $dict) {
+          $node->createPath($uriParts, $paramCaptureGroupMap);
+        }
       }
+//      if (isset($this->parametric[$regex]) && $this->parametric[$regex]->paramDictionary === $dict) {
+//        $this->parametric[$regex]->assign($httpMethod, $uriParts, $callbacks, $paramCaptureGroupMap);
+//        return;
+//      }
       
       //* create new end point
       
@@ -151,9 +158,11 @@
       }
 
       //* parametric
+//      var_dump("___new___");
+//      var_dump($part, $regex);
       $node = new ParametricPathNode($regex, $this);
       $node->assign($httpMethod, $uriParts, $callbacks, $paramCaptureGroupMap);
-      $this->parametric[$regex] = $node;
+      $this->parametric[] = [$regex, $node];
       $node->paramDictionary = $dict;
     }
     
@@ -165,23 +174,31 @@
   
     
   
-    protected function execute (array &$uri, Request &$request, Response &$response) {
-      if (empty($uri)) {
+    protected function execute (array &$uri, int $uriIndex, Request &$request, Response &$response) {
+      if (!isset($uri[$uriIndex])) {
         $this->callHandlesClosures($request, $response);
-      }
-
-      $part = array_shift($uri);
-      if (isset($this->static[$part])) {
-        $this->static[$part]->execute($uri, $request, $response);
         return;
       }
 
+      $part = $uri[$uriIndex];
+      $request->trace[] = $part;
+      if (isset($this->static[$part])) {
+        $this->static[$part]->execute($uri, $uriIndex + 1, $request, $response);
+        return;
+      }
+      
       // breaking chars [-.~]
-      foreach ($this->parametric as $regex => $node) {
+      /**
+       * @var $regex string
+       * @var $node ParametricPathNode
+       */
+      foreach ($this->parametric as [$regex, $node]) {
         if (preg_match($regex, $part, $matches)) {
           if ($node instanceof Router) {
-            $node = $node->home;
+            $node = &$node->home;
           }
+          
+          $removeRegister = [];
           
           foreach ($node->paramDictionary as $key => $param) {
             $paramLength = strlen($param);
@@ -189,20 +206,37 @@
               $shortHand = substr($param, 0, -2);
               
               if ($request->param->isset($shortHand)) {
-                $request->param->modify($shortHand, function ($value) use ($matches, $key) {
+                $request->param->modify($shortHand, function ($value) use ($matches, $key, &$removeRegister, $shortHand) {
+                  $removeRegister[$shortHand][] = count($value);
                   $value[] = $matches[$key];
                   return $value;
                 });
               } else {
                 $request->param->set($shortHand, [$matches[$key]]);
+                $removeRegister[$shortHand] = [0];
               }
               continue;
             }
             
             $request->param->set($param, $matches[$key]);
+            $removeRegister[$param] = -1;
           }
-          $node->execute($uri, $request, $response);
-          exit;
+          
+          $node->execute($uri, $uriIndex + 1, $request, $response);
+          
+          foreach ($removeRegister as $remove => $indexes) {
+            if ($indexes === -1) {
+              $request->param->unset($remove);
+              continue;
+            }
+            
+            $request->param->modify($remove, function ($value) use ($indexes) {
+              foreach ($indexes as $index) {
+                $value[$index] = null;
+              }
+              return $value;
+            });
+          }
         }
       }
       
@@ -210,11 +244,15 @@
         $request->remainingURI = "$part" . (count($uri) == 0 ? "" : ("/" . join("/", $uri)));
         $this->callHandlesClosures($request, $response);
       }
+  
+      if (!$request->getState() == HomeRouter::REQUEST_SERVED) {
+        $request->setState(HomeRouter::ERROR_ENDPOINT_DOES_NOT_EXISTS);
+      }
     
-      $request->homeRouter->dispathError(
-        HomeRouter::ERROR_ENDPOINT_DOES_NOT_EXISTS,
-        new RequestError("Endpoint does not exist for '$request->fullURI'", $request, $response)
-      );
+//      $request->homeRouter->dispathError(
+//        HomeRouter::ERROR_ENDPOINT_DOES_NOT_EXISTS,
+//        new RequestError("Endpoint does not exist for '$request->fullURI'", $request, $response)
+//      );
     }
     
     
@@ -223,6 +261,10 @@
       $accumulator = [];
       
       foreach ($array as $key => $value) {
+        if ($value instanceof ParametricPathNode) {
+          $key .= " -> " . join(", ", $value->paramDictionary);
+        }
+        
         if ($value instanceof Node) {
           $accumulator[$key] = $value->getEndpoints();
           continue;
@@ -246,13 +288,19 @@
   
     private function callHandlesClosures (Request $request, Response $response) {
       if (!isset($this->handles[$_SERVER["REQUEST_METHOD"]])) {
-        $request->homeRouter->dispathError(
-          HomeRouter::ERROR_HTTP_METHOD_NOT_IMPLEMENTED,
-          new RequestError("HTTP method: '$_SERVER[REQUEST_METHOD]' is not implemented for '$request->fullURI'", $request, $response)
-        );
+        if (!$request->getState() == HomeRouter::REQUEST_SERVED) {
+//          var_dump($this);
+          $request->setState(HomeRouter::ERROR_HTTP_METHOD_NOT_IMPLEMENTED);
+        }
+//        $request->homeRouter->dispathError(
+//          HomeRouter::ERROR_HTTP_METHOD_NOT_IMPLEMENTED,
+//          new RequestError("HTTP method: '$_SERVER[REQUEST_METHOD]' is not implemented for '$request->fullURI'", $request, $response)
+//        );
         return;
       }
   
+      $request->setState(HomeRouter::REQUEST_SERVED);
+      
       $doNext = false;
       $argumentsForNextHandler = [];
       $nextFunc = function (...$arguments) use (&$doNext, &$argumentsForNextHandler) {

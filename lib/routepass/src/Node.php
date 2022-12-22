@@ -10,7 +10,7 @@
      */
     abstract protected function assign (string &$httpMethod, array &$uriParts, array &$callbacks, array &$paramCaptureGroupMap = []);
     abstract protected function setMethod (string &$httpMethod, array &$callbacks);
-    abstract protected function execute (array &$uri, Request &$request, Response &$response);
+    abstract protected function execute (array &$uri, int $uriIndex, Request &$request, Response &$response);
     abstract public function getEndpoints (): array;
   
     /**

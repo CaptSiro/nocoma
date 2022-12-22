@@ -47,7 +47,7 @@
   $router->use("/page", require __DIR__ . "/routes/page-router.php");
   $router->use("/file", require __DIR__ . "/routes/file-router.php");
   $router->use("/profile", require __DIR__ . "/routes/profile-router.php");
-  $router->use("/user", require __DIR__ . "/routes/user-router.php");
+  $router->use("/users", require __DIR__ . "/routes/user-router.php");
   
   /** @var Blueprints $b */
   $b = require __DIR__ . "/lib/blueprint/collection.php";

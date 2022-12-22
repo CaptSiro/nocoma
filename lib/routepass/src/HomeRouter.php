@@ -100,7 +100,7 @@
         $filePath = realpath("$absoluteDirectoryPath/$request->remainingURI");
         
         if (strpos($filePath, $realAbsoluteDirectoryPath) === false) {
-          $request->homeRouter->dispathError(
+          $request->homeRouter->dispatchError(
             self::ERROR_REQUEST_OUT_OF_STATIC_DIRECTORY,
             new RequestError("Request '$request->fullURI' is referencing outside of static folder: '$realAbsoluteDirectoryPath'", $request, $response)
           );
@@ -166,7 +166,7 @@
       $uri = self::filterEmpty(explode("/", substr($_SERVER["REQUEST_PATH"], strlen($home))));
       
       if (isset($this->staticDomains[$_SERVER["HTTP_HOST"]])) {
-        $this->staticDomains[$_SERVER["HTTP_HOST"]]->execute($uri, $req, $res);
+        $this->staticDomains[$_SERVER["HTTP_HOST"]]->execute($uri, 0, $req, $res);
         exit;
       }
       
@@ -176,12 +176,31 @@
             $req->domain->set($domain, $matches[$key]);
           }
     
-          $domainRouter->execute($uri, $req, $res);
+          $domainRouter->execute($uri, 0, $req, $res);
           exit;
         }
       }
       
-      $this->home->execute($uri, $req, $res);
+      $this->home->execute($uri, 0, $req, $res);
+      
+//      switch ($req->getState()) {
+//        case self::ERROR_ENDPOINT_DOES_NOT_EXISTS: {
+//          $this->dispatchError(
+//            self::ERROR_ENDPOINT_DOES_NOT_EXISTS,
+//            new RequestError("Endpoint does not exist for '$req->fullURI'", $req, $res)
+//          );
+//          break;
+//        }
+//        case self::ERROR_HTTP_METHOD_NOT_IMPLEMENTED: {
+//          $req->homeRouter->dispatchError(
+//            HomeRouter::ERROR_HTTP_METHOD_NOT_IMPLEMENTED,
+//            new RequestError("HTTP method: '$_SERVER[REQUEST_METHOD]' is not implemented for '$req->fullURI'", $req, $res)
+//          );
+//          break;
+//        }
+//      }
+      
+      var_dump($req->getState());
     }
     private function displayTrace ($trace, $indent = "  ") {
       foreach ($trace as $key => $arrayOfEndpoints) {
@@ -209,8 +228,17 @@
       };
     }
     public function showTrace () {
+      $home = "";
+      $dir = dirname($_SERVER["SCRIPT_FILENAME"]);
+  
+      for ($i = 0; $i < strlen($dir); $i++) {
+        if (!(isset($_SERVER["DOCUMENT_ROOT"][$i]) && $_SERVER["DOCUMENT_ROOT"][$i] == $dir[$i])){
+          $home .= $dir[$i];
+        }
+      }
+      
       echo "<pre>";
-      echo "\n/";
+      echo "\n$home";
       $this->displayTrace($this->getEndpoints());
       echo "\nDomains:";
       $this->displayTrace([
@@ -226,10 +254,12 @@
     const ERROR_PROPERTY_NOT_FOUND = "property-not-found";
     const ERROR_REQUEST_OUT_OF_STATIC_DIRECTORY = "request-out-of-static-directory";
     
+    const REQUEST_SERVED = "request-served";
+    
     /** @var Closure[] $errorHandlers */
     private $errorHandlers = [];
     
-    public function dispathError ($errorID, $errorEvent) {
+    public function dispatchError ($errorID, $errorEvent) {
       $this->errorHandlers[$errorID]->call($errorEvent, $errorEvent);
     }
     

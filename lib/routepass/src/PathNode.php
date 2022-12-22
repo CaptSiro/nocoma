@@ -276,8 +276,10 @@
       $accumulator = [];
       
       foreach ($array as $key => $value) {
-        if ($value instanceof ParametricPathNode) {
-          $key .= " -> " . join(", ", $value->paramDictionary);
+        if (is_array($value)) {
+          $key = $value[0] . " -> " . join(", ", $value[1]->paramDictionary);
+          $accumulator[$key] = $value[1]->getEndpoints();
+          continue;
         }
         
         if ($value instanceof Node) {

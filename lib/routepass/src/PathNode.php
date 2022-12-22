@@ -59,7 +59,21 @@
       return [$format, $dict];
     }
   
-  
+    private static function sliceArray (array $array, $startIndex) {
+      $newArray = [];
+      
+      $doAdd = false;
+      for ($i = 0; $i < count($array); $i++) {
+        if ($i === $startIndex || $doAdd) {
+          $doAdd = true;
+          $newArray[] = $array[$i];
+        }
+      }
+      
+      return $newArray;
+    }
+    
+    
     
     /**
      * @var Node[]
@@ -241,7 +255,8 @@
       }
       
       if ($this->redirectAllToHome) {
-        $request->remainingURI = "$part" . (count($uri) == 0 ? "" : ("/" . join("/", $uri)));
+        $slicedURI = self::sliceArray($uri, $uriIndex + 1);
+        $request->remainingURI = "$part" . (count($slicedURI) == 0 ? "" : ("/" . join("/", $slicedURI)));
         $this->callHandlesClosures($request, $response);
       }
   

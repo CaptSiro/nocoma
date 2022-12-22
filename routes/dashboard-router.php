@@ -54,7 +54,9 @@
     Middleware::requireToBeLoggedIn(),
     Middleware::authorize(Middleware::LEVEL_ADMIN, Middleware::RESPONSE_REDIRECT, Middleware::RESPONSE_REDIRECT_DASHBOARD_MAP),
     function (Request $request, Response $response) {
-      $response->render("dashboards/admin");
+      $response->render("dashboards/admin", [
+        "user" => $request->session->get("user")
+      ]);
     }
   ]);
   

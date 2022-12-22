@@ -13,6 +13,7 @@ var WText = class WText extends Widget { // var is used because it creates refer
   
   /**
    * @param {string[]} lines
+   * @param {boolean} forceSingleLine
    * @returns {HTMLElement}
    */
   static #parseLines (lines, forceSingleLine = false) {
@@ -20,7 +21,7 @@ var WText = class WText extends Widget { // var is used because it creates refer
       return html({ content: lines.reduce((acc, cur) => acc + cur, "")})
     }
 
-    return lines.length != 0 ? lines.map(str => html({ content: str })) : document.createElement("div");
+    return lines.length !== 0 ? lines.map(str => html({ content: str })) : document.createElement("div");
   }
 
 
@@ -47,6 +48,7 @@ var WText = class WText extends Widget { // var is used because it creates refer
    * @override
    * @param {TextJSON} json
    * @param {Widget} parent
+   * @param {boolean} editable
    * @returns {WText}
    */
   static build (json, parent, editable = false) {
@@ -56,20 +58,20 @@ var WText = class WText extends Widget { // var is used because it creates refer
       className: "w-text",
     }), parent);
 
-    if (editable == true) {
+    if (editable === true) {
       text.appendEditGui();
-      text.rootElement.setAttribute("contenteditable", true);
-      text.rootElement.setAttribute("spellcheck", false);
+      text.rootElement.setAttribute("contenteditable", "true");
+      text.rootElement.setAttribute("spellcheck", "false");
       text.rootElement.classList.add("edit");
 
-      if (text.rootElement.textContent == "") {
+      if (text.rootElement.textContent === "") {
         text.rootElement.classList.add("show-hint");
       }
 
-      text.rootElement.addEventListener("input", function (evt) {
-        if (this.textContent == "") {
+      text.rootElement.addEventListener("input", function () {
+        if (this.textContent === "") {
           this.classList.add("show-hint");
-          if (this.children.length == 0) {
+          if (this.children.length === 0) {
             this.append(document.createElement('div'));
           }
         } else {
@@ -97,9 +99,9 @@ var WText = class WText extends Widget { // var is used because it creates refer
       },
       className: ["w-text", "edit"],
       listeners: {
-        blur: function (evt) {
+        blur: function () {
           console.log("save");
-          console.log(Array.from(this.childNodes).reduce((acc, cur, i, arr) => acc + cur.textContent + ((i != arr.length - 1) ? "<nl>" : ""), ""));
+          console.log(Array.from(this.childNodes).reduce((acc, cur, i, arr) => acc + cur.textContent + ((i !== arr.length - 1) ? "<nl>" : ""), ""));
           console.dir(this);
         }
       }

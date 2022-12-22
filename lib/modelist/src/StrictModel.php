@@ -14,8 +14,17 @@
         return intval($string);
       }
     }
-
+  
+    /**
+     * @param $objectOrArray
+     * @return array|mixed|false if type of $objectOrArray is not object or array, false is returned
+     */
     public static function parseProps ($objectOrArray) {
+      $type = gettype($objectOrArray);
+      if (!($type === "object" || $type === "array")) {
+        return false;
+      }
+      
       $cb = function ($obj) {
         foreach ($obj as $key => $value) {
           if (in_array($key, static::getNumberProps())) {

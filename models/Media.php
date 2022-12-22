@@ -10,21 +10,21 @@
   class Media extends StrictModel {
     protected $src, $usersID, $basename, $extension, $mimeContentType, $timeCreated, $hash, $size;
     const ALL_COLUMNS = ["src", "usersID", "basename", "extension", "mimeContentType", "timeCreated", "hash", "size"];
-    const TABLE_NAME = "media";
+    const TABLE_NAME = "`media`";
     
     protected static function getNumberProps (): array { return ["usersID", "size"]; }
     protected static function getBooleanProps (): array { return []; }
     
     
     
-    public static function accept (RequestFile $file, User $user): Result {
+    public static function save (RequestFile $file, User $user): Result {
       if ($file->error !== UPLOAD_ERR_OK) {
         return fail(new TypeExc("Error when uploading file: '$file->fullName'. Code: '$file->error'"));
       }
       
       $sourceResult = Generate::valid(
         Generate::string(Generate::CHARSET_URL, 10),
-        self::isSRCValid()
+        self::isSRCValid(HOSTS_DIR . "/$user->website/media/")
       );
       
       if ($sourceResult->isFailure()) {
@@ -43,7 +43,10 @@
       }
       
       $mimeType = $mimeTypeResult->getSuccess();
-      $file->moveTo(HOSTS_DIR . "/$user->website/media/$source$file->ext");
+      $moveResult = $file->moveTo(HOSTS_DIR . "/$user->website/media/$source$file->ext");
+      if ($moveResult->isFailure()) {
+        return $moveResult;
+      }
       
       return success(Database::get()->statement(
         "INSERT INTO `media` (`src`, `extension`, `basename`, `usersID`, `hash`, `size`, `mimeContentType`)
@@ -59,7 +62,7 @@
         ]
       ));
     }
-    public static function throwOut (string $source, User $user): Result {
+    public static function delete (string $source, User $user): Result {
       $fileResult = self::getBySource($source);
       if ($fileResult->isFailure()) {
         return $fileResult;
@@ -149,21 +152,21 @@
     }
     
     
-    public static function isSRCValid (): Closure {
-      return function ($src): Result {
+    public static function isSRCValid (string $directory): Closure {
+      return function ($src) use ($directory): Result {
         if ($src == "") {
           return fail(new InvalidArgumentExc("Source is not defined."));
         }
-        
-        return success(
-          Count::parseProps(Database::get()->fetch(
+  
+        $isNotPresentInDatabaseOrInDirectory = Count::parseProps(Database::get()->fetch(
             "SELECT COUNT(*) amount
-                  FROM `media`
-                  WHERE src = :src",
+            FROM " . self::TABLE_NAME . "
+            WHERE src = :src",
             Count::class,
             [new DatabaseParam("src", $src, PDO::PARAM_STR)]
-          ))->amount != 0
-        );
+          ))->amount != 0 && empty(glob("$directory/$src.*"));
+  
+        return success($isNotPresentInDatabaseOrInDirectory);
       };
     }
     public static function isFileUnique (string $footprint, User $user): bool {

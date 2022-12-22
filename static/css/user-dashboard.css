@@ -1,3 +1,12 @@
+#create-post .checkboxes {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+
+
+
 .post-view {
   display: flex;
   flex-direction: column;
@@ -323,92 +332,4 @@
 .file span.size {
   white-space: pre;
   padding-left: 0.5em;
-}
-
-
-
-
-
-
-
-
-
-
-
-.info {
-  display: flex;
-  flex-direction: row;
-  gap: 32px;
-  padding: 32px;
-  overflow: hidden;
-}
-.pfp {
-  position: relative;
-  height: 100%;
-  aspect-ratio: 1/1;
-}
-.pfp > img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  border-radius: 10px;
-}
-.pfp .edit {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 50px;
-  height: 50px;
-}
-.pfp .edit img {
-  border-radius: 10px;
-}
-.pfp .edit:hover {
-  cursor: pointer;
-}
-.pfp .edit img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-.info > * {
-  margin: unset;
-}
-.info .i-column {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  background-color: var(--container-1);
-  border-radius: 10px;
-  overflow: auto;
-}
-.info .i-column > *:first-child {
-  padding-top: 16px;
-}
-.info .i-column > * {
-  padding: 8px 16px;
-}
-.info .i-column > *:last-child {
-  padding-bottom: 16px;
-}
-.i-column .field {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.field h3:focus {
-  outline: unset;
-}
-.i-column .field.end {
-  justify-content: flex-end;
-}
-.info > button {
-  width: min-content;
-} 
-.info .website {
-  font-size: small;
-  color: var(--text-color-2);
-}
-.info .website::after {
-  content: "/";
 }

@@ -16,3 +16,16 @@
   left: 16px;
   color: var(--text-color-2);
 }
+
+
+.viewport-tablet .w-text {
+  color: #900C3E;
+}
+
+.viewport-smartphone .w-text {
+  color: #035956;
+}
+
+.viewport-small-smartphone .w-text {
+  color: #005073;
+}

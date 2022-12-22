@@ -236,6 +236,31 @@ function rejected (element, dark = false) {
   return pulse(element, ["rejected", ...(dark ? ["darken"] : [])]);
 }
 
+function redirect (destination, savePositionToHistory = true) {
+  if (savePositionToHistory) {
+    history.pushState({}, '', new URL(window.location));
+  }
+  
+  window.location.replace(destination);
+}
+
+function contentEditableLimiter (maxSize = 16) {
+  return function (evt) {
+    const isRemovalKey = evt.key === "Backspace" || evt.key === "Delete";
+    const isNavigationKey = evt.key === "ArrowLeft" || evt.key === "ArrowUp" || evt.key === "ArrowDown" || evt.key === "ArrowRight";
+    const exceededLength = this.textContent.length > maxSize;
+    
+    if (exceededLength && !isRemovalKey && !isNavigationKey) {
+      evt.preventDefault();
+    }
+    
+    if (evt.key === "Enter") {
+      evt.preventDefault()
+      this.blur();
+    }
+  }
+}
+
 
 
 

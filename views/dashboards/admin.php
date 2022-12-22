@@ -9,27 +9,32 @@
   <link rel="stylesheet" href="<?=$GLOBALS["__HOME__"]?>/public/css/main.css">
   <link rel="stylesheet" href="<?=$GLOBALS["__HOME__"]?>/public/css/dashboard.css">
   <link rel="stylesheet" href="<?=$GLOBALS["__HOME__"]?>/public/css/admin-dashboard.css">
+  <link rel="stylesheet" href="<?=$GLOBALS["__HOME__"]?>/public/css/modal.css">
+  <link rel="stylesheet" href="<?=$GLOBALS["__HOME__"]?>/public/css/forms.css">
   
   <script src="<?=$GLOBALS["__HOME__"]?>/public/js/main.js"></script>
+  <script src="<?=$GLOBALS["__HOME__"]?>/public/js/components/InfiniteScroller.js"></script>
   <script>
     AJAX.DOMAIN_HOME = "<?=$GLOBALS["__HOME__"]?>";
     AJAX.SERVER_HOME = "<?=$GLOBALS["__SERVER_HOME__"] ?? $GLOBALS["__HOME__"]?>";
   </script>
+  
   <script src="<?=$GLOBALS["__HOME__"]?>/public/js/grid.js" defer></script>
   <script src="<?=$GLOBALS["__HOME__"]?>/public/js/dashboard.js" defer></script>
+  <script src="<?=$GLOBALS["__HOME__"]?>/public/js/modal.js" defer></script>
+  <script src="<?=$GLOBALS["__HOME__"]?>/public/js/forms.js" defer></script>
   <script src="<?=$GLOBALS["__HOME__"]?>/public/js/dashboard-admin.js" defer></script>
 </head>
 <body>
   <div class="modals">
-    <div class="windows form">
-    
-    </div>
+  
   </div>
   
   <nav>
     <section>
       <button reference-to="users" class="link-pointer active" title="Users"><span>1</span></button>
       <button reference-to="appeals" class="link-pointer" title="Appeals"><span>2</span></button>
+      <button reference-to="profile" class="link-pointer" title="Profile" style="background-image: url(<?= $GLOBALS["__SERVER_HOME__"] ?>/profile/picture)" id="profile-picture-small"></button>
     </section>
     <section>
       <button class="logout" title="Logout" id="logout"><span style="font-family: monospace;">&lt;-</span></button>
@@ -1313,6 +1318,37 @@
           </div>
         </div>
       </section>
+    </div>
+  
+  
+    <div columns="7" class="c-grid link-element" auto-fill="true" id="profile">
+      <section column="0-7" row="0-3" class="info">
+        <div class="pfp">
+          <img src="<?= $GLOBALS["__HOME__"] ?>/profile/picture/" alt="profile picture" id="profile-picture">
+          <div class="edit">
+            <label for="profile-picture-upload">
+              <img src="<?= $GLOBALS["__HOME__"] ?>/public/images/upload.svg" alt="upload" class="icon button-like">
+            </label>
+            <input type="file" name="profile-picture" id="profile-picture-upload" class="display-none" accept="image/png, image/gif, image/jpeg">
+          </div>
+        </div>
+        <div class="i-column">
+          <div class="field username">
+            <h3 class="selectable"><?= $GLOBALS["user"]->username ?></h3>
+            <button>Edit</button>
+          </div>
+          <div class="field">
+            <span><?= $GLOBALS["user"]->email ?></span>
+          </div>
+          <div class="field end">
+            <button id="reset-password">Reset password</button>
+          </div>
+        </div>
+      </section>
+    
+      <!-- <section column="0-7" row="3-4">
+        <div>settings</div>
+      </section> -->
     </div>
   </main>
 </body>

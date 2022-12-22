@@ -2,10 +2,12 @@
   
   require_once __DIR__ . "/../lib/routepass/routers.php";
   require_once __DIR__ . "/../lib/regular-expressions.php";
+  require_once __DIR__ . "/../lib/retval/retval.php";
   
   require_once __DIR__ . "/Middleware.php";
   
   require_once __DIR__ . "/../models/User.php";
+  require_once __DIR__ . "/../models/ProfilePicture.php";
   
   $profileRouter = new Router();
   
@@ -30,6 +32,73 @@
       $response->json($sideEffect);
     }
   ]);
+  
+  
+  
+  
+  $profileRouter->post("/picture", [
+    Middleware::requireToBeLoggedIn(),
+    function (Request $request, Response $response) {
+      $response->json(
+        ProfilePicture::save($request->files->get("picture"), $request->session->get("user"))
+          ->forwardFailure($response)
+          ->getSuccess()
+      );
+    }
+  ]);
+  
+  
+  
+  $renderPicture = function (string $path, Response $response) {
+    $response->setHeader("Content-Type",
+      Response::getMimeType($path)
+        ->forwardFailure($response)
+        ->getSuccess()
+    );
+  
+    $response->readFile($path);
+  };
+  $serveUserPicture = function (Request $request, Response $response, Closure $next, Result $userResult) use ($renderPicture) {
+    if ($userResult->isFailure()) {
+      $renderPicture(__DIR__ . "/../static/images/stock/pfp-user-not-found.png", $response);
+    }
+    
+    /** @var User $user */
+    $user = $userResult->getSuccess();
+    
+    $usersPicture = ProfilePicture::getByUserID($user->ID)
+      ->failed(function () use ($response, $renderPicture) {
+        $renderPicture(__DIR__ . "/../static/images/stock/pfp.png", $response);
+      })
+      ->getSuccess();
+  
+    $renderPicture(HOSTS_DIR . "/$user->website/media/$usersPicture->src$usersPicture->extension", $response);
+  };
+  
+  $profileRouter->get("/picture", [
+    Middleware::requireToBeLoggedIn(),
+    function (Request $request, Response $response, Closure $next) {
+      $next(success($request->session->get("user")));
+    },
+    $serveUserPicture
+  ]);
+  
+  
+  
+  
+  $profileRouter->get("/picture/:userID", [
+    function (Request $request, Response $response, Closure $next) {
+      $next(User::get($request->param->get("userID")));
+    },
+    $serveUserPicture
+  ], ["userID" => Router::REGEX_NUMBER]);
+  
+  
+  
+  
+//  $profileRouter->get("/collect", [function (Request $request, Response $response) {
+//    $response->render("collect");
+//  }]);
   
   
   

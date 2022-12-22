@@ -48,7 +48,7 @@
       }
       
       foreach ($request->files->get("uploaded") as $file) {
-        Media::accept($file, $request->session->get("user"))
+        Media::save($file, $request->session->get("user"))
             ->forwardFailure($response);
       }
       
@@ -64,7 +64,7 @@
     Middleware::requireToBeLoggedIn(),
     function (Request $request, Response $response) {
       $response->json(
-        Media::throwOut($request->param->get("file"), $request->session->get("user"))
+        Media::delete($request->param->get("file"), $request->session->get("user"))
           ->forwardFailure($response)
           ->getSuccess()
       );

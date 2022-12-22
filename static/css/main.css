@@ -59,6 +59,10 @@
   align-items: center;
 }
 
+.display-none {
+  display: none;
+}
+
 .center-text {
   text-align: center;
 }

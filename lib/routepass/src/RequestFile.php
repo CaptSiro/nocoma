@@ -1,5 +1,7 @@
 <?php
   
+  
+  
   class RequestFile {
     public $name, $ext, $fullName, $type, $temporaryName, $error, $size;
     
@@ -14,8 +16,14 @@
       $this->size = $file["size"];
     }
     
-    public function moveTo (string $destination) {
+    public function moveTo (string $destination): Result {
+      if ($this->error !== UPLOAD_ERR_OK) {
+        return fail(new Exc("Error occurred when uploading file: '$this->fullName'. Code: '$this->error'"));
+      }
+      
       move_uploaded_file($this->temporaryName, $destination);
+      
+      return success(true);
     }
     
     public function getExt (): array {

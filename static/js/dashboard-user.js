@@ -42,20 +42,16 @@ createPost.querySelector("button.submit").addEventListener("click", () => {
 
 //* load posts
 const postView = $(".post-view");
-let postCallIndex = 0;
 
 /**
  * @returns {Promise<HTMLElement|undefined>}
  */
-function loadPosts () {
+function loadPosts (index) {
   return new Promise(resolve => {
-    AJAX.get(`/page/${postCallIndex++}`, new JSONHandler(posts => {
+    AJAX.get(`/page/${index}`, new JSONHandler(posts => {
       let element = undefined;
       
       for (const post of posts) {
-        const redirectToEdit = () => {
-          window.location.replace(AJAX.SERVER_HOME + "/editor/" + post.src);
-        };
         element = html({
           className: "post",
           content: [{
@@ -92,7 +88,7 @@ function loadPosts () {
                 name: "h3",
                 textContent: post.title,
                 listeners: {
-                  click: redirectToEdit
+                  click: () => redirect(AJAX.SERVER_HOME + "/editor/" + post.src)
                 }
               }]
             }]
@@ -111,11 +107,11 @@ function loadPosts () {
             }, {
               className: "menu-body",
               content: [{
+                listeners: { click: () => redirect(AJAX.SERVER_HOME + "/editor/" + post.src) },
                 content: [{
                   name: "span",
                   className: "label",
-                  textContent: "Edit",
-                  listeners: { click: redirectToEdit }
+                  textContent: "Edit"
                 }]
               }, {
                 listeners: {
@@ -147,30 +143,8 @@ function loadPosts () {
     }));
   });
 }
-const postInfiniteScrolling = new IntersectionObserver(entries => {
-  const lastPost = entries[0];
-  
-  if (!lastPost.isIntersecting) {
-    return;
-  }
-  
-  postInfiniteScrolling.unobserve(lastPost.target);
-  loadPosts().then(last => {
-    if (last !== undefined) {
-      postInfiniteScrolling.observe(last);
-    }
-  });
-}, {
-  root: postView,
-  rootMargin: "50px",
-  threshold: 0
-});
-loadPosts().then(last => {
-  if (last !== undefined) {
-    postInfiniteScrolling.observe(last);
-  }
-});
 
+new InfiniteScroller(postView, loadPosts);
 
 
 
@@ -183,32 +157,8 @@ $("#upload-files-button").addEventListener("click", () => showWindow("upload-fil
 
 
 
-
-
-function contentEditableLimiter (maxSize = 16) {
-  return function (evt) {
-    const isRemovalKey = evt.key === "Backspace" || evt.key === "Delete";
-    const isNavigationKey = evt.key === "ArrowLeft" || evt.key === "ArrowUp" || evt.key === "ArrowDown" || evt.key === "ArrowRight";
-    const exceededLength = this.textContent.length > maxSize;
-    
-    if (exceededLength && !isRemovalKey && !isNavigationKey) {
-      evt.preventDefault();
-    }
-  
-    if (evt.key === "Enter") {
-      evt.preventDefault()
-      this.blur();
-    }
-  }
-}
-
-
-
-
-
 //* load files
 const fileView = $(".files-view");
-let filesCallIndex = 0;
 
 function fileSizeFormatter (size, inPowerOfTwo = false, decimal = 1) {
   const divider = inPowerOfTwo ? 1000 : 1024;
@@ -231,16 +181,16 @@ function fileSizeFormatter (size, inPowerOfTwo = false, decimal = 1) {
   
   return size.toFixed(decimal) + ' ' + units[unit];
 }
-const numberFormatter = Intl.NumberFormat("en", { notation: "compact" });
 
 /**
+ * @param {number} index
  * @returns {Promise<HTMLElement|undefined>}
  */
-function loadFiles () {
+function loadFiles (index) {
   return new Promise(resolve => {
     const order = localStorage.getItem("order") !== null ? localStorage.getItem("order") : "0";
     
-    AJAX.get(`/file/${filesCallIndex++}/?order=${order}`, new JSONHandler(files => {
+    AJAX.get(`/file/${index}/?order=${order}`, new JSONHandler(files => {
       let element = undefined;
   
       for (const file of files) {
@@ -338,40 +288,17 @@ function loadFiles () {
     }));
   });
 }
-const fileInfiniteScrolling = new IntersectionObserver(entries => {
-  const lastFile = entries[0];
-  
-  if (!lastFile.isIntersecting) {
-    return;
-  }
-  
-  fileInfiniteScrolling.unobserve(lastFile.target);
-  loadFiles().then(last => {
-    if (last !== undefined) {
-      fileInfiniteScrolling.observe(last);
-    }
-  });
-}, {
-  root: fileView,
-  rootMargin: "50px",
-  threshold: 0
-});
-function resetFiles () {
-  fileView.textContent = "";
-  filesCallIndex = 0;
-  fileInfiniteScrolling.disconnect();
-  loadFiles().then(last => {
-    if (last !== undefined) {
-      fileInfiniteScrolling.observe(last);
-    }
-  });
-}
-resetFiles();
+const filesInfiniteScroller = new InfiniteScroller(fileView, loadFiles);
 
 
 
-//TODO: remove
-$("nav section button[title=Profile]").dispatchEvent(new CustomEvent("pointerdown"));
+
+// $("nav section button[title=Profile]").dispatchEvent(new CustomEvent("pointerdown"));
+
+
+
+
+
 
 
 const selectedFilesMap = new Map();
@@ -453,7 +380,7 @@ $("#upload-files button[type=submit]").addEventListener("click", () => {
     
     //TODO: update files-view
     clearWindows();
-    resetFiles();
+    filesInfiniteScroller.reset();
   
     selectedFilesMap.clear();
     selectedFiles.textContent = "";
@@ -469,71 +396,6 @@ $$(".change-order").forEach(element => {
     if (element.dataset.order === localStorage.getItem("order")) return;
     
     localStorage.setItem("order", element.dataset.order);
-    resetFiles();
+    filesInfiniteScroller.reset();
   });
-});
-
-
-
-
-
-
-
-
-//* user profile
-const userName = $("#profile .username > h3");
-function editUserName () {
-  userName.dataset.temporary = userName.textContent;
-  userName.setAttribute("contenteditable", "true");
-  
-  const range = document.createRange();
-  const selection = window.getSelection();
-  
-  range.setStart(userName.childNodes[0], userName.textContent.length);
-  range.collapse(true);
-  selection.removeAllRanges();
-  selection.addRange(range);
-  
-  userName.focus();
-}
-userName.addEventListener("dblclick", editUserName);
-userName.addEventListener("keydown", contentEditableLimiter(32));
-userName.addEventListener("blur", () => {
-  userName.setAttribute("contenteditable", "false");
-  if (userName.textContent === userName.dataset.temporary) return;
-  
-  if (userName.textContent === "") {
-    userName.textContent = userName.dataset.temporary;
-    rejected(userName.parentElement);
-    return;
-  }
-  
-  const value = userName.textContent;
-  AJAX.patch("/profile/username/", new JSONHandler(response => {
-    if (response.error) {
-      userName.textContent = userName.dataset.temporary;
-      rejected(userName.parentElement);
-      //TODO: custom alert
-      alert(response.error);
-      return;
-    }
-    
-    validated(userName.parentElement);
-  }), {
-    body: JSON.stringify({ value })
-  });
-});
-$("#profile .username > button").addEventListener("click", editUserName);
-
-
-$("#reset-password").addEventListener("click", () => {
-  AJAX.post("/auth/password-recovery-email", new JSONHandler(json => {
-    if (json.error !== undefined) {
-      //TODO: custom alert
-      alert(json.error);
-      return;
-    }
-    
-    alert("Email has been sent with link to password reset form.");
-  }));
 });

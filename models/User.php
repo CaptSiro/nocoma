@@ -57,14 +57,12 @@
       return self::parseProps(Database::get()->fetchAll(
         "SELECT
           " . self::generateSelectColumns(self::TABLE_NAME, self::ALL_COLUMNS) . "
-        FROM `websites`
+        FROM users
         WHERE level != 0
         ORDER BY ID ASC
         LIMIT :offset, " . self::SET_SIZE,
         self::class,
-        [
-          new DatabaseParam("offset", $offset * self::SET_SIZE)
-        ]
+        [new DatabaseParam("offset", $offset * self::SET_SIZE)]
       ));
     }
 

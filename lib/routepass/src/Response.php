@@ -413,4 +413,13 @@
         ? $_SERVER["HOME_DIR"]
         : "") . $url;
     }
+  
+  
+    /**
+     * @param string $id must follow file name guidelines
+     * @return void
+     */
+    public static function createEventStream (string $id) {
+    
+    }
   }

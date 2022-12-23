@@ -61,6 +61,62 @@
   
   
   
+  //TODO: remove or incorporate
+  require_once __DIR__ . "/lib/scuffed-sockets/scuffed-sockets.php";
+  $router->get("/stream-page", [function (Request $request, Response $response) {
+    $response->render("stream");
+  }]);
+  
+  $router->get("/stream/broadcast", [function (Request $request, Response $response) {
+    Server::broadcast(new Packet($request->query->looselyGet("data", "pong"), "message"));
+  }]);
+  
+  $router->get("/stream", [function (Request $request, Response $response) {
+    header("Cache-Control: no-store");
+    header("Content-Type: text/event-stream");
+    session_write_close();
+    
+    $id = $request->query->get("id");
+    Server::accept($id);
+    $send = function ($packet) {
+      echo("event: $packet->event\n");
+      echo("data: $packet->data\n");
+      echo("\n");
+  
+      if (ob_get_contents()) ob_end_flush();
+      flush();
+    };
+    $send(new Packet("accepted $id", "connected"));
+    
+    ignore_user_abort(false);
+    
+    while (true) {
+      /** @var ServerSocket $socket */
+      $socket = Server::getSocket($id)
+        ->forwardFailure($response)
+        ->getSuccess();
+      
+      $packets = $socket->getData();
+      foreach ($packets as $packet) {
+        $send($packet);
+      }
+      
+      echo ".\n";
+      if (ob_get_contents()) ob_end_flush();
+      flush();
+      if (connection_status() != 0) {
+        Server::broadcast(new Packet("user $id has left us :(", "disconnected"));
+        break;
+      }
+  
+      usleep(500000);
+    }
+    
+    Server::destroy($id);
+  }]);
+  
+  
+  
   
   $router->domain("[website].$hostName", require __DIR__ . "/routes/domain-router.php", []);
   

@@ -301,6 +301,11 @@
         "parametric" => self::extractEndpoints($this->parametric),
       ];
     }
+    
+    
+    public function getCallbacks(array $list = []): array {
+      return $this->parent->getCallbacks($list);
+    }
   
   
     private function callHandlesClosures (Request $request, Response $response) {
@@ -320,12 +325,13 @@
       
       $doNext = false;
       $argumentsForNextHandler = [];
+      $handles = array_merge($this->getCallbacks([]), $this->handles[$_SERVER["REQUEST_METHOD"]]);
       $nextFunc = function (...$arguments) use (&$doNext, &$argumentsForNextHandler) {
         $doNext = true;
         $argumentsForNextHandler = $arguments;
       };
   
-      foreach ($this->handles[$_SERVER["REQUEST_METHOD"]] as $cb) {
+      foreach ($handles as $cb) {
         $cb($request, $response, $nextFunc, ...$argumentsForNextHandler);
     
         if ($doNext) {

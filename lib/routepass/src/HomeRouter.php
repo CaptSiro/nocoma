@@ -183,24 +183,22 @@
       
       $this->home->execute($uri, 0, $req, $res);
       
-//      switch ($req->getState()) {
-//        case self::ERROR_ENDPOINT_DOES_NOT_EXISTS: {
-//          $this->dispatchError(
-//            self::ERROR_ENDPOINT_DOES_NOT_EXISTS,
-//            new RequestError("Endpoint does not exist for '$req->fullURI'", $req, $res)
-//          );
-//          break;
-//        }
-//        case self::ERROR_HTTP_METHOD_NOT_IMPLEMENTED: {
-//          $req->homeRouter->dispatchError(
-//            HomeRouter::ERROR_HTTP_METHOD_NOT_IMPLEMENTED,
-//            new RequestError("HTTP method: '$_SERVER[REQUEST_METHOD]' is not implemented for '$req->fullURI'", $req, $res)
-//          );
-//          break;
-//        }
-//      }
-      
-      var_dump($req->getState());
+      switch ($req->getState()) {
+        case self::ERROR_ENDPOINT_DOES_NOT_EXISTS: {
+          $this->dispatchError(
+            self::ERROR_ENDPOINT_DOES_NOT_EXISTS,
+            new RequestError("Endpoint does not exist for '$req->fullURI'", $req, $res)
+          );
+          break;
+        }
+        case self::ERROR_HTTP_METHOD_NOT_IMPLEMENTED: {
+          $req->homeRouter->dispatchError(
+            HomeRouter::ERROR_HTTP_METHOD_NOT_IMPLEMENTED,
+            new RequestError("HTTP method: '$_SERVER[REQUEST_METHOD]' is not implemented for '$req->fullURI'", $req, $res)
+          );
+          break;
+        }
+      }
     }
     private function displayTrace ($trace, $indent = "  ") {
       foreach ($trace as $key => $arrayOfEndpoints) {

@@ -90,11 +90,32 @@
     
       $parent->static[$part] = $router;
     }
+    
+    private $callbacks = [];
+    public function implement (Closure ...$callbacks) {
+      foreach ($callbacks as $callback) {
+        $this->callbacks[] = $callback;
+      }
+    }
+    
+    public function getCallbacks(array $list = []): array {
+      $merged = [];
+      foreach ($this->callbacks as $callback) {
+        $merged[] = $callback;
+      }
+      
+      foreach ($list as $item) {
+        $merged[] = $item;
+      }
+      
+      if (!isset($this->parent)) {
+        return $merged;
+      }
+      
+      return $this->parent->getCallbacks($merged);
+    }
   
-    
-    
-    
-    
+  
     /**
      * For these HTTP Methods will be added assigned given callbacks.
      *

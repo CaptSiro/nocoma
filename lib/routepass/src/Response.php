@@ -410,7 +410,7 @@
      */
     public static function createRedirectURL (string $url, bool $doPrependHomeDirectory = true): string {
       return ($doPrependHomeDirectory
-        ? $_SERVER["HOME_DIR"]
+        ? $_SERVER["SERVER_HOME"]
         : "") . $url;
     }
   

@@ -154,7 +154,7 @@
       $_SERVER["HOME_DIR_PATH"] = $dir;
       
       $res = new Response();
-      $req = new Request($res, $this);
+      $req = new Request($res, $this, $this->getFlag(self::FLAG_SESSION_DOMAIN));
   
       if ($this->getFlag(HomeRouter::FLAG_MAIN_SERVER_HOST_NAME) !== null) {
         $_SERVER["SERVER_HOME"] = "$req->protocol://" . $this->getFlag(HomeRouter::FLAG_MAIN_SERVER_HOST_NAME) . "$_SERVER[HOME_DIR]";
@@ -279,6 +279,7 @@
     
     private $flags = [
       self::FLAG_RESPONSE_AUTO_FLUSH => true,
+      self::FLAG_SESSION_DOMAIN => "local"
     ];
     
     
@@ -290,6 +291,13 @@
      * Default: true
      */
     public const FLAG_RESPONSE_AUTO_FLUSH = "DO_RESPONSE_AUTO_FLUSH";
+  
+    /**
+     * Sets domain for session cookie.
+     *
+     * Default: "local" (for localhost)
+     */
+    public const FLAG_SESSION_DOMAIN = "SESSION_DOMAIN";
   
     /**
      * Set host name for main server, which will be used to create `__SERVER_HOME__` for views

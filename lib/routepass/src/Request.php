@@ -114,7 +114,7 @@
       return $this->headers[strtolower($header)] ?? "";
     }
     
-    public function __construct (Response &$response, HomeRouter &$homeRouter) {
+    public function __construct (Response &$response, HomeRouter &$homeRouter, $domain = "local") {
       $this->response = $response;
       $this->homeRouter = $homeRouter;
       $this->httpMethod = $_SERVER["REQUEST_METHOD"];
@@ -131,6 +131,7 @@
       });
   
       if (session_status() == PHP_SESSION_NONE) {
+        session_set_cookie_params(0, "/", ".$domain");
         session_start();
       }
   

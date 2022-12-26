@@ -106,14 +106,11 @@
       }
   
       [$regex, $dict] = self::createParamFormat($part, $paramCaptureGroupMap);
-      foreach ($this->parametric as [$reg, $node]) {
-        if ($reg === $regex) {
+      foreach ($this->parametric as $node) {
+        if ($node->regex === $regex) {
           $node->createPath($uriParts, $paramCaptureGroupMap);
         }
       }
-//      if (isset($this->parametric[$regex])) {
-//        return $this->parametric[$regex]->createPath($uriParts, $paramCaptureGroupMap);
-//      }
   
       //* create new end point
       if (strpos($part, ":") === false) {
@@ -125,8 +122,9 @@
   
       //* parametric
       $node = new ParametricPathNode($regex, $this);
-      $this->parametric[] = [$regex, $node];
       $node->paramDictionary = $dict;
+      $node->regex = $regex;
+      $this->parametric[] = $node;
       return $node->createPath($uriParts, $paramCaptureGroupMap);
     }
 
@@ -151,15 +149,11 @@
       }
       
       [$regex, $dict] = self::createParamFormat($part, $paramCaptureGroupMap);
-      foreach ($this->parametric as [$reg, $node]) {
-        if ($reg === $regex  && $node->paramDictionary === $dict) {
+      foreach ($this->parametric as $node) {
+        if ($node->regex === $regex  && $node->paramDictionary === $dict) {
           $node->createPath($uriParts, $paramCaptureGroupMap);
         }
       }
-//      if (isset($this->parametric[$regex]) && $this->parametric[$regex]->paramDictionary === $dict) {
-//        $this->parametric[$regex]->assign($httpMethod, $uriParts, $callbacks, $paramCaptureGroupMap);
-//        return;
-//      }
       
       //* create new end point
       
@@ -176,8 +170,9 @@
 //      var_dump($part, $regex);
       $node = new ParametricPathNode($regex, $this);
       $node->assign($httpMethod, $uriParts, $callbacks, $paramCaptureGroupMap);
-      $this->parametric[] = [$regex, $node];
+      $node->regex = $regex;
       $node->paramDictionary = $dict;
+      $this->parametric[] = $node;
     }
     
     
@@ -203,54 +198,54 @@
       
       // breaking chars [-.~]
       /**
-       * @var $regex string
        * @var $node ParametricPathNode
        */
-      foreach ($this->parametric as [$regex, $node]) {
-        if (preg_match($regex, $part, $matches)) {
-          if ($node instanceof Router) {
-            $node = &$node->home;
-          }
-          
-          $removeRegister = [];
-          
-          foreach ($node->paramDictionary as $key => $param) {
-            $paramLength = strlen($param);
-            if ($param[$paramLength - 2] == "[" && $param[$paramLength - 1] == "]") {
-              $shortHand = substr($param, 0, -2);
-              
-              if ($request->param->isset($shortHand)) {
-                $request->param->modify($shortHand, function ($value) use ($matches, $key, &$removeRegister, $shortHand) {
-                  $removeRegister[$shortHand][] = count($value);
-                  $value[] = $matches[$key];
-                  return $value;
-                });
-              } else {
-                $request->param->set($shortHand, [$matches[$key]]);
-                $removeRegister[$shortHand] = [0];
-              }
-              continue;
-            }
+      foreach ($this->parametric as $node) {
+        if (!preg_match($node->regex, $part, $matches)) continue;
+        
+        
+        if ($node instanceof Router) {
+          $node = &$node->home;
+        }
+        
+        $removeRegister = [];
+        
+        foreach ($node->paramDictionary as $key => $param) {
+          $paramLength = strlen($param);
+          if ($param[$paramLength - 2] == "[" && $param[$paramLength - 1] == "]") {
+            $shortHand = substr($param, 0, -2);
             
-            $request->param->set($param, $matches[$key]);
-            $removeRegister[$param] = -1;
-          }
-          
-          $node->execute($uri, $uriIndex + 1, $request, $response);
-          
-          foreach ($removeRegister as $remove => $indexes) {
-            if ($indexes === -1) {
-              $request->param->unset($remove);
-              continue;
+            if ($request->param->isset($shortHand)) {
+              $request->param->modify($shortHand, function ($value) use ($matches, $key, &$removeRegister, $shortHand) {
+                $removeRegister[$shortHand][] = count($value);
+                $value[] = $matches[$key];
+                return $value;
+              });
+            } else {
+              $request->param->set($shortHand, [$matches[$key]]);
+              $removeRegister[$shortHand] = [0];
             }
-            
-            $request->param->modify($remove, function ($value) use ($indexes) {
-              foreach ($indexes as $index) {
-                $value[$index] = null;
-              }
-              return $value;
-            });
+            continue;
           }
+          
+          $request->param->set($param, $matches[$key]);
+          $removeRegister[$param] = -1;
+        }
+        
+        $node->execute($uri, $uriIndex + 1, $request, $response);
+        
+        foreach ($removeRegister as $remove => $indexes) {
+          if ($indexes === -1) {
+            $request->param->unset($remove);
+            continue;
+          }
+          
+          $request->param->modify($remove, function ($value) use ($indexes) {
+            foreach ($indexes as $index) {
+              $value[$index] = null;
+            }
+            return $value;
+          });
         }
       }
       

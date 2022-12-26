@@ -4,6 +4,7 @@
 
   class ParametricPathNode extends PathNode {
     public $paramDictionary = [];
+    public $regex;
     
     public function upgrade (PathNode $pathNode): ParametricPathNode {
       $this->parent = $pathNode->parent;

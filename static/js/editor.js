@@ -1,30 +1,33 @@
-const vp = $("#viewport");
-const vpmount = $(".viewport-mount");
+const viewport = $("#viewport");
+const viewportMount = $(".viewport-mount");
+let switcher = false;
 $(".toggle-viewport").addEventListener("pointerdown", evt => {
-  vp.classList.toggle("mobile");
+  switcher = !switcher;
+  viewport.classList.toggle("mobile", switcher);
+  viewport.classList.toggle("viewport-smartphone", switcher);
 
-  if (vp.classList.contains("mobile")) {
-    vp.style.height = "min(" + (vpmount.offsetWidth ?? vpmount.scrollWidth) / 9 * 16 + "px, 100%)";
-    vp.style.width = "min(" + (vpmount.offsetHeight ?? vpmount.scrollHeight) / 16 * 9 + "px, 100%)";
+  if (viewport.classList.contains("mobile")) {
+    viewport.style.height = "min(" + (viewportMount.offsetWidth ?? viewportMount.scrollWidth) / 9 * 16 + "px, 100%)";
+    viewport.style.width = "min(" + (viewportMount.offsetHeight ?? viewportMount.scrollHeight) / 16 * 9 + "px, 100%)";
     return;
   }
   
-  vp.style.width = "min(" + (vpmount.offsetHeight ?? vpmount.scrollHeight) / 9 * 16 + "px, 100%)";
-  vp.style.height = "min(" + (vpmount.offsetWidth ?? vpmount.scrollWidth) / 16 * 9 + "px, 100%)";
+  viewport.style.width = "min(" + (viewportMount.offsetHeight ?? viewportMount.scrollHeight) / 9 * 16 + "px, 100%)";
+  viewport.style.height = "min(" + (viewportMount.offsetWidth ?? viewportMount.scrollWidth) / 16 * 9 + "px, 100%)";
 });
 
 new ResizeObserver((entries) => {
   const vpm = entries[0];
 
-  if (vp.classList.contains("mobile")) {
-    vp.style.height = "min(" + vpm.contentRect.width / 9 * 16 + "px, 100%)";
-    vp.style.width = "min(" + vpm.contentRect.height / 16 * 9 + "px, 100%)";
+  if (viewport.classList.contains("mobile")) {
+    viewport.style.height = "min(" + vpm.contentRect.width / 9 * 16 + "px, 100%)";
+    viewport.style.width = "min(" + vpm.contentRect.height / 16 * 9 + "px, 100%)";
     return;
   }
   
-  vp.style.width = "min(" + vpm.contentRect.height / 9 * 16 + "px, 100%)";
-  vp.style.height = "min(" + vpm.contentRect.width / 16 * 9 + "px, 100%)";
-}).observe(vpmount);
+  viewport.style.width = "min(" + vpm.contentRect.height / 9 * 16 + "px, 100%)";
+  viewport.style.height = "min(" + vpm.contentRect.width / 16 * 9 + "px, 100%)";
+}).observe(viewportMount);
 
 
 
@@ -115,7 +118,7 @@ settingItems.forEach(e => {
     HelperDropdown.changeCurrent(HelperDropdown.findSettingsItem(evt.target));
   });
   e.addEventListener('mouseenter', evt => {
-    if (HelperDropdown.drop == true && !e.classList.contains("drop")) {
+    if (HelperDropdown.drop === true && !e.classList.contains("drop")) {
       HelperDropdown.changeCurrent(HelperDropdown.findSettingsItem(evt.target));
     }
   });
@@ -214,8 +217,8 @@ AJAX.get("/bundler/resource/*", new JSONHandler(json => {
             textContent: resource.properties.label
           }],
           listeners: {
-            click: function (evt) {
-              console.log(window[resource.properties.class].default());
+            click: function () {
+              console.log(widgets.get(resource.properties.class).default(null));
             }
           }
         }))
@@ -224,7 +227,9 @@ AJAX.get("/bundler/resource/*", new JSONHandler(json => {
   }
 }));
 window.addEventListener("load", () => {
-  WRoot.build(JSON.parse(document.querySelector("#page-data").textContent), null, true).then(root => {
+  const dataElement = $("#page-data");
+  WRoot.build(JSON.parse(dataElement.textContent), null, true).then(root => {
+    dataElement.remove();
     window.page.pageWidget = root;
     document.widgetElement = root;
     document.querySelector("#viewport").appendChild(root.rootElement);

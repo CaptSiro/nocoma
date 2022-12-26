@@ -1,4 +1,4 @@
-var WText = class WText extends Widget { // var is used because it creates reference on globalThis (window) object
+class WText extends Widget {
 
   // use json.child for single child widget like Center
   // or json.children for array of widgets
@@ -130,4 +130,5 @@ var WText = class WText extends Widget { // var is used because it creates refer
       type: "WText"
     };
   }
-};
+}
+widgets.define("WText", WText);

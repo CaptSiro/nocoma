@@ -307,14 +307,13 @@ input[type=text].invalid {
   top: 4px;
   right: 4px;
   background-color: white;
-  border: 1px solid var(--container-opposite-3);
+  border: 2px solid var(--container-opposite-3);
   color: var(--container-opposite-3);
   padding: 8px;
 }
 
 .table .viewport-mount .toggle-viewport:hover {
   background-color: var(--container-opposite-3);
-  border: 1px solid white;
   color: white;
   cursor: pointer;
 }

@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,7 +16,6 @@
   <script src="<?= $GLOBALS["__HOME__"] ?>/public/js/widget-core.js"></script>
   <script src="<?= $GLOBALS["__HOME__"] ?>/bundler/js/*" id="widgets-scripts"></script>
   <link rel="stylesheet" href="<?= $GLOBALS["__HOME__"] ?>/bundler/css/*" id="widgets-styles">
-  <script src="<?= $GLOBALS["__HOME__"] ?>/static/widgets/root/root.js"></script>
   
   <link rel="stylesheet" href="<?= $GLOBALS["__HOME__"] ?>/public/css/main.css">
   <link rel="stylesheet" href="<?= $GLOBALS["__HOME__"] ?>/public/css/editor.css">

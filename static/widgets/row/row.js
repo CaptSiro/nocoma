@@ -1,4 +1,4 @@
-var WRow = class WRow extends ContainerWidget { // var is used because it creates reference on globalThis (window) object
+class WRow extends ContainerWidget { // var is used because it creates reference on globalThis (window) object
 
   // use json.child for single child widget like Center
   // or json.children for array of widgets
@@ -40,7 +40,7 @@ var WRow = class WRow extends ContainerWidget { // var is used because it create
     }), parent);
 
     for (const o of json.children) {
-      row.appendWidget(window[o.type].build(o, row, editable));
+      row.appendWidget(widgets.get(o.type).build(o, row, editable));
     }
 
     return row;
@@ -68,4 +68,5 @@ var WRow = class WRow extends ContainerWidget { // var is used because it create
       type: "WRow"
     };
   }
-};
+}
+widgets.define("WRow", WRow);

@@ -1,4 +1,4 @@
-var WRoot = class WRoot extends ContainerWidget { // var is used because it creates reference on globalThis (window) object
+class WRoot extends ContainerWidget { // var is used because it creates reference on globalThis (window) object
 
   // use json.child for single child widget like Center
   // or json.children for array of widgets
@@ -28,7 +28,7 @@ var WRoot = class WRoot extends ContainerWidget { // var is used because it crea
     if (editable === true) {
       const root = new WRoot(html({className: "w-root"}), null, editable);
       for (const child of json.children) {
-        root.appendWidget(window[child.type].build(child, root, editable));
+        root.appendWidget(widgets.get(child.type).build(child, root, editable));
       }
       return root;
     }
@@ -58,7 +58,7 @@ var WRoot = class WRoot extends ContainerWidget { // var is used because it crea
     await Promise.all([new Promise(resolve => {
       script.addEventListener("load", async _ => {
         for (const child of json.children) {
-          root.appendWidget(window[child.type].build(child, root, editable));
+          root.appendWidget(widgets.get(child.type).build(child, root, editable));
         }
         resolve();
       });
@@ -143,4 +143,5 @@ var WRoot = class WRoot extends ContainerWidget { // var is used because it crea
   remove () {
     console.error("WRoot cannot be removed.");
   }
-};
+}
+widgets.define("WRoot", WRoot);

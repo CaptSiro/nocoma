@@ -1,4 +1,4 @@
-var WHeading = class WHeading extends Widget { // var is used because it creates reference on globalThis (window) object
+class WHeading extends Widget { // var is used because it creates reference on globalThis (window) object
 
   // use json.child for single child widget like Center
   // or json.children for array of widgets
@@ -25,7 +25,7 @@ var WHeading = class WHeading extends Widget { // var is used because it creates
    * @returns {WHeading}
    */
   static default (parent) {
-    return this.build({ level: 3, text: "Lorem" }, parent);
+    return this.build({ level: 3, text: "Lorem ipsum" }, parent);
   }
 
   /**
@@ -65,4 +65,5 @@ var WHeading = class WHeading extends Widget { // var is used because it creates
       type: "WHeading"
     };
   }
-};
+}
+widgets.define("WHeading", WHeading);

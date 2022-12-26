@@ -1,4 +1,4 @@
-var WColumn = class WColumn extends ContainerWidget { // var is used because it creates reference on globalThis (window) object
+class WColumn extends ContainerWidget { // var is used because it creates reference on globalThis (window) object
 
   // use json.child for single child widget like Center
   // or json.children for array of widgets
@@ -42,7 +42,7 @@ var WColumn = class WColumn extends ContainerWidget { // var is used because it 
     }), parent);
 
     for (const o of json.children) {
-      col.appendWidget(window[o.type].build(o, col, editable));
+      col.appendWidget(widgets.get(o.type).build(o, col, editable));
     }
 
     return col;
@@ -70,4 +70,5 @@ var WColumn = class WColumn extends ContainerWidget { // var is used because it 
       type: "WColumn"
     };
   }
-};
+}
+widgets.define("WColumn", WColumn);

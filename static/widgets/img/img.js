@@ -1,4 +1,4 @@
-var WImage = class WImage extends Widget { // var is used because it creates reference on globalThis (window) object
+class WImage extends Widget {
 
   // use json.child for single child widget like Center
   // or json.children for array of widgets
@@ -62,7 +62,7 @@ var WImage = class WImage extends Widget { // var is used because it creates ref
       },
     }), parent);
 
-    if (editable == true) {
+    if (editable === true) {
       img.appendEditGui();
     }
 
@@ -91,4 +91,5 @@ var WImage = class WImage extends Widget { // var is used because it creates ref
       type: "WImage"
     };
   }
-};
+}
+widgets.define("WImage", WImage);

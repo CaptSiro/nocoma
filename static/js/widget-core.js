@@ -285,6 +285,41 @@ class ContainerWidget extends Widget {
 
 
 
+class WidgetRegistry {
+  /**
+   * @type {Object.<string, typeof Widget>}
+   */
+  #map = {};
+  
+  
+  /**
+   * @param {string} className
+   * @param {typeof Widget} constructor
+   */
+  define (className, constructor) {
+    this.#map[className] = constructor;
+  }
+  
+  
+  /**
+   * @param {string} className
+   */
+  get (className) {
+    return this.#map[className];
+  }
+  
+  
+  /**
+   * @param {string} className
+   */
+  exists (className) {
+    return this.#map[className] === undefined;
+  }
+}
+const widgets = new WidgetRegistry();
+
+
+
 /**
  * @typedef Page
  * @prop {Widget} root

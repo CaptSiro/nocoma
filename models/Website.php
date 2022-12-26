@@ -167,7 +167,7 @@
       $post = Database::get()->fetch(
         "SELECT
           " . self::generateSelectColumns(self::TABLE_NAME, array_diff(self::ALL_COLUMNS, ["timeCreated"]), true) . "
-          " . self::IS_TAKEN_DOWN_CONDITION_PROJECTION . "
+          " . self::IS_TAKEN_DOWN_CONDITION_PROJECTION . ",
           MIN(websites.timeCreated) timeCreated
         FROM
           `websites`

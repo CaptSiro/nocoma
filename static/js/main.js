@@ -333,6 +333,8 @@ class NonHTMLTextHandler extends Handler {
 class AJAX {
   static DOMAIN_HOME = "";
   static SERVER_HOME = "";
+  static HOST_NAME = "";
+  static PROTOCOL = "";
   
   static #logResponseError (response) {
     return (text) => {

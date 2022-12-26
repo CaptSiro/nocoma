@@ -5,17 +5,24 @@ class InfiniteScroller {
   /** @type {(index: number)=>Promise<HTMLElement|undefined>} */
   loader;
   
+  /** @type {(rootContainer: HTMLElement)=>void} */
+  #rootContainerReSetter;
+  
   #loaderIndex = 0;
   
   #observer;
   
   /**
-   * @param {HTMLElement} container
+   * @param {HTMLElement} rootContainer
    * @param {(index: number)=>Promise<HTMLElement|undefined>} loader
+   * @param {(rootContainer: HTMLElement)=>void} rootContainerReSetter
    */
-  constructor(container, loader) {
-    this.container = container;
+  constructor(rootContainer, loader, rootContainerReSetter = undefined) {
+    this.container = rootContainer;
     this.loader = loader;
+    this.#rootContainerReSetter = rootContainerReSetter ?? (rootContainer => {
+      rootContainer.textContent = "";
+    });
     
     this.#observer = new IntersectionObserver(entries => {
       const lastElement = entries[0];
@@ -27,7 +34,7 @@ class InfiniteScroller {
       this.#observer.unobserve(lastElement.target);
       this.callLoader();
     }, {
-      root: container,
+      root: rootContainer,
       rootMargin: "50px",
       threshold: 0
     });
@@ -48,7 +55,7 @@ class InfiniteScroller {
   
   
   reset() {
-    this.container.textContent = "";
+    this.#rootContainerReSetter(this.container);
     this.#loaderIndex = 0;
     this.#observer.disconnect();
     

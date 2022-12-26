@@ -11,10 +11,11 @@
   
   $pageRouter = new Router();
   
+  $pageRouter->implement(Middleware::requireToBeLoggedIn());
+  
   
   
   $pageRouter->get("/:offset", [
-    Middleware::requireToBeLoggedIn(),
     function (Request $request, Response $response) {
       $response->json(Website::getSet($request->session->get("user")->ID, intval($request->param->get("offset"))));
     }
@@ -23,7 +24,6 @@
   
   
   $pageRouter->post("/create", [
-    Middleware::requireToBeLoggedIn(),
     function (Request $request, Response $response) {
       $sourceResult = Generate::valid(Generate::string(Generate::CHARSET_URL, 10), Website::isSRCValid());
       $sourceResult->forwardFailure($response);
@@ -48,8 +48,9 @@
     }
   ]);
   
+  
+  
   $pageRouter->delete("/delete/:source", [
-    Middleware::requireToBeLoggedIn(),
     function (Request $request, Response $response) {
       /** @var User $user */
       $user = $request->session->get("user");
@@ -72,6 +73,45 @@
       $response->json(["message" => "ok"]);
     }
   ], ["source" => "([0-9a-zA-Z_-]+)"]);
+  
+  
+  
+
+  $pageRouter->post("/take-down", [
+    Middleware::requireToBeLoggedIn(),
+    Middleware::authorize(Middleware::LEVEL_ADMIN),
+    function (Request $request, Response $response) {
+      $response->json(Website::takeDown(
+        intval($request->body->get("id")),
+        htmlspecialchars($request->body->get("message"))
+      )->forwardFailure($response)->getSuccess());
+    }
+  ]);
+  $pageRouter->delete("/take-down", [
+    Middleware::requireToBeLoggedIn(),
+    Middleware::authorize(Middleware::LEVEL_ADMIN),
+    function (Request $request, Response $response) {
+      $response->json(Website::removeTakeDown(
+        intval($request->body->get("id"))
+      )->forwardFailure($response)->getSuccess());
+    }
+  ]);
+  
+  $pageRouter->patch("/isTakenDown/:id/:boolean", [
+    Middleware::requireToBeLoggedIn(),
+    Middleware::authorize(Middleware::LEVEL_ADMIN),
+    function (Request $request, Response $response) {
+      $response->json(Website::set(
+        intval($request->param->get("id")),
+        "isTakenDown",
+        new DatabaseParam("value", intval(
+          filter_var($request->param->get("boolean"), FILTER_VALIDATE_BOOLEAN)
+        ))
+      ));
+    }
+  ], ["id" => Router::REGEX_NUMBER]);
+  
+  
   
   //TODO: set to PATCH
   //TODO: refactor to -> /set/:class/:function/:argument

@@ -13,11 +13,11 @@
   $dashboardRouter = new Router();
   $env = new Env(ENV_FILE);
   
+  $dashboardRouter->implement(Middleware::requireToBeLoggedIn(Middleware::RESPONSE_REDIRECT));
   
   
   
   $dashboardRouter->get("/", [
-    Middleware::requireToBeLoggedIn(),
     function (Request $request, Response $response) {
       /** @var User $user */
       $user = $request->session->get("user");
@@ -34,7 +34,6 @@
   
   
   $dashboardRouter->get("/user", [
-    Middleware::requireToBeLoggedIn(),
     Middleware::authorize(Middleware::LEVEL_USER, Middleware::RESPONSE_REDIRECT, Middleware::RESPONSE_REDIRECT_DASHBOARD_MAP),
     function (Request $request, Response $response) use ($env) {
       $response->render("dashboards/user", [
@@ -51,11 +50,14 @@
   
   
   $dashboardRouter->get("/admin", [
-    Middleware::requireToBeLoggedIn(),
     Middleware::authorize(Middleware::LEVEL_ADMIN, Middleware::RESPONSE_REDIRECT, Middleware::RESPONSE_REDIRECT_DASHBOARD_MAP),
-    function (Request $request, Response $response) {
+    function (Request $request, Response $response) use ($env) {
       $response->render("dashboards/admin", [
-        "user" => $request->session->get("user")
+        "user" => $request->session->get("user"),
+        "env_home" => $env->get("HOST_NAME")
+          ->forwardFailure($response)
+          ->getSuccess(),
+        "protocol" => $request->protocol
       ]);
     }
   ]);

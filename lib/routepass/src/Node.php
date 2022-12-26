@@ -12,6 +12,7 @@
     abstract protected function setMethod (string &$httpMethod, array &$callbacks);
     abstract protected function execute (array &$uri, int $uriIndex, Request &$request, Response &$response);
     abstract public function getEndpoints (): array;
+    abstract public function getCallbacks (array $list = []): array;
   
     /**
      * @var Node

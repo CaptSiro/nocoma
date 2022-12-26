@@ -208,6 +208,12 @@ main > div > section header .separator {
   align-items: center;
   color: var(--text-color-opposite);
 }
+main > div > section header .separator.right {
+  border-left: unset;
+  padding-left: unset;
+  padding-right: 8px;
+  border-right: 2px solid var(--text-color-opposite);
+}
 main > div > section header button {
   all: unset;
   background-color: var(--container-opposite-2);

@@ -130,9 +130,3 @@ $("#profile-picture-upload").addEventListener("change", evt => {
     })
   });
 });
-
-
-
-
-//TODO remove
-$("button[title=Profile]").dispatchEvent(new CustomEvent("pointerdown"));

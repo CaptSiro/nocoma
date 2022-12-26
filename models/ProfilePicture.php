@@ -10,7 +10,7 @@
   class ProfilePicture extends StrictModel {
     protected $src, $usersID, $hash, $extension;
     const ALL_COLUMNS = ["src", "usersID", "hash", "extension"];
-    const TABLE_NAME = "`profilePictures`";
+    const TABLE_NAME = "profilePictures";
     
     protected static function getNumberProps (): array { return ["usersID", "size"]; }
     protected static function getBooleanProps (): array { return []; }

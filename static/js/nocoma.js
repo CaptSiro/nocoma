@@ -55,6 +55,7 @@ renderer.addEventListener("load", _ => {
 
 document.querySelectorAll(".login-button").forEach(button => {
   button.addEventListener("click", () => {
+    history.pushState({}, '', new URL(window.location));
     window.location.replace(HOME + "/auth/");
   });
 });

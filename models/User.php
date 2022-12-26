@@ -51,14 +51,22 @@
 
       return success(self::parseProps($optionalUser));
     }
+    
+    public static function set (int $userID, string $column, DatabaseParam $param): SideEffect {
+      return Database::get()->statement(
+        "UPDATE users SET $column = :$param->name WHERE ID = :userID",
+        [new DatabaseParam("userID", $userID), $param]
+      );
+    }
+    
   
     private const SET_SIZE = 20;
-    public static function getSet (int $offset) {
+    public static function getSet (int $offset, string $restrictions = "1") {
       return self::parseProps(Database::get()->fetchAll(
         "SELECT
           " . self::generateSelectColumns(self::TABLE_NAME, self::ALL_COLUMNS) . "
         FROM users
-        WHERE level != 0
+        WHERE $restrictions
         ORDER BY ID ASC
         LIMIT :offset, " . self::SET_SIZE,
         self::class,

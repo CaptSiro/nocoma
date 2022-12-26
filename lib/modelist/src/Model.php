@@ -11,7 +11,7 @@
       $length = count($columns);
       $index = 0;
       foreach ($columns as $name) {
-        $string .= "$table.`$name` \"$name\"" . ($length - 1 != $index++ || $addTrailingComa ? "," : "") . "\n";
+        $string .= "`$table`.`$name` \"$name\"" . ($length - 1 != $index++ || $addTrailingComa ? "," : "") . "\n";
       }
       
       return $string;

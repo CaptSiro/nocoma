@@ -1,3 +1,24 @@
+#take-down-window #post-title {
+  font-weight: bold;
+  font-style: italic;
+}
+
+#take-down-window textarea {
+  background-color: var(--container-2);
+  border: 1px solid var(--container-4);
+  resize: none;
+
+  transition: background-color 250ms linear, border-color 250ms linear;
+}
+
+#take-down-window textarea:focus {
+  background-color: var(--container-1);
+  border-color: var(--container-3);
+  outline: unset;
+}
+
+
+
 .user-view > *:last-child .u-head {
   border-bottom: unset;
 }
@@ -8,6 +29,9 @@
   padding: 16px;
   background-color: var(--container-1);
   border-bottom: 1px solid var(--container-3);
+}
+.user.banned .u-head {
+  background-color: #FFCCCC !important;
 }
 .u-head.default,
 .user.expanded .u-head {
@@ -70,7 +94,7 @@
   position: absolute;
   width: calc(100% + 10px);
   height: 100%;
-  top: 0px;
+  top: 0;
   left: -10px;
 }
 .post .absolute img {
@@ -80,11 +104,16 @@
 }
 .post .absolute .darken {
   position: absolute;
-  top: 0px;
-  left: 0px;
+  top: 0;
+  left: 0;
   background-color: rgba(0, 0, 0, 0.3);
   width: 100%;
   height: 100%;
+
+  transition: background-color 250ms linear;
+}
+.post.taken-down .absolute .darken {
+  background-color: rgba(144, 12, 62, 0.75);
 }
 .post .content {
   flex: 1;

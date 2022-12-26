@@ -7,8 +7,10 @@
     protected $ID, $usersID, $thumbnailSRC, $src, $timeCreated, $title,
       $isTemplate, $isPublic, $areCommentsAvailable, $isHomePage, $isTakenDown;
     const ALL_COLUMNS = ["ID", "usersID", "thumbnailSRC", "src", "timeCreated", "title",
-      "isTemplate", "isPublic", "areCommentsAvailable", "isHomePage", "isTakenDown"];
+      "isTemplate", "isPublic", "areCommentsAvailable", "isHomePage"];
     const TABLE_NAME = "websites";
+    const IS_TAKEN_DOWN_CONDITION_PROJECTION = "(takedowns.ID IS NOT NULL) as isTakenDown";
+    const IS_TAKEN_DOWN_CONDITION = "LEFT JOIN takedowns ON websites.ID = takedowns.websitesID";
 
     protected static function getNumberProps (): array { return ["ID", "userID"]; }
     protected static function getBooleanProps (): array { return [
@@ -62,13 +64,42 @@
       
       return 1;
     }
-  
+    public static function takeDown (int $websiteID, string $message): Result {
+      try {
+        return success(Database::get()->statement(
+          "INSERT INTO `takeDowns` (`websitesID`, `message`)
+         VALUES (:websiteID, :message)",
+          [
+            new DatabaseParam("websiteID", $websiteID),
+            new DatabaseParam("message", $message, PDO::PARAM_STR)
+          ]
+        ));
+      } catch (PDOException $exception) {
+        return fail(new InvalidArgumentExc("This post is already taken down."));
+      }
+    }
+    public static function removeTakeDown (int $websiteID): Result {
+      return success(Database::get()->statement(
+        "DELETE FROM `takeDowns` WHERE websitesID = :websiteID LIMIT 1",
+        [new DatabaseParam("websiteID", $websiteID)]
+      ));
+    }
+    
+    public static function set (int $websiteID, string $column, DatabaseParam $param): SideEffect {
+      return Database::get()->statement(
+        "UPDATE websites SET $column = :$param->name WHERE ID = :websiteID",
+        [new DatabaseParam("websiteID", $websiteID), $param]
+      );
+    }
+    
     public static function getByID (int $id): Result {
       $post = Database::get()->fetch(
         "SELECT
-            " . self::generateSelectColumns(self::TABLE_NAME, self::ALL_COLUMNS) . "
+            " . self::generateSelectColumns(self::TABLE_NAME, self::ALL_COLUMNS, true) . "
+            " . self::IS_TAKEN_DOWN_CONDITION_PROJECTION . "
         FROM
           `websites`
+          " . self::IS_TAKEN_DOWN_CONDITION . "
         WHERE websites.ID = :id",
         self::class,
         [new DatabaseParam("id", $id)]
@@ -88,7 +119,8 @@
     public static function getHomePage (string $website): Result {
       $post = Database::get()->fetch(
         "SELECT
-          " . self::generateSelectColumns(self::TABLE_NAME, self::ALL_COLUMNS) . "
+          " . self::generateSelectColumns(self::TABLE_NAME, self::ALL_COLUMNS, true) . "
+          " . self::IS_TAKEN_DOWN_CONDITION_PROJECTION . "
         FROM
           websites
           JOIN users ON users.ID = websites.usersID
@@ -112,7 +144,8 @@
     public static function getOldestPage (string $website): Result {
       $post = Database::get()->fetch(
         "SELECT
-          " . self::generateSelectColumns(self::TABLE_NAME, self::ALL_COLUMNS) . "
+          " . self::generateSelectColumns(self::TABLE_NAME, self::ALL_COLUMNS, true) . "
+          " . self::IS_TAKEN_DOWN_CONDITION_PROJECTION . "
         FROM
           `websites`
           JOIN users ON users.ID = websites.usersID
@@ -134,9 +167,11 @@
       $post = Database::get()->fetch(
         "SELECT
           " . self::generateSelectColumns(self::TABLE_NAME, array_diff(self::ALL_COLUMNS, ["timeCreated"]), true) . "
+          " . self::IS_TAKEN_DOWN_CONDITION_PROJECTION . "
           MIN(websites.timeCreated) timeCreated
         FROM
           `websites`
+          " . self::IS_TAKEN_DOWN_CONDITION . "
           JOIN users ON users.ID = websites.usersID
             AND users.website = :website
             AND websites.src = :source",
@@ -154,10 +189,6 @@
         return fail(new NotFoundExc("This website does not exist."));
       }
   
-      if (isset($post->isTakenDown) && $post->isTakenDown == "1") {
-        return fail(new IllegalArgumentExc("This website is no longer accessible."));
-      }
-  
       return success(self::parseProps($post));
     }
     
@@ -166,8 +197,10 @@
     public static function getSet (int $userID, int $offset) {
       return self::parseProps(Database::get()->fetchAll(
         "SELECT
-          " . self::generateSelectColumns(self::TABLE_NAME, self::ALL_COLUMNS) . "
+          " . self::generateSelectColumns(self::TABLE_NAME, self::ALL_COLUMNS, true) . "
+          " . self::IS_TAKEN_DOWN_CONDITION_PROJECTION . "
         FROM `websites`
+          " . self::IS_TAKEN_DOWN_CONDITION . "
         WHERE websites.usersID = :userID
         ORDER BY timeCreated DESC
         LIMIT :offset, " . self::SET_SIZE,

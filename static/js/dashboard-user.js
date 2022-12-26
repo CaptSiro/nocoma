@@ -27,7 +27,7 @@ createPost.querySelector("button.submit").addEventListener("click", () => {
       return;
     }
     
-    window.location.replace(AJAX.SERVER_HOME + "/editor/" + website.src);
+    redirect(AJAX.SERVER_HOME + "/editor/" + website.src);
   }), {
     method: "POST",
     body: JSON.stringify(body)
@@ -44,6 +44,7 @@ createPost.querySelector("button.submit").addEventListener("click", () => {
 const postView = $(".post-view");
 
 /**
+ * @param {number} index
  * @returns {Promise<HTMLElement|undefined>}
  */
 function loadPosts (index) {

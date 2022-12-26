@@ -24,7 +24,7 @@
   
   
   $authRouter->get("/", [
-    Middleware::requireToBeLoggedOut(),
+    Middleware::requireToBeLoggedOut(Middleware::RESPONSE_REDIRECT),
     function (Request $request, Response $response) use ($env) {
       $response->render("login-register", ["host" => $env->HOST_NAME]);
     }

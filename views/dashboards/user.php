@@ -110,8 +110,9 @@
       <section column="0-4" row="0-4">
         <header class="no-mg">
           <section class="controls">
+            <div class="separator right">Posts</div>
             <button id="create-post-button">New</button>
-            <div class="separator">Sort by:</div>
+            <div class="separator">Show:</div>
             <button>Public</button>
             <button>Planned</button>
             <button>Private</button>
@@ -135,7 +136,8 @@
     <div columns="4" class="c-grid link-element" auto-fill="true" id="comments">
       <section column="0-4" row="0-4">
         <header class="no-mg">
-          <section>
+          <section class="controls">
+            <div class="separator right">Comments</div>
             <button>Show not seen</button>
           </section>
           <section class="search-mount">
@@ -284,7 +286,8 @@
     <div columns="4" class="c-grid link-element" auto-fill="true" id="themes">
       <section column="0-4" row="0-4">
         <header class="no-mg">
-          <section>
+          <section class="controls">
+            <div class="separator right">Themes</div>
           </section>
           <section class="search-mount">
             <img src="<?= $GLOBALS["__HOME__"] ?>/public/images/search-white.svg" alt="search">
@@ -429,6 +432,7 @@
       <section column="0-4" row="0-4">
         <header class="no-mg">
           <section class="controls no-user-select">
+            <div class="separator right">Gallery</div>
             <button id="upload-files-button">Add</button>
             <div class="dropdown">
               <button>Sort by</button>

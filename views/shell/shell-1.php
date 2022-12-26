@@ -14,6 +14,8 @@
   <script src="<?= $GLOBALS["__SERVER_HOME__"] ?>/public/js/widget-core.js"></script>
   <script src="<?= $GLOBALS["__SERVER_HOME__"] ?>/public/widgets/root/root.js"></script>
   
+  <script src="<?= $GLOBALS["__SERVER_HOME__"] ?>/public/js/shell.js" defer></script>
+  
   <link rel="stylesheet" href="<?= $GLOBALS["__SERVER_HOME__"] ?>/public/css/main.css">
   
   <style>
@@ -27,4 +29,4 @@
   </style>
 </head>
 <body>
-  <div class="display-none">
+  <div id="page-data" class="display-none viewport-tablet viewport-smartphone viewport-small-smartphone">

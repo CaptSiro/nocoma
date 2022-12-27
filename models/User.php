@@ -115,6 +115,21 @@
   
       return success(self::parseProps($optionalUser));
     }
+    
+    
+    public static function isBanned ($userID): Result {
+      $user = Database::get()->fetch(
+        "SELECT isDisabled FROM `users` WHERE ID = :userID",
+        "stdClass",
+        [new DatabaseParam("userID", $userID)]
+      );
+      
+      if (!$user) {
+        return fail(new InvalidArgumentExc("Could not find user ID: $userID"));
+      }
+      
+      return success(boolval($user->isDisabled));
+    }
   
   
     /**

@@ -124,6 +124,28 @@
   
   
   
+  function matchUserID (Request $request, int $userID): bool {
+    return $request->session->isset("user") && $request->session->get("user")->level === $userID;
+  }
+  /**
+   * @param Request $request
+   * @param Website $webpage
+   * @param Response $response
+   * @return void
+   */
+  function testUserAccessibility(Request $request, Website $webpage, Response $response): void {
+    $isNotAdmin = matchUserID($request, Middleware::LEVEL_ADMIN);
+    $isCreatorBanned = (!matchUserID($request, $webpage->usersID)) && User::isBanned($webpage->usersID)->forwardFailure($response)->getSuccess();
+    
+    if ($isCreatorBanned) {
+      $response->render("error", ["message" => "This creator has been restricted."]);
+    }
+    
+    if ($webpage->isTakenDown && $isNotAdmin) {
+      $response->render("error", ["message" => "Web page is no longer accessible."]);
+    }
+  }
+  
   $router->get("/d/:website", [function (Request $request, Response $response) use ($env) {
     $website = $request->param->get("website");
   
@@ -133,13 +155,9 @@
         $response->render("error", ["message" => $exception->getMessage()]);
       })->getSuccess();
     })->getSuccess();
-  
-    $isUserAdmin = $request->session->isset("user") && $request->session->get("user")->level === Middleware::LEVEL_ADMIN;
-  
-    if ($webpage->isTakenDown && !$isUserAdmin) {
-      $response->render("error", ["message" => "Web page is no longer accessible."]);
-    }
-  
+    
+    testUserAccessibility($request, $webpage, $response);
+    
     $hostName = $env->get("HOST_NAME")->failed(function () use ($response) {
       $response->render("error", ["message" => "505: Internal server error.<br><br>Error code: 0x000003"]);
     })->getSuccess();
@@ -159,11 +177,7 @@
       $response->render("error", ["message" => $exception->getMessage()]);
     })->getSuccess();
   
-    $isUserAdmin = $request->session->isset("user") && $request->session->get("user")->level === Middleware::LEVEL_ADMIN;
-  
-    if ($webpage->isTakenDown && !$isUserAdmin) {
-      $response->render("error", ["message" => "Web page is no longer accessible."]);
-    }
+    testUserAccessibility($request, $webpage, $response);
   
     $response->render("shell/shell-1", ["webpage" => $webpage], "php", false);
     $response->readFile(HOSTS_DIR . "/$website/$webpage->src.json", false);

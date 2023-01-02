@@ -96,7 +96,7 @@
       <div id="viewport"></div>
       <button class="toggle-viewport">mobile/PC</button>
 
-      <div id="widget-select-mount" style="display: none"></div>
+      <div id="widget-select-mount" style="visibility: hidden"></div>
     </div>
 
     <div class="controls">

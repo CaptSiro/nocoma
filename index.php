@@ -4,22 +4,29 @@
   Middleware::setDefaultResponseType(Middleware::RESPONSE_JSON);
   
   
+  
   require_once __DIR__ . "/lib/dotenv/dotenv.php";
   $env = new Env(__DIR__ . "/.env");
   $hostName = $env->get("HOST_NAME")->failed(function () {
     exit("Error code: 0x000003");
   })->getSuccess();
   
+  
+  
   /** @var HomeRouter $router */
   $router = require __DIR__ . "/lib/routepass/routepass.php";
   
+  
+  
   $router->setBodyParser(HomeRouter::BODY_PARSER_JSON());
   $router->setFlag(HomeRouter::FLAG_MAIN_SERVER_HOST_NAME, $hostName);
-  $router->setFlag(HomeRouter::FLAG_SESSION_DOMAIN, $hostName);
+  $router->setFlag(HomeRouter::FLAG_SESSION_COOKIE_PARAMS, [0, "/", ".$hostName"]);
   $router->setViewDirectory(__DIR__ . "/views");
   
   
+  
   $router->static("/public", __DIR__ . "/static");
+  
   
   
   $router->onAnyErrorEvent(function (RequestError $requestError) {
@@ -28,10 +35,16 @@
   });
   
   
+  
   $router->get("/", [function (Request $request, Response $response) {
     $response->render("nocoma");
   }]);
   
+  
+  
+  $router->get("/error", [function (Request $request, Response $response) {
+    $response->render("error", ["message" => $request->query->get("message")]);
+  }]);
   
   
   
@@ -50,6 +63,8 @@
   $router->use("/file", require __DIR__ . "/routes/file-router.php");
   $router->use("/profile", require __DIR__ . "/routes/profile-router.php");
   $router->use("/users", require __DIR__ . "/routes/users-router.php");
+  
+  
   
   /** @var Blueprints $b */
 //  $b = require __DIR__ . "/lib/blueprint/collection.php";
@@ -119,71 +134,7 @@
   
   
   
-  
   $router->domain("[website].$hostName", require __DIR__ . "/routes/domain-router.php", []);
-  
-  
-  
-  function matchUserID (Request $request, int $userID): bool {
-    return $request->session->isset("user") && $request->session->get("user")->level === $userID;
-  }
-  /**
-   * @param Request $request
-   * @param Website $webpage
-   * @param Response $response
-   * @return void
-   */
-  function testUserAccessibility(Request $request, Website $webpage, Response $response): void {
-    $isNotAdmin = matchUserID($request, Middleware::LEVEL_ADMIN);
-    $isCreatorBanned = (!matchUserID($request, $webpage->usersID)) && User::isBanned($webpage->usersID)->forwardFailure($response)->getSuccess();
-    
-    if ($isCreatorBanned) {
-      $response->render("error", ["message" => "This creator has been restricted."]);
-    }
-    
-    if ($webpage->isTakenDown && $isNotAdmin) {
-      $response->render("error", ["message" => "Web page is no longer accessible."]);
-    }
-  }
-  
-  $router->get("/d/:website", [function (Request $request, Response $response) use ($env) {
-    $website = $request->param->get("website");
-  
-    /** @var Website $webpage */
-    $webpage = Website::getHomePage($website)->failed(function () use ($website, $response) {
-      return Website::getOldestPage($website)->failed(function (Exc $exception) use ($response) {
-        $response->render("error", ["message" => $exception->getMessage()]);
-      })->getSuccess();
-    })->getSuccess();
-    
-    testUserAccessibility($request, $webpage, $response);
-    
-    $hostName = $env->get("HOST_NAME")->failed(function () use ($response) {
-      $response->render("error", ["message" => "505: Internal server error.<br><br>Error code: 0x000003"]);
-    })->getSuccess();
-  
-    $response->render("shell/shell-1", ["SERVER_HOME" => $request->protocol . "://$hostName$_SERVER[HOME_DIR]", "webpage" => $webpage], "php", false);
-    $response->readFile(HOSTS_DIR . "/$website/$webpage->src.json", false);
-    $response->render("shell/shell-2");
-  }], ["website" => "([^.]+)"]);
-  
-  
-  
-  $router->get("/d/:website/:source", [function (Request $request, Response $response) {
-    $website = $request->param->get("website");
-  
-    /** @var Website $renderedPage */
-    $webpage = Website::getBySource($website, $request->param->get("source"))->failed(function (Exc $exception) use ($response) {
-      $response->render("error", ["message" => $exception->getMessage()]);
-    })->getSuccess();
-  
-    testUserAccessibility($request, $webpage, $response);
-  
-    $response->render("shell/shell-1", ["webpage" => $webpage], "php", false);
-    $response->readFile(HOSTS_DIR . "/$website/$webpage->src.json", false);
-    $response->render("shell/shell-2");
-  }], ["website" => "([^.]+)", "source" => "([0-9a-zA-Z_-]+)"]);
-  
   
   
   

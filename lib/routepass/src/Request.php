@@ -114,7 +114,38 @@
       return $this->headers[strtolower($header)] ?? "";
     }
     
-    public function __construct (Response &$response, HomeRouter &$homeRouter, $domain = "local") {
+    
+    
+    
+    public function loadSession ($sessionID = null, array $cookieParams = []): bool {
+      if (session_status() === PHP_SESSION_DISABLED) {
+        return false;
+      }
+      
+      if (session_status() === PHP_SESSION_ACTIVE) {
+        session_commit();
+      }
+      
+      if ($sessionID !== null) {
+        session_id($sessionID);
+      }
+      
+      if (!empty($cookieParams)) {
+        session_set_cookie_params(...$cookieParams);
+      }
+      
+      if (!session_start()) {
+        return false;
+      }
+      
+      $this->session->discard();
+      $this->session->load($_SESSION);
+      
+      return true;
+    }
+    
+    
+    public function __construct (Response &$response, HomeRouter &$homeRouter, bool $doStartSession = true, array $sessionCookieParams = []) {
       $this->response = $response;
       $this->homeRouter = $homeRouter;
       $this->httpMethod = $_SERVER["REQUEST_METHOD"];
@@ -130,16 +161,17 @@
         $this->headers[strtolower($key)] = $value;
       });
   
-      if (session_status() == PHP_SESSION_NONE) {
-        session_set_cookie_params(0, "/", ".$domain");
-        session_start();
-      }
-  
+
+      
       $this->session = new WriteRegistry($this, function ($propertyName, $value) {
         $_SESSION[$propertyName] = $value;
         return $value;
       });
-      $this->session->load($_SESSION);
+      if ($doStartSession) {
+        $this->loadSession(null, $sessionCookieParams);
+      }
+      
+      
       
       $this->cookies = new WriteRegistry($this, function ($propertyName, $value) {
         $cookie = $value;
@@ -151,6 +183,8 @@
       });
       $this->cookies->enableSerializedValues();
       $this->cookies->load($_COOKIE);
+      
+      
       
       $this->files = new RequestRegistry($this);
       foreach ($_FILES as $key => $file) {
@@ -173,6 +207,8 @@
         
         $this->files->set($key, new RequestFile($file));
       }
+      
+      
       
       $this->param = new RequestRegistry($this);
       $this->domain = new RequestRegistry($this);

@@ -176,11 +176,63 @@ window.page = {}
 
 //? widget menu
 const widgetSelect = $("#widget-select-mount");
+/** @type {HTMLElement} */
+let selectedWidget = undefined;
+let isInSearchMode = false;
+
+/**
+ * @param {boolean} isInSearch
+ */
+function setSearchMode (isInSearch) {
+  isInSearchMode = isInSearch;
+  widgetSelect.classList.toggle("search-mode", isInSearch);
+}
+
+/**
+ * @param {boolean} direction true => Up; false => Down
+ */
+function moveSelection (direction) {
+  if (selectedWidget === undefined) {
+    const widgetPool = isInSearchMode
+      ? widgetSelect.querySelectorAll(".widget.search-satisfactory")
+      : widgetSelect.querySelectorAll(".widget")
+    
+    selectedWidget = widgetPool[!direction ? 0 : (widgetPool.length - 1)];
+    selectedWidget.classList.add("selected");
+    return;
+  }
+  
+  selectedWidget.classList.remove("selected");
+  let selectionPool = Array.from(widgetSelect.querySelectorAll(".widget"));
+  if (direction) {
+    selectionPool = selectionPool.reverse();
+  }
+  
+  let pointer = selectionPool.indexOf(selectedWidget);
+  
+  do {
+    pointer++;
+    if (pointer === selectionPool.length) {
+      pointer = 0;
+    }
+    
+    if (isInSearchMode === false || selectionPool[pointer].classList.contains("search-satisfactory")) {
+      selectedWidget = selectionPool[pointer];
+      break;
+    }
+  } while (selectionPool[pointer] !== selectedWidget);
+  
+  selectedWidget.classList.add("selected");
+}
+
+
 AJAX.get("/bundler/resource/*", new JSONHandler(json => {
-  /** @type {Map<string, { properties: { category: string, label: string, class: string }, files: { icon: string } }[]>} */
+  /** @type {Map<string, { properties: { category: string, label: string, class: string, searchIndex: string }, files: { icon: string } }[]>} */
   const grouped = Array.from(json)
     .filter(resource => resource.properties.category !== "Hidden")
     .reduce((map, resource) => {
+      resource.properties.searchIndex = resource.properties.category + "_" + resource.properties.label;
+      
       if (map.has(resource.properties.category)) {
         map.get(resource.properties.category).push(resource);
       } else {
@@ -190,7 +242,6 @@ AJAX.get("/bundler/resource/*", new JSONHandler(json => {
       return map;
     }, new Map())
   
-
   widgetSelect.textContent = "";
   const filenameRegex = /^.*[\\\/]/;
   for (const key of Array.from(grouped.keys()).sort()) {
@@ -206,6 +257,10 @@ AJAX.get("/bundler/resource/*", new JSONHandler(json => {
         className: "content",
         content: htmlCollection(grouped.get(key), resource => ({
           className: "widget",
+          modify: widgetElement => {
+            widgetElement.dataset.search = resource.properties.searchIndex;
+            widgetElement.dataset.class = resource.properties.class;
+          },
           content: [{
             name: "img",
             attributes: {
@@ -219,6 +274,11 @@ AJAX.get("/bundler/resource/*", new JSONHandler(json => {
           listeners: {
             click: function () {
               console.log(widgets.get(resource.properties.class).default(null));
+            },
+            mouseover: function () {
+              widgetSelect.querySelectorAll(".widget").forEach(w => w.classList.remove("selected"));
+              selectedWidget = this;
+              this.classList.add("selected");
             }
           }
         }))
@@ -235,3 +295,33 @@ window.addEventListener("load", () => {
     document.querySelector("#viewport").appendChild(root.rootElement);
   });
 });
+
+
+/**
+ * @param {HTMLElement} to
+ */
+function moveWidgetSelect (to) {
+  to.scrollIntoView();
+  const toBoundingBox = to.getBoundingClientRect();
+  const mountBoundingBox = viewportMount.getBoundingClientRect();
+  const selectBoundingBox = widgetSelect.getBoundingClientRect();
+  
+  let left = toBoundingBox.left;
+  if (left + selectBoundingBox.width > mountBoundingBox.width) {
+    left = mountBoundingBox.width - selectBoundingBox.width;
+  }
+  left /= (mountBoundingBox.width / 100);
+  
+  let top = toBoundingBox.top + toBoundingBox.height;
+  if (top + selectBoundingBox.height > mountBoundingBox.height) {
+    top = toBoundingBox.top - selectBoundingBox.height;
+  }
+  top -= mountBoundingBox.top;
+  top /= (mountBoundingBox.height / 100);
+  
+  widgetSelect.style.left = left + "%";
+  widgetSelect.style.top = top + "%";
+  
+  console.log("visible")
+  widgetSelect.style.visibility = "visible";
+}

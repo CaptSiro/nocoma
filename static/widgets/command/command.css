@@ -3,6 +3,7 @@
   line-height: 1.1em;
   min-height: 1.1em;
   position: relative;
+  display: block;
 }
 .w-command > * {
   line-height: 1.1em;

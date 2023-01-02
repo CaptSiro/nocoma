@@ -49,37 +49,36 @@
   $authRouter->post("/login", [
     Middleware::requireToBeLoggedOut(),
     function (Request $request, Response $response) {
-      $userRes = User::getByEmail($request->body->get("email"));
-      $userRes->failed(function () use ($response) {
-        $response->json((object)["error" => "Email or password does not match."]);
-      });
-      
       /** @var User $user */
-      $user = $userRes->getSuccess();
-      $compareResult = $user->comparePassword($request->body->get("password"));
-      $compareResult->forwardFailure($response);
-      
-      $compareResult->succeeded(function ($doesLoginMatch) use ($request, $response, $user) {
-        if (!$doesLoginMatch) {
+      $user = User::getByEmail($request->body->get("email"))
+        ->failed(function () use ($response) {
           $response->json((object)["error" => "Email or password does not match."]);
-          return;
-        }
-        
-        if (!$user->isVerified) {
-          $request->session->set("unauthorized_user", $user);
-          $response->json((object)["next" => "code-verification"]);
-        }
-  
-        $request->session->set("user", $user);
-  
-        $redirectURL = Response::createRedirectURL("/dashboard/user");
-        
-        if ($user->level === Middleware::LEVEL_ADMIN) {
-          $redirectURL = Response::createRedirectURL("/dashboard/admin");
-        }
-        
-        $response->json((object)["redirect" => $redirectURL]);
-      });
+        })
+        ->getSuccess();
+      
+      $doesLoginMatch = $user->comparePassword($request->body->get("password"))
+        ->forwardFailure($response)
+        ->getSuccess();
+      
+      if (!$doesLoginMatch) {
+        $response->json((object)["error" => "Email or password does not match."]);
+        return;
+      }
+      
+      if (!$user->isVerified) {
+        $request->session->set("unauthorized_user", $user);
+        $response->json((object)["next" => "code-verification"]);
+      }
+
+      $request->session->set("user", $user);
+
+      $redirectURL = Response::createRedirectURL("/dashboard/user");
+      
+      if ($user->level === Middleware::LEVEL_ADMIN) {
+        $redirectURL = Response::createRedirectURL("/dashboard/admin");
+      }
+      
+      $response->json((object)["redirect" => $redirectURL, "sessionID" => session_id()]);
     }
   ]);
   
@@ -199,7 +198,7 @@
     $removalResult = TimeoutMail::removeCode($request->body->get("code"));
     $removalResult->forwardFailure($response);
     
-    $response->json((object)["redirect" => Response::createRedirectURL("/dashboard/user")]);
+    $response->json((object)["redirect" => Response::createRedirectURL("/dashboard/user"), "sessionID" => session_id()]);
   }]);
   
   

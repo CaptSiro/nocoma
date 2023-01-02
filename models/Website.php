@@ -12,7 +12,7 @@
     const IS_TAKEN_DOWN_CONDITION_PROJECTION = "(takedowns.ID IS NOT NULL) as isTakenDown";
     const IS_TAKEN_DOWN_CONDITION = "LEFT JOIN takedowns ON websites.ID = takedowns.websitesID";
 
-    protected static function getNumberProps (): array { return ["ID", "userID"]; }
+    protected static function getNumberProps (): array { return ["ID", "usersID"]; }
     protected static function getBooleanProps (): array { return [
       "isTemplate", "isPublic", "areCommentsAvailable", "isHomePage", "isTakenDown"
     ]; }
@@ -123,6 +123,7 @@
           " . self::IS_TAKEN_DOWN_CONDITION_PROJECTION . "
         FROM
           websites
+          " . self::IS_TAKEN_DOWN_CONDITION . "
           JOIN users ON users.ID = websites.usersID
             AND websites.isHomePage = 1
             AND users.website = :website",
@@ -163,7 +164,7 @@
       return success(self::parseProps($post));
     }
     
-    public static function getBySource (string $website, string $source, bool $bypassPublicConstraint = false): Result {
+    public static function getBySource (string $website, string $source): Result {
       $post = Database::get()->fetch(
         "SELECT
           " . self::generateSelectColumns(self::TABLE_NAME, array_diff(self::ALL_COLUMNS, ["timeCreated"]), true) . "
@@ -181,11 +182,8 @@
           new DatabaseParam("source", $source, PDO::PARAM_STR),
         ]
       );
-  
-      $postDoesNotExists = !isset($post->ID);
-      $postIsNotAccessible = !((isset($post->isPublic) && $post->isPublic == "1") || ($bypassPublicConstraint));
       
-      if ($postDoesNotExists || $postIsNotAccessible) {
+      if (!$post) {
         return fail(new NotFoundExc("This website does not exist."));
       }
   

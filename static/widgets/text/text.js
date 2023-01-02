@@ -9,19 +9,37 @@ class WText extends Widget {
    * 
    * @typedef {TextJSONType & WidgetJSON} TextJSON
    */
-
+  
+  /**
+   * @param {string} content
+   * @returns {HTMLDivElement}
+   */
+  static #newLine (content) {
+    const div = document.createElement("div");
+    div.classList.add("line");
+    
+    if (content === "") {
+      div.innerHTML = "&#8203;";
+    } else {
+      div.textContent = content;
+    }
+    
+    return div;
+  }
   
   /**
    * @param {string[]} lines
    * @param {boolean} forceSingleLine
-   * @returns {HTMLElement}
+   * @returns {HTMLElement|HTMLElement[]}
    */
   static #parseLines (lines, forceSingleLine = false) {
     if (forceSingleLine) {
-      return html({ content: lines.reduce((acc, cur) => acc + cur, "")})
+      return this.#newLine(lines.reduce((acc, cur) => acc + cur, ""));
     }
 
-    return lines.length !== 0 ? lines.map(str => html({ content: str })) : document.createElement("div");
+    return lines.length !== 0
+      ? lines.map(this.#newLine)
+      : this.#newLine("");
   }
 
 
@@ -38,10 +56,11 @@ class WText extends Widget {
   /**
    * @override
    * @param {Widget} parent
+   * @param {boolean} editable
    * @returns {WText}
    */
-  static default (parent) {
-    return new WText(html({}), parent);
+  static default (parent, editable) {
+    return WText.build({ lines: [""] }, parent, editable);
   }
 
   /**
@@ -129,6 +148,53 @@ class WText extends Widget {
     return {
       type: "WText"
     };
+  }
+  
+  /**
+   * @param {number} index
+   * @returns {HTMLDivElement|undefined}
+   */
+  getLine (index) {
+    const lines = this.rootElement.querySelectorAll(".line");
+    
+    if (index < 0) {
+      return lines[lines.length + index];
+    }
+    
+    return lines[index];
+  }
+  
+  getTextContent () {
+    return Array.from(this.rootElement.querySelectorAll(".line"))
+      .reduce((content, element) => content + element.textContent, "");
+  }
+  
+  
+  focus() {
+    const range = document.createRange();
+    const selection = window.getSelection();
+  
+    console.log(this);
+  
+    const lastLine = this.getLine(-1);
+    let lastTextNode = undefined;
+    for (const childNode of Array.from(lastLine.childNodes).reverse()) {
+      if (childNode.nodeType === Node.TEXT_NODE) {
+        lastTextNode = childNode;
+      }
+    }
+    
+    if (lastTextNode === undefined) {
+      lastLine.innerHTML = "&#8203;";
+      lastTextNode = lastLine;
+    }
+    
+    range.setStart(lastTextNode, lastTextNode.textContent.length);
+    range.collapse(true);
+    selection.removeAllRanges();
+    selection.addRange(range);
+  
+    lastLine.focus();
   }
 }
 widgets.define("WText", WText);

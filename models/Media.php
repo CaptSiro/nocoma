@@ -10,7 +10,7 @@
   class Media extends StrictModel {
     protected $src, $usersID, $basename, $extension, $mimeContentType, $timeCreated, $hash, $size;
     const ALL_COLUMNS = ["src", "usersID", "basename", "extension", "mimeContentType", "timeCreated", "hash", "size"];
-    const TABLE_NAME = "`media`";
+    const TABLE_NAME = "media";
     
     protected static function getNumberProps (): array { return ["usersID", "size"]; }
     protected static function getBooleanProps (): array { return []; }

@@ -413,6 +413,10 @@
         ? $_SERVER["SERVER_HOME"]
         : "") . $url;
     }
+    
+    public static function createRedirectURLDirPrefix (string $url): string {
+      return "$_SERVER[HOME_DIR]$url";
+    }
   
   
     /**

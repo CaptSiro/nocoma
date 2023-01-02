@@ -20,6 +20,14 @@
       self::$defaultResponseType = $defaultResponseType;
     }
     
+    
+    public static function sessionStart ($id = null, array $sessionParams = []) {
+      return function (Request $request, Response $response, Closure $next) use ($id, $sessionParams) {
+        if ($request->loadSession($id, $sessionParams)) $next();
+      };
+    }
+    
+    
     public static function requireToBeLoggedIn (int $middlewareResponseType = -1): Closure {
       return function (Request $request, Response $response, Closure $next) use ($middlewareResponseType) {
         $isUserLoggedIn = $request->session->looselyGet("user") !== null;
@@ -33,8 +41,7 @@
   
         switch ($responseType) {
           case Middleware::RESPONSE_TEXT: {
-            //TODO: change to rendering an error view
-            $response->error("You must log in first.", Response::UNAUTHORIZED);
+            $response->render("error", ["message" => "You must log in first."]);
             break;
           }
           case Middleware::RESPONSE_JSON: {
@@ -63,7 +70,7 @@
         switch ($responseType) {
           case Middleware::RESPONSE_TEXT: {
             //TODO: change to rendering an error view
-            $response->error("You must not be logged in.", Response::UNAUTHORIZED);
+            $response->render("error", ["message" => "You must not be logged in."]);
             break;
           }
           case Middleware::RESPONSE_JSON: {
@@ -96,8 +103,7 @@
   
         switch ($responseType) {
           case Middleware::RESPONSE_TEXT: {
-            //TODO: change to rendering an error view
-            $response->error("You don't have the permission to access this website.", Response::UNAUTHORIZED);
+            $response->render("error", ["message" => "You don't have the permission to access this website."]);
             break;
           }
           case Middleware::RESPONSE_JSON: {

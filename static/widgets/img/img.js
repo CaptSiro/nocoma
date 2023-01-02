@@ -27,7 +27,7 @@ class WImage extends Widget {
    * @returns {WImage}
    */
   static default (parent) {
-    return this.build({ src: "", alt: "Unnamed image" }, parent, true);
+    return this.build({ src: AJAX.SERVER_HOME + "/public/images/theme-stock-pictures/__8219034641.png", alt: "Unnamed image" }, parent, true);
   }
 
   /**

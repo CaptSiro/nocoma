@@ -4,7 +4,7 @@
   min-height: 1.1em;
   position: relative;
 }
-.w-text > * {
+.w-text > .line {
   line-height: 1.1em;
   min-height: 1.1em;
 }

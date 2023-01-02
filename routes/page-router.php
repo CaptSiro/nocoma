@@ -2,6 +2,7 @@
   
   require_once __DIR__ . "/../lib/routepass/routers.php";
   require_once __DIR__ . "/../lib/newgen/newgen.php";
+//  require_once __DIR__ . "/../lib/dotenv/dotenv.php";
   require_once __DIR__ . "/../lib/paths.php";
   
   require_once __DIR__ . "/Middleware.php";
@@ -10,6 +11,7 @@
   require_once __DIR__ . "/../models/Website.php";
   
   $pageRouter = new Router();
+//  $env = new Env(ENV_FILE);
   
   $pageRouter->implement(Middleware::requireToBeLoggedIn());
   
@@ -25,12 +27,18 @@
   
   $pageRouter->post("/create", [
     function (Request $request, Response $response) {
-      $sourceResult = Generate::valid(Generate::string(Generate::CHARSET_URL, 10), Website::isSRCValid());
-      $sourceResult->forwardFailure($response);
-      $source = $sourceResult->getSuccess();
-      
       /** @var User $user */
       $user = $request->session->get("user");
+      
+      if (User::isBanned($user->ID)
+        ->forwardFailure($response)
+        ->getSuccess()) {
+        $response->json(["error" => "You are not allowed to create more websites."]);
+      }
+    
+      $source = Generate::valid(Generate::string(Generate::CHARSET_URL, 10), Website::isSRCValid())
+        ->forwardFailure($response)
+        ->getSuccess();
       
       file_put_contents(HOSTS_DIR . "/$user->website/$source.json", '{"type": "WRoot","children": []}');
       $created = Website::getByID(Website::create(
@@ -78,7 +86,6 @@
   
 
   $pageRouter->post("/take-down", [
-    Middleware::requireToBeLoggedIn(),
     Middleware::authorize(Middleware::LEVEL_ADMIN),
     function (Request $request, Response $response) {
       $response->json(Website::takeDown(
@@ -88,7 +95,6 @@
     }
   ]);
   $pageRouter->delete("/take-down", [
-    Middleware::requireToBeLoggedIn(),
     Middleware::authorize(Middleware::LEVEL_ADMIN),
     function (Request $request, Response $response) {
       $response->json(Website::removeTakeDown(
@@ -97,8 +103,10 @@
     }
   ]);
   
+  
+  
+  //TODO: check for usage
   $pageRouter->patch("/isTakenDown/:id/:boolean", [
-    Middleware::requireToBeLoggedIn(),
     Middleware::authorize(Middleware::LEVEL_ADMIN),
     function (Request $request, Response $response) {
       $response->json(Website::set(

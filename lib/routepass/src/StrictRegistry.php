@@ -109,4 +109,8 @@
         }
       }
     }
+    
+    public function discard () {
+      $this->map = [];
+    }
   }

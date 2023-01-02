@@ -53,6 +53,36 @@ function loadPosts (index) {
       let element = undefined;
       
       for (const post of posts) {
+        const optionsBody = html({
+          className: "menu-body",
+          content: [{
+            listeners: { click: () => redirect(AJAX.SERVER_HOME + "/editor/" + post.src) },
+            content: [{
+              name: "span",
+              className: "label",
+              textContent: "Edit"
+            }]
+          }, {
+            listeners: {
+              click: evt => {
+                AJAX.delete("/page/delete/" + post.src, new JSONHandler(response => {
+                  if (response.error !== undefined) {
+                    //TODO: create my own alert
+                    alert(response.error);
+                    return;
+                  }
+          
+                  evt.target.closest(".post").remove();
+                }));
+              }
+            },
+            content: [{
+              name: "span",
+              className: "label",
+              textContent: "Delete"
+            }]
+          }]
+        });
         element = html({
           className: "post",
           content: [{
@@ -105,37 +135,22 @@ function loadPosts (index) {
                   alt: "opt"
                 }
               }]
-            }, {
-              className: "menu-body",
+            }, optionsBody]
+          }],
+          modify: postElement => {
+            if (!post.isTakenDown) {
+              return;
+            }
+            
+            postElement.classList.add("taken-down");
+            optionsBody.appendChild(html({
               content: [{
-                listeners: { click: () => redirect(AJAX.SERVER_HOME + "/editor/" + post.src) },
-                content: [{
-                  name: "span",
-                  className: "label",
-                  textContent: "Edit"
-                }]
-              }, {
-                listeners: {
-                  click: evt => {
-                    AJAX.delete("/page/delete/" + post.src, new JSONHandler(response => {
-                      if (response.error !== undefined) {
-                        //TODO: create my own alert
-                        alert(response.error);
-                        return;
-                      }
-
-                      evt.target.closest(".post").remove();
-                    }));
-                  }
-                },
-                content: [{
-                  name: "span",
-                  className: "label",
-                  textContent: "Delete"
-                }]
+                name: "span",
+                className: "label",
+                textContent: "Appeal to remove take down"
               }]
-            }]
-          }]
+            }));
+          }
         });
         postView.appendChild(element);
       }

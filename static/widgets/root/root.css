@@ -8,9 +8,10 @@ body {
   position: absolute;
   display: flex;
   top: 100%;
-  right: 0px;
+  right: 0;
   z-index: 2;
-  padding: 0px 16px 16px 16px;
+  padding: 0 16px 16px 16px;
+  user-select: none;
 }
 
 .widget:hover > .edit-gui,
@@ -21,9 +22,14 @@ body {
 .widget.edit:hover,
 .widget.edit:focus {
   outline: 2px solid black;
+  z-index: 3;
+}
+.widget.edit:hover {
+  z-index: 5;
 }
 
 .edit-gui button {
+  user-select: none;
   padding: 4px;
   color: white;
   background-color: var(--container-opposite-2);

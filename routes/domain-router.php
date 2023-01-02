@@ -14,54 +14,70 @@
   
   
   
+  /**
+   * @param Request $request
+   * @param Website $webpage
+   * @param Response $response
+   * @return void
+   */
+  function canUserAccess(Request $request, Website $webpage, Response $response): void {
+    $isAdmin = $request->session->isset("user")
+      && $request->session->get("user")->level === Middleware::LEVEL_ADMIN;
+    
+    if ($isAdmin) return;
+    
+    $isNotCreator = !($request->session->isset("user")
+      && $request->session->get("user")->ID === $webpage->usersID);
+    
+    $isCreatorBanned = $isNotCreator && User::isBanned($webpage->usersID)
+      ->forwardFailure($response)
+      ->getSuccess();
+  
+    if ($isCreatorBanned) {
+      $response->json(["error" => "This creator has been restricted."]);
+    }
+    
+    if ($webpage->isTakenDown && $isNotCreator) {
+      $response->json(["error" => "Web page is no longer accessible."]);
+    }
+  }
+  
   $domainRouter->get("/", [function (Request $request, Response $response) use ($env) {
-    $response->redirect("/d/" . $request->domain->get("website"));
-//    $website = $request->domain->get("website");
-//
-//    /** @var Website $webpage */
-//    $webpage = Website::getHomePage($website)->failed(function () use ($website, $response) {
-//      return Website::getOldestPage($website)->failed(function (Exc $exception) use ($response) {
-//        $response->render("error", ["message" => $exception->getMessage()]);
-//      })->getSuccess();
-//    })->getSuccess();
-//
-//    $isUserAdmin = $request->session->isset("user") && $request->session->get("user")->level === Middleware::LEVEL_ADMIN;
-//
-//    if ($webpage->isTakenDown && !$isUserAdmin) {
-//      $response->render("error", ["message" => "Web page is no longer accessible."]);
-//    }
-//
-//    $hostName = $env->get("HOST_NAME")->failed(function () use ($response) {
-//      $response->render("error", ["message" => "505: Internal server error.<br><br>Error code: 0x000003"]);
-//    })->getSuccess();
-//
-//    $response->render("shell/shell-1", ["SERVER_HOME" => $request->protocol . "://$hostName$_SERVER[HOME_DIR]", "webpage" => $webpage], "php", false);
-//    $response->readFile(HOSTS_DIR . "/$website/$webpage->src.json", false);
-//    $response->render("shell/shell-2");
+    $website = $request->domain->get("website");
+  
+    /** @var Website $webpage */
+    $webpage = Website::getHomePage($website)->failed(function () use ($website, $response) {
+      return Website::getOldestPage($website)->failed(function (Exc $exception) use ($response) {
+        $response->render("error", ["message" => $exception->getMessage()]);
+      })->getSuccess();
+    })->getSuccess();
+  
+    canUserAccess($request, $webpage, $response);
+  
+    $hostName = $env->get("HOST_NAME")->failed(function () use ($response) {
+      $response->render("error", ["message" => "505: Internal server error.<br><br>Error code: 0x000003"]);
+    })->getSuccess();
+  
+    $response->render("shell/shell-1", ["SERVER_HOME" => $request->protocol . "://$hostName$_SERVER[HOME_DIR]", "webpage" => $webpage], "php", false);
+    $response->readFile(HOSTS_DIR . "/$website/$webpage->src.json", false);
+    $response->render("shell/shell-2");
   }]);
   
   
   
-  
   $domainRouter->get("/:source", [function (Request $request, Response $response) {
-    $response->redirect("/d/" . $request->domain->get("website") . "/" . $request->param->get("source"));
-//    $website = $request->domain->get("website");
-//
-//    /** @var Website $renderedPage */
-//    $webpage = Website::getBySource($website, $request->param->get("source"))->failed(function (Exc $exception) use ($response) {
-//      $response->render("error", ["message" => $exception->getMessage()]);
-//    })->getSuccess();
-//
-//    $isUserAdmin = $request->session->isset("user") && $request->session->get("user")->level === Middleware::LEVEL_ADMIN;
-//    var_dump($request->session->looselyGet("user", "no user"));
-//
-//    if ($webpage->isTakenDown && !$isUserAdmin) {
-//      $response->render("error", ["message" => "Web page is no longer accessible."]);
-//    }
-//
-//    $response->render("shell/shell-1", ["webpage" => $webpage], "php", false);
-//    $response->readFile(HOSTS_DIR . "/$website/$webpage->src.json", false);
-//    $response->render("shell/shell-2");
+    $website = $request->domain->get("website");
+  
+    /** @var Website $renderedPage */
+    $webpage = Website::getBySource($website, $request->param->get("source"))->failed(function (Exc $exception) use ($response) {
+      $response->render("error", ["message" => $exception->getMessage()]);
+    })->getSuccess();
+  
+    canUserAccess($request, $webpage, $response);
+  
+    $response->render("shell/shell-1", ["webpage" => $webpage], "php", false);
+    $response->readFile(HOSTS_DIR . "/$website/$webpage->src.json", false);
+    $response->render("shell/shell-2");
   }], ["source" => "([0-9a-zA-Z_-]+)"]);
   
   

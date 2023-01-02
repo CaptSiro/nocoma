@@ -24,11 +24,10 @@
       $filePath = HOSTS_DIR . "/$user->website/" . $request->param->get("source") . ".json";
       
       if (!file_exists($filePath)) {
-        //TODO: change to error view
-        $response->error("Requested page does not exists.", Response::NOT_FOUND);
+        $response->render("error", ["message" => "Requested page does not exists."]);
       }
       
-      $webpage = Website::getBySource($user->website, $request->param->get("source"), true)
+      $webpage = Website::getBySource($user->website, $request->param->get("source"))
         ->forwardFailure($response)
         ->getSuccess();
       
@@ -37,8 +36,10 @@
       $response->readFile($filePath, false);
       $response->render("editor/editor-2", [
         "postLink" => "$request->protocol://$user->website."
-          . $env->get("HOST_NAME")->forwardFailure($response)->getSuccess()
-          . Response::createRedirectURL("/" . $request->param->get("source"))
+          . $env->get("HOST_NAME")
+              ->forwardFailure($response)
+              ->getSuccess()
+          . Response::createRedirectURLDirPrefix("/" . $request->param->get("source"))
       ]);
     }
   ], ["source" => Router::REGEX_BASE64_URL_SAFE]);

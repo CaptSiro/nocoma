@@ -1,12 +1,13 @@
 <?php
-  //todo finish Result::all()
+  
+  require_once __DIR__ . "/../../jsonEncodeAble/jsonEncodeAble.php";
 
-  class ResultSet {
+  class ResultSet extends JSONEncodeAble {
     private $success, $failures;
-    public function getSuccess () {
+    public function getSuccess (): ?array {
       return $this->success;
     }
-    public function getFailures () {
+    public function getFailures (): ?array {
       return $this->failures;
     }
 
@@ -42,11 +43,11 @@
   /**
    * @template T
    */
-  class Result {
+  class Result extends JSONEncodeAble {
     /**
      * @var T $succ
      */
-    private $succ, $failure;
+    protected $succ, $failure;
   
     /**
      * @return T
@@ -78,7 +79,8 @@
   
   
     /**
-     * @param Closure $function (T $success)->Result
+     * @template R
+     * @param Closure $function (T $success)->R
      * @return Result
      */
     public function succeeded (Closure $function): Result {

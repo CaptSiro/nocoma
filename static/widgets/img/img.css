@@ -1,16 +1,21 @@
 .w-image-container {
   width: 200px;
-  height: 50px;
+  height: min-content;
   margin: 16px;
 }
 
+.w-image-container.fit {
+  width: 200px;
+  height: 50px;
+}
+
 .w-image {
+  display: block;
   width: 100%;
   height: auto;
 }
 
-.w-image.obey {
-  width: 100%;
+.w-image-container.fit .w-image {
   height: 100%;
   object-fit: cover;
 }

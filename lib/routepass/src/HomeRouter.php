@@ -141,6 +141,10 @@
       parent::use($urlPattern, $staticRouter, $paramCaptureGroupMap);
     }
     public function serve () {
+      if (preg_match("/[a-z]+:\/\/[a-zA-Z-_.]+(.*)/", $_SERVER["REQUEST_URI"], $groups)) {
+        $_SERVER["REQUEST_URI"] = $groups[1];
+      }
+      
       $home = "";
       $dir = dirname($_SERVER["SCRIPT_FILENAME"]);
     
@@ -154,7 +158,12 @@
       $_SERVER["HOME_DIR_PATH"] = $dir;
       
       $res = new Response();
-      $req = new Request($res, $this, $this->getFlag(self::FLAG_SESSION_DOMAIN));
+      $req = new Request(
+        $res,
+        $this,
+        $this->getFlag(self::FLAG_SESSION_AUTO_START),
+        $this->getFlag(self::FLAG_SESSION_COOKIE_PARAMS)
+      );
   
       if ($this->getFlag(HomeRouter::FLAG_MAIN_SERVER_HOST_NAME) !== null) {
         $_SERVER["SERVER_HOME"] = "$req->protocol://" . $this->getFlag(HomeRouter::FLAG_MAIN_SERVER_HOST_NAME) . "$_SERVER[HOME_DIR]";
@@ -279,7 +288,8 @@
     
     private $flags = [
       self::FLAG_RESPONSE_AUTO_FLUSH => true,
-      self::FLAG_SESSION_DOMAIN => "local"
+      self::FLAG_SESSION_COOKIE_PARAMS => [],
+      self::FLAG_SESSION_AUTO_START => true
     ];
     
     
@@ -288,16 +298,29 @@
      *
      * Expected value type: boolean
      *
-     * Default: true
+     * Type: bool
+     *
+     * Default: `true`
      */
-    public const FLAG_RESPONSE_AUTO_FLUSH = "DO_RESPONSE_AUTO_FLUSH";
+    public const FLAG_RESPONSE_AUTO_FLUSH = "RESPONSE_AUTO_FLUSH";
   
     /**
-     * Sets domain for session cookie.
+     * On each request automatically starts session.
      *
-     * Default: "local" (for localhost)
+     * Type: bool
+     *
+     * Default: `true`
      */
-    public const FLAG_SESSION_DOMAIN = "SESSION_DOMAIN";
+    public const FLAG_SESSION_AUTO_START = "SESSION_AUTO_START";
+  
+    /**
+     * Sets parameters for session cookie in order of function `session_set_cookie_params()` arguments.
+     *
+     * Type: array,
+     *
+     * Default: `[]`
+     */
+    public const FLAG_SESSION_COOKIE_PARAMS = "SESSION_COOKIE_PARAMS";
   
     /**
      * Set host name for main server, which will be used to create `__SERVER_HOME__` for views
@@ -305,8 +328,10 @@
      * example: (value set to "localhost")
      *
      * http://`localhost`/test-directory/index.php
+     *
+     * Type: string
      */
-    public const FLAG_MAIN_SERVER_HOST_NAME = "CREATE_SERVER_HOME_VARIABLE";
+    public const FLAG_MAIN_SERVER_HOST_NAME = "MAIN_SERVER_HOST_NAME";
   
     /**
      * @param $flag
@@ -338,7 +363,7 @@
      * If array is sent, it is stored under "array" property on body object, use this to access it: `$request->body->get("array")`
      * @return Closure
      */
-    public static function BODY_PARSER_JSON () {
+    public static function BODY_PARSER_JSON (): Closure {
       return function ($bodyContents, Request $request) {
         $request->body = new RequestRegistry($request);
 
@@ -365,7 +390,7 @@
      * Parses body as text. Stored under "text" property on body object, use this to access it: `$request->body->get("text")`
      * @return Closure
      */
-    public static function BODY_PARSER_TEXT () {
+    public static function BODY_PARSER_TEXT (): Closure {
       return function ($bodyContents, Request $request) {
         $request->body = new RequestRegistry($request);
   
@@ -386,7 +411,7 @@
      * If Content-Type header contains multipart/form-data (file upload) the remaining entries will be parsed as urlencoded string. You may use `Request::parseURLEncoded($request->body->get("text"), $request->body)` to populate the `$request->body` registry with key-value pairs.
      * @return Closure
      */
-    public static function BODY_PARSER_URLENCODED () {
+    public static function BODY_PARSER_URLENCODED (): Closure {
       return function ($bodyContents, Request $request) {
         $request->body = new RequestRegistry($request);
         

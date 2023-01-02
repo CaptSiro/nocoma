@@ -41,6 +41,11 @@
   background-color: rgba(0, 0, 0, 0.3);
   width: 100%;
   height: 100%;
+
+  transition: background-color 250ms linear;
+}
+.post.taken-down .absolute .darken {
+  background-color: rgba(144, 12, 62, 0.75);
 }
 
 .post .content {

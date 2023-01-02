@@ -79,9 +79,11 @@ class Widget {
   }
 
   /**
+   * @param {Widget} parent
+   * @param {boolean} editable
    * @returns {Widget}
    */
-  static default (parent) {
+  static default (parent, editable) {
     return new Widget(document.createElement("div"), parent);
   }
 
@@ -117,6 +119,10 @@ class Widget {
       type: "Widget"
     }
   }
+  
+  focus () {
+    console.log("You should probably add a way that will show that the element is focused. Like it will appear in inspector and maybe the caret will be set to the end. Just sain.");
+  }
 
   /**
    * @returns {WidgetJSON[]}
@@ -128,6 +134,13 @@ class Widget {
   remove () {
     this.parentWidget.removeWidget(this);
   }
+  
+  /**
+   * @param {Widget} replacement
+   */
+  replaceSelf (replacement) {
+    this.parentWidget.replaceWidget(this, replacement);
+  }
 
   /**
    * @param {Widget} widget 
@@ -135,6 +148,16 @@ class Widget {
   removeWidget (widget) {
     widget.rootElement.remove();
     this.children.splice(this.children.indexOf(widget), 1);
+  }
+  
+  /**
+   * @param {Widget} find
+   * @param {Widget} replacement
+   */
+  replaceWidget (find, replacement) {
+    find.rootElement.parentElement.insertBefore(replacement.rootElement, find.rootElement);
+    find.rootElement.remove();
+    this.children.splice(this.children.indexOf(find), 1, replacement);
   }
   
   /**

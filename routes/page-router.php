@@ -19,7 +19,17 @@
   
   $pageRouter->get("/:offset", [
     function (Request $request, Response $response) {
-      $response->json(Website::getSet($request->session->get("user")->ID, intval($request->param->get("offset"))));
+      $type = 0;
+    
+      if ($request->query->isset("type")) {
+        $type = intval($request->query->get("type"));
+      }
+    
+      $response->json(Website::getSet(
+        $request->session->get("user")->ID,
+        intval($request->param->get("offset")),
+        $type
+      ));
     }
   ], ["offset" => Router::REGEX_NUMBER]);
   

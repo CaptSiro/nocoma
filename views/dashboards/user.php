@@ -113,9 +113,10 @@
             <div class="separator right">Posts</div>
             <button id="create-post-button">New</button>
             <div class="separator">Show:</div>
-            <button>Public</button>
-            <button>Planned</button>
-            <button>Private</button>
+            <button class="change-post-type" data-type="0">All</button>
+            <button class="change-post-type" data-type="1">Public</button>
+            <button class="change-post-type" data-type="2">Planned</button>
+            <button class="change-post-type" data-type="3">Private</button>
             <!-- <button>?Templates?</button> -->
           </section>
           <section class="search-mount">

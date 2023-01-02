@@ -313,13 +313,6 @@ function loadUsers (index) {
     }));
   });
 }
-const userScroller = new InfiniteScroller(userView, loadUsers);
 
-$$(".change-type").forEach(button => {
-  button.addEventListener("click", () => {
-    if (localStorage.getItem("user-type") === button.dataset.type) return;
-    
-    localStorage.setItem("user-type", button.dataset.type);
-    userScroller.reset();
-  });
-});
+const userScroller = new InfiniteScroller(userView, loadUsers);
+changeUserPreferredSetting(".change-type", "type", "user-type", userScroller);

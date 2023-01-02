@@ -5,10 +5,13 @@
 
   class Website extends StrictModel {
     protected $ID, $usersID, $thumbnailSRC, $src, $timeCreated, $title,
-      $isTemplate, $isPublic, $areCommentsAvailable, $isHomePage, $isTakenDown;
+      $isTemplate, $isPublic, $areCommentsAvailable, $isHomePage, $isTakenDown, $releaseDate;
     const ALL_COLUMNS = ["ID", "usersID", "thumbnailSRC", "src", "timeCreated", "title",
       "isTemplate", "isPublic", "areCommentsAvailable", "isHomePage"];
+    
     const TABLE_NAME = "websites";
+    const PLANNED_WEBSITES_TABLE_NAME = "plannedwebsites";
+    
     const IS_TAKEN_DOWN_CONDITION_PROJECTION = "(takedowns.ID IS NOT NULL) as isTakenDown";
     const IS_TAKEN_DOWN_CONDITION = "LEFT JOIN takedowns ON websites.ID = takedowns.websitesID";
 
@@ -191,15 +194,42 @@
     }
     
     
+    const SET_RESTRICTION_ALL = 0;
+    const SET_RESTRICTION_PUBLIC = 1;
+    const SET_RESTRICTION_PLANNED = 2;
+    const SET_RESTRICTION_PRIVATE = 3;
     private const SET_SIZE = 20;
-    public static function getSet (int $userID, int $offset) {
+    public static function getSet (int $userID, int $offset, $restriction = 0) {
+      if ($restriction === self::SET_RESTRICTION_PLANNED) {
+        return self::parseProps(Database::get()->fetchAll(
+          "SELECT
+          " . self::generateSelectColumns(self::TABLE_NAME, self::ALL_COLUMNS, true) . "
+          " . self::IS_TAKEN_DOWN_CONDITION_PROJECTION . ",
+          `" . self::PLANNED_WEBSITES_TABLE_NAME ."`.`releaseDate` as releaseDate
+        FROM `websites`
+          JOIN `" . self::PLANNED_WEBSITES_TABLE_NAME . "` ON `" . self::PLANNED_WEBSITES_TABLE_NAME . "`.websitesID = websites.ID
+          " . self::IS_TAKEN_DOWN_CONDITION . "
+        WHERE websites.usersID = :userID
+        ORDER BY timeCreated DESC
+        LIMIT :offset, " . self::SET_SIZE,
+          self::class,
+          [
+            new DatabaseParam("offset", $offset * self::SET_SIZE),
+            new DatabaseParam("userID", $userID),
+          ]
+        ));
+      }
+  
+      $restrictions = ($restriction === self::SET_RESTRICTION_PRIVATE ? " AND websites.isPublic = 0" : "")
+        . ($restriction === self::SET_RESTRICTION_PUBLIC ? " AND websites.isPublic = 1" : "");
+      
       return self::parseProps(Database::get()->fetchAll(
         "SELECT
           " . self::generateSelectColumns(self::TABLE_NAME, self::ALL_COLUMNS, true) . "
           " . self::IS_TAKEN_DOWN_CONDITION_PROJECTION . "
         FROM `websites`
           " . self::IS_TAKEN_DOWN_CONDITION . "
-        WHERE websites.usersID = :userID
+        WHERE websites.usersID = :userID $restrictions
         ORDER BY timeCreated DESC
         LIMIT :offset, " . self::SET_SIZE,
         self::class,

@@ -24,7 +24,7 @@
       $objectProps = get_object_vars($this);
 
       if (!array_key_exists($propName, $objectProps)) {
-        throw new Exception("Property '$propName' does not exist for " . get_class($this) . ":[" . join(", ", array_keys($objectProps)) . "].");
+        throw new Exception("Property '$propName' does not exist for " . get_class($this) . ":[" . join(", ", array_keys($objectProps)) . "]. If you want to keep track of this property try adding it to the property list or making it public or protected.");
       }
 
       return true;

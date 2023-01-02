@@ -48,8 +48,11 @@ const postView = $(".post-view");
  * @returns {Promise<HTMLElement|undefined>}
  */
 function loadPosts (index) {
+  const type = localStorage.getItem("post-type") ?? "0";
+  
   return new Promise(resolve => {
-    AJAX.get(`/page/${index}`, new JSONHandler(posts => {
+    AJAX.get(`/page/${index}/?type=${type}`, new JSONHandler(posts => {
+      console.log(posts)
       let element = undefined;
       
       for (const post of posts) {
@@ -160,7 +163,8 @@ function loadPosts (index) {
   });
 }
 
-new InfiniteScroller(postView, loadPosts);
+const postScroller = new InfiniteScroller(postView, loadPosts);
+changeUserPreferredSetting(".change-post-type", "type", "post-type", postScroller);
 
 
 
@@ -317,6 +321,9 @@ const filesInfiniteScroller = new InfiniteScroller(fileView, loadFiles);
 
 
 
+
+
+//* Galery
 const selectedFilesMap = new Map();
 const selectedFiles = $(".selected-files");
 function displaySelectedFiles () {
@@ -407,11 +414,4 @@ $("#upload-files .cancel-modal").addEventListener("click", () => {
   selectedFiles.textContent = "";
 });
 
-$$(".change-order").forEach(element => {
-  element.addEventListener("click", () => {
-    if (element.dataset.order === localStorage.getItem("order")) return;
-    
-    localStorage.setItem("order", element.dataset.order);
-    filesInfiniteScroller.reset();
-  });
-});
+changeUserPreferredSetting(".change-order", "order", "order");

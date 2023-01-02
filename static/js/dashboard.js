@@ -130,3 +130,28 @@ $("#profile-picture-upload").addEventListener("change", evt => {
     })
   });
 });
+
+
+/**
+ * @param {string} css
+ * @param {string} datasetPropertyName
+ * @param {string} storageKey
+ * @param {InfiniteScroller|undefined} scroller
+ */
+function changeUserPreferredSetting (css, datasetPropertyName, storageKey, scroller = undefined) {
+  const listener = (button) => (() => {
+    if (localStorage.getItem(storageKey) === button.dataset[datasetPropertyName]) return;
+  
+    localStorage.setItem(storageKey, button.dataset[datasetPropertyName]);
+    
+    if (scroller !== undefined) {
+      scroller.reset();
+    }
+  });
+  
+  $$(css).forEach(button => {
+    button.addEventListener("click", listener(button));
+    button.addEventListener("pointerdown", listener(button));
+    button.addEventListener("submit", listener(button));
+  });
+}

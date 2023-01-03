@@ -84,11 +84,11 @@
       /**
        * **Only accessible with POST HTTP method**
        * @var RequestRegistry $files
+       * @var RequestRegistry $body
        */
       $files,
       $query,
       $param,
-      /** @var RequestRegistry $body */
       $body,
       $session,
       $cookies, $trace;
@@ -213,6 +213,7 @@
       $this->param = new RequestRegistry($this);
       $this->domain = new RequestRegistry($this);
       $this->query = new RequestRegistry($this);
+      $this->body = new RequestRegistry($this);
     }
   
     public function trimQueries () {

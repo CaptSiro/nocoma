@@ -360,6 +360,7 @@ input[type=text].invalid {
   /*position: absolute;*/
   line-height: 1.1em;
   margin: 8px 16px;
+  font-style: italic;
   /*top: 16px;*/
   /*left: 16px;*/
   color: var(--text-color-2);

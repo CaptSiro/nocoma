@@ -12,7 +12,7 @@
     const TABLE_NAME = "websites";
     const PLANNED_WEBSITES_TABLE_NAME = "plannedwebsites";
     
-    const IS_TAKEN_DOWN_CONDITION_PROJECTION = "(takedowns.ID IS NOT NULL) as isTakenDown";
+    const IS_TAKEN_DOWN_CONDITION_PROJECTION = "(takedowns.websitesID IS NOT NULL) as isTakenDown";
     const IS_TAKEN_DOWN_CONDITION = "LEFT JOIN takedowns ON websites.ID = takedowns.websitesID";
 
     protected static function getNumberProps (): array { return ["ID", "usersID"]; }
@@ -199,7 +199,7 @@
     const SET_RESTRICTION_PLANNED = 2;
     const SET_RESTRICTION_PRIVATE = 3;
     private const SET_SIZE = 20;
-    public static function getSet (int $userID, int $offset, $restriction = 0) {
+    public static function getSet (int $userID, int $offset, $restriction = self::SET_RESTRICTION_ALL) {
       if ($restriction === self::SET_RESTRICTION_PLANNED) {
         return self::parseProps(Database::get()->fetchAll(
           "SELECT

@@ -40,8 +40,51 @@ createPost.querySelector("button.submit").addEventListener("click", () => {
 
 
 
+//* appeal for take down
+let postToAppealFor = undefined;
+/** @type {HTMLElement} */
+let postElementToAppealFor = undefined;
+const appealMessage = $("#appeal-message");
+const appealError = $("#appeal .error-modal");
+$("#appeal button[type=submit]").addEventListener("click", () => {
+  if (appealMessage.value.length > 1024) {
+    appealError.textContent = "Your message is too long. Maximum of 1024 characters is allowed.";
+    appealError.classList.add("show");
+    return;
+  }
+  
+  appealError.classList.remove("show");
+  appealError.textContent = "";
+  
+  AJAX.post("/page/appeal", new JSONHandler(response => {
+    if (response.error) {
+      alert(response.error);
+      return;
+    }
+    
+    if (response.rowCount !== 1) {
+      alert("Internal server error");
+      return;
+    }
+    
+    appealMessage.value = "";
+    clearWindows();
+  }), {
+    body: JSON.stringify({
+      id: postToAppealFor.ID,
+      message: appealMessage.value
+    })
+  });
+});
+$("#appeal button.cancel-modal").addEventListener("click", () => {
+  appealMessage.value = "";
+});
+
+
+
 //* load posts
 const postView = $(".post-view");
+
 
 /**
  * @param {number} index
@@ -52,7 +95,6 @@ function loadPosts (index) {
   
   return new Promise(resolve => {
     AJAX.get(`/page/${index}/?type=${type}`, new JSONHandler(posts => {
-      console.log(posts)
       let element = undefined;
       
       for (const post of posts) {
@@ -150,7 +192,15 @@ function loadPosts (index) {
               content: [{
                 name: "span",
                 className: "label",
-                textContent: "Appeal to remove take down"
+                textContent: "Appeal to remove take down",
+                listeners: {
+                  click: () => {
+                    postToAppealFor = post;
+                    postElementToAppealFor = postElement;
+                    $("#post-title").textContent = post.title;
+                    showWindow("appeal");
+                  }
+                }
               }]
             }));
           }

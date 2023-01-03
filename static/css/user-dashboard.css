@@ -1,3 +1,24 @@
+#appeal #post-title {
+  font-weight: bold;
+  font-style: italic;
+}
+
+#appeal textarea {
+  background-color: var(--container-2);
+  border: 1px solid var(--container-4);
+  resize: none;
+
+  transition: background-color 250ms linear, border-color 250ms linear;
+}
+
+#appeal textarea:focus {
+  background-color: var(--container-1);
+  border-color: var(--container-3);
+  outline: unset;
+}
+
+
+
 #create-post .checkboxes {
   display: flex;
   flex-direction: column;

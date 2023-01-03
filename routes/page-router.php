@@ -9,6 +9,7 @@
   
   require_once __DIR__ . "/../models/User.php";
   require_once __DIR__ . "/../models/Website.php";
+  require_once __DIR__ . "/../models/Appeal.php";
   
   $pageRouter = new Router();
 //  $env = new Env(ENV_FILE);
@@ -68,6 +69,7 @@
   
   
   
+  //TODO: remove delete from url
   $pageRouter->delete("/delete/:source", [
     function (Request $request, Response $response) {
       /** @var User $user */
@@ -129,6 +131,9 @@
     }
   ], ["id" => Router::REGEX_NUMBER]);
   
+  
+  
+  $pageRouter->use("/appeal", require __DIR__ . "/appeal-router.php");
   
   
   //TODO: set to PATCH

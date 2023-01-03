@@ -145,9 +145,15 @@
 .appeals-view > * {
   border-bottom: 1px solid inherit;
 }
-.appeals-view > *:nth-child(even) {
+.appeals-view > .appeal {
   background-color: var(--container-1);
   border-color: var(--container-3);
+
+  transition: background-color 250ms linear, border-color 250ms linear;
+}
+.appeals-view > .appeal.not-read {
+  background-color: var(--container-0);
+  border-color: var(--container-2);
 }
 .appeals-view > .appeal:first-child {
   margin-top: unset;
@@ -157,13 +163,22 @@
 }
 .appeal .u-head {
   background-color: inherit;
+  border: unset;
 }
 .a-body {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding: 16px
+  padding: 16px;
+  border-bottom: 1px solid var(--container-2);
 }
-.a-msg {
-  border-bottom: 1px solid inherit;
+.a-msg.null::before {
+  content: "No message";
+  font-style: italic;
+  color: var(--text-color-2);
+}
+.a-controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
 }

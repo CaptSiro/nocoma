@@ -9,8 +9,6 @@ let postElementToTakeDown = undefined;
 const takeDownMessage = $("#take-down-message");
 const takeDownError = $("#take-down-window .error-modal");
 $("#take-down-window button[type=submit]").addEventListener("click", () => {
-  console.dir(takeDownMessage)
-  
   if (takeDownMessage.value === "") {
     takeDownError.textContent = "You must include a message.";
     takeDownError.classList.add("show");
@@ -40,6 +38,7 @@ $("#take-down-window button[type=submit]").addEventListener("click", () => {
     postToTakeDown.isTakenDown = true;
     postElementToTakeDown.classList.add("taken-down");
     postElementToTakeDown.querySelector(".take-down-label").textContent = "Remove take down";
+    takeDownMessage.value = "";
     
     clearWindows();
   }), {
@@ -49,6 +48,10 @@ $("#take-down-window button[type=submit]").addEventListener("click", () => {
     })
   });
 });
+$("#take-down-window button.cancel-modal").addEventListener("click", () => {
+  takeDownMessage.value = "";
+});
+
 
 /**
  * @returns {HTMLElement}
@@ -100,6 +103,10 @@ function takeDownElement (post) {
 
 
 
+function createPostLink (userWebsite, postSRC) {
+  return AJAX.PROTOCOL + "://" + userWebsite + "." + AJAX.HOST_NAME + AJAX.DOMAIN_HOME + "/" + postSRC;
+}
+
 
 /**
  * @param {*} user
@@ -113,7 +120,7 @@ function loadUsersPosts (user, container) {
         let element = undefined;
         
         for (const post of posts) {
-          const postsURL = AJAX.PROTOCOL + "://" + user.website + "." + AJAX.HOST_NAME + AJAX.DOMAIN_HOME + "/" + post.src;
+          const postsURL = createPostLink(user.website, post.src);
           element = html({
             className: "post",
             modify: postHTMLElement => {
@@ -316,3 +323,161 @@ function loadUsers (index) {
 
 const userScroller = new InfiniteScroller(userView, loadUsers);
 changeUserPreferredSetting(".change-type", "type", "user-type", userScroller);
+
+
+
+
+
+
+
+
+const appealView = $(".appeals-view");
+
+/**
+ * @param {number} appealID
+ * @param {HTMLElement} appealElement
+ * @returns {(function(): void)|*}
+ */
+function setAsReadFactory (appealID, appealElement) {
+  return function __listener () {
+    AJAX.patch(`/page/appeal/${appealID}/`, new JSONHandler(response => {
+      if (response.error) {
+        alert(response.error);
+        return;
+      }
+    
+      if (response.rowCount !== 1) {
+        alert("Internal server error");
+        return;
+      }
+  
+      appealElement.classList.remove("not-read");
+      appealElement.removeEventListener("click", __listener);
+    }))
+  }
+}
+const appealScroll = new InfiniteScroller(appealView, (index) => {
+  const type = localStorage.getItem("appeal-type") ?? "0";
+
+  return new Promise(resolve => AJAX.get(`/page/appeal/${index}/?type=${type}`, new JSONHandler(appeals => {
+    let element = undefined;
+
+    for (const appeal of appeals) {
+      const appealElement = html({
+        className: "appeal",
+        content: [{
+          className: "a-head",
+          content: [{
+            className: ["u-head"],
+            content: [{
+              className: "start",
+              content: [{
+                name: "img",
+                attributes: {
+                  src: AJAX.SERVER_HOME + "/profile/picture/" + appeal.usersID,
+                  alt: "pfp for " + appeal.username
+                }
+              }, {
+                className: "u-column",
+                content: [{
+                  name: "h4",
+                  textContent: appeal.username
+                }, {
+                  name: "span",
+                  textContent: appeal.website
+                }]
+              }]
+            }]
+          }]
+        }, {
+          className: "a-body",
+          content: [{
+            className: "related-post",
+            content: {
+              name: "h3",
+              textContent: appeal.title
+            }
+          }, {
+            className: "a-msg",
+            textContent: appeal.message,
+            modify: messageElement => {
+              if (appeal.message == null || appeal.message === "") {
+                messageElement.classList.add("null");
+              }
+            }
+          }, {
+            className: "a-controls",
+            content: [{
+              name: "button",
+              textContent: "View post",
+              listeners: {
+                click: () => {
+                  window.open(createPostLink(appeal.website, appeal.src), "_blank");
+                }
+              }
+            }, {
+              name: "button",
+              textContent: "Accept",
+              listeners: {
+                click: (evt) => {
+                  if (!confirm("Are sure you want to ACCEPT appeal for " + appeal.title + " by " + appeal.username + "/" + appeal.website)) {
+                    return;
+                  }
+  
+                  AJAX.delete(`/page/appeal/${appeal.ID}/accept`, new JSONHandler(response => {
+                    if (response.error) {
+                      alert(response.error);
+                      return;
+                    }
+  
+                    if (response.rowCount !== 1) {
+                      alert("Internal server error");
+                      return;
+                    }
+                    
+                    evt.target.closest(".appeal").remove();
+                  }))
+                }
+              }
+            }, {
+              name: "button",
+              textContent: "Decline",
+              listeners: {
+                click: (evt) => {
+                  if (!confirm("Are sure you want to DECLINE appeal for " + appeal.title + " by " + appeal.username + "/" + appeal.website)) {
+                    return;
+                  }
+    
+                  AJAX.delete(`/page/appeal/${appeal.ID}/decline`, new JSONHandler(response => {
+                    if (response.error) {
+                      alert(response.error);
+                      return;
+                    }
+      
+                    if (response.rowCount !== 1) {
+                      alert("Internal server error");
+                      return;
+                    }
+      
+                    evt.target.closest(".appeal").remove();
+                  }))
+                }
+              }
+            }]
+          }]
+        }]
+      });
+  
+      if (appeal.hasBeenRead === false) {
+        appealElement.addEventListener("click", setAsReadFactory(appeal.ID, appealElement));
+        appealElement.classList.add("not-read");
+      }
+
+      element = appealElement;
+      appealView.appendChild(element);
+    }
+
+    resolve(element);
+  })));
+});
+changeUserPreferredSetting(".change-appeal-type", "type", "appeal-type", appealScroll);

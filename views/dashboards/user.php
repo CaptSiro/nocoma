@@ -86,6 +86,28 @@
         <p class="blockquote error error-modal"></p>
       </div>
     </div>
+  
+    <div class="window form large" id="appeal">
+      <div class="wrapper">
+        <p class="label">Appeal for take down on post: <span id="post-title"></span></p>
+      </div>
+    
+      <div class="wrapper">
+        <p class="label">Message: (Optional)</p>
+        <textarea name="appeal-message" id="appeal-message" cols="30" rows="8"></textarea>
+      </div>
+    
+      <div class="divider"></div>
+    
+      <div class="wrapper sideways-end">
+        <button class="cancel-modal">Cancel</button>
+        <button class="submit" type="submit">Submit</button>
+      </div>
+    
+      <div class="wrapper">
+        <p class="blockquote error error-modal"></p>
+      </div>
+    </div>
   </div>
   
   <nav>

@@ -87,13 +87,14 @@
         <header class="no-mg">
           <section class="controls">
             <div class="separator right">Appeals</div>
-            <button>All</button>
-            <button>Not read</button>
+            <button class="change-appeal-type" data-type="0">All</button>
+            <button class="change-appeal-type" data-type="1">Not read</button>
           </section>
         </header>
         
         <div class="scrollable appeals-view no-mg">
-          <div class="appeal">
+          
+          <div class="appeal not-read">
             <div class="a-head">
               <div class="u-head default">
                 <div class="start">

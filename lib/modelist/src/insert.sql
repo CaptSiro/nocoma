@@ -62,9 +62,9 @@ INSERT INTO `media` (`src`, `usersID`, `basename`, `extension`, `mimeContentType
 
 
 
-INSERT INTO `takedowns` (`ID`, `websitesID`, `message`) VALUES
-(4, 72, 'get good'),
-(5, 71, 'get good\nlmao');
+INSERT INTO `takedowns` (`websitesID`, `message`) VALUES
+(72, 'get good'),
+(71, 'get good\nlmao');
 
 
 INSERT INTO `profilepictures` (`src`, `usersID`, `hash`, `extension`) VALUES

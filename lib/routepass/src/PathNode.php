@@ -79,6 +79,9 @@
      * @var Node[]
      */
     public $static = [];
+    /**
+     * @var ParametricPathNode[] $parametric
+     */
     public $parametric = [];
     /**
      * @var Closure[][]
@@ -150,8 +153,8 @@
       
       [$regex, $dict] = self::createParamFormat($part, $paramCaptureGroupMap);
       foreach ($this->parametric as $node) {
-        if ($node->regex === $regex  && $node->paramDictionary === $dict) {
-          $node->createPath($uriParts, $paramCaptureGroupMap);
+        if ($node->regex === $regex && $node->paramDictionary === $dict) {
+          $node->assign($httpMethod, $uriParts, $callbacks, $paramCaptureGroupMap);
         }
       }
       
@@ -306,13 +309,8 @@
     private function callHandlesClosures (Request $request, Response $response) {
       if (!isset($this->handles[$_SERVER["REQUEST_METHOD"]])) {
         if (!$request->getState() == HomeRouter::REQUEST_SERVED) {
-//          var_dump($this);
           $request->setState(HomeRouter::ERROR_HTTP_METHOD_NOT_IMPLEMENTED);
         }
-//        $request->homeRouter->dispathError(
-//          HomeRouter::ERROR_HTTP_METHOD_NOT_IMPLEMENTED,
-//          new RequestError("HTTP method: '$_SERVER[REQUEST_METHOD]' is not implemented for '$request->fullURI'", $request, $response)
-//        );
         return;
       }
   

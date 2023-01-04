@@ -55,19 +55,19 @@
   
   
   
-  $router->use("/auth", require __DIR__ . "/routes/auth-router.php");
-  $router->use("/dashboard", require __DIR__ . "/routes/dashboard-router.php");
-  $router->use("/editor", require __DIR__ . "/routes/editor-router.php");
-  $router->use("/bundler", require __DIR__ . "/routes/bundler-router.php");
-  $router->use("/page", require __DIR__ . "/routes/page-router.php");
-  $router->use("/file", require __DIR__ . "/routes/file-router.php");
-  $router->use("/profile", require __DIR__ . "/routes/profile-router.php");
-  $router->use("/users", require __DIR__ . "/routes/users-router.php");
+  $router->use("/auth", new RouterPromise(__DIR__ . "/routes/auth-router.php"));
+  $router->use("/dashboard", new RouterPromise(__DIR__ . "/routes/dashboard-router.php"));
+  $router->use("/editor", new RouterPromise(__DIR__ . "/routes/editor-router.php"));
+  $router->use("/bundler", new RouterPromise(__DIR__ . "/routes/bundler-router.php"));
+  $router->use("/page", new RouterPromise(__DIR__ . "/routes/page-router.php"));
+  $router->use("/file", new RouterPromise(__DIR__ . "/routes/file-router.php"));
+  $router->use("/profile", new RouterPromise(__DIR__ . "/routes/profile-router.php"));
+  $router->use("/users", new RouterPromise(__DIR__ . "/routes/users-router.php"));
   
   
   
   /** @var Blueprints $b */
-//  $b = require __DIR__ . "/lib/blueprint/collection.php";
+  //  $b = require __DIR__ . "/lib/blueprint/collection.php";
 //  $router->get("/blueprint", [function (Request $request, Response $response) use ($b) {
 //    $boolean = $b->boolean()->falsy();
 //    var_dump($boolean->parse(true));
@@ -134,7 +134,9 @@
   
   
   
-  $router->domain("[website].$hostName", require __DIR__ . "/routes/domain-router.php", []);
+  $router->domain("[website].$hostName", new RouterPromise(__DIR__ . "/routes/domain-router.php"), [
+    "website" => Router::REGEX_BASE64_URL_SAFE
+  ]);
   
   
   

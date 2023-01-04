@@ -1,9 +1,10 @@
 <?php
 
   require_once __DIR__ . "/PathNode.php";
-  require_once __DIR__ . "/Node.php";
+  require_once __DIR__ . "/RouterLike.php";
+  require_once __DIR__ . "/Parametric.php";
 
-  class Router extends Node {
+  class Router extends RouterLike implements Parametric {
     /** Try to avoid using as much as possible. May cause problems with `'internal param break character'` (characters that are not considered as valid param name. `/user/:user-id` interpreted as `/user/{space for 'user' parameter}-id`) */
     const REGEX_ANY = "(.*)";
     const REGEX_NUMBER = "([0-9]+)";
@@ -15,22 +16,18 @@
     const REGEX_SENTENCE_LOWER = "([a-z_]+)";
     const REGEX_BASE64_URL_SAFE = "([a-zA-Z0-9_-]+)";
   
-    protected static function filterEmpty (array $toBeFiltered): array {
-      $return = [];
-      foreach ($toBeFiltered as $fragment) {
-        if ($fragment != "") {
-          $return[] = $fragment;
-        }
-      }
-    
-      return $return;
+    public PathNode $home;
+    public function getHome(): PathNode {
+      return $this->home;
+    }
+    public function setHome(PathNode $home) {
+      $this->home = $home;
     }
   
-    public $home;
     /**
      * @var Router[]
      */
-    public $domainDictionary = [];
+    public array $domainDictionary = [];
     
     
     public function __construct (Node $parent = null) {
@@ -62,29 +59,27 @@
     
     
     /**
-     * Assign Router to URI Pattern.
-     * @param string $uriPattern
-     * @param Router $router
-     * @param array $paramCaptureGroupMap
-     * @return void
+     * @inheritDoc
      */
-    public function use (string $uriPattern, Router $router, array $paramCaptureGroupMap = []) {
+    public function use (string $uriPattern, RouterLike $router, array $paramCaptureGroupMap = []) {
       $parsedURI = self::filterEmpty(explode("/", $uriPattern));
       $lastNode = $this->createPath($parsedURI, $paramCaptureGroupMap);
-    
+      
       $part = $lastNode->getPathPart();
       $parent = $lastNode->getParent();
       $router->setPathPart($part);
       $router->setParent($parent);
     
       if ($lastNode instanceof ParametricPathNode) {
-        $parent->parametric[$part] = $router;
-        if (!$router->home instanceof ParametricPathNode) {
+        $parent->parametric[array_search($lastNode, $parent->parametric)] = $router;
+        if (!$router->getHome() instanceof ParametricPathNode) {
           $paramNode = new ParametricPathNode($part, $router);
-          $router->home = $paramNode->upgrade($router->home);
+          $router->setHome($paramNode->upgrade($router->getHome()));
         }
       
-        $router->home->paramDictionary = $lastNode->paramDictionary;
+        $router->setIsParametric(true);
+        $router->setRegex($lastNode->getRegex());
+        $router->setParamDirectory($lastNode->getParamDirectory());
         return;
       }
     
@@ -523,5 +518,40 @@
       $parsedURI = self::filterEmpty(explode("/", $uriPattern));
       $m = "PATCH";
       $this->assign($m, $parsedURI, $callbacks, $paramCaptureGroupMap);
+    }
+  
+  
+  
+  
+  
+    private array $paramDictionary = [];
+    private string $regex;
+    private bool $isParametric = false;
+  
+    /**
+     * @param bool $isParametric
+     */
+    public function setIsParametric(bool $isParametric): void {
+      $this->isParametric = $isParametric;
+    }
+    
+    function isParametric(): bool {
+      return $this->isParametric;
+    }
+  
+    function getRegex(): string {
+      return $this->regex;
+    }
+  
+    function getParamDirectory(): array {
+      return $this->paramDictionary;
+    }
+  
+    function setRegex(string $regex) {
+      $this->regex = $regex;
+    }
+  
+    function setParamDirectory(array $dictionary) {
+      $this->paramDictionary = $dictionary;
     }
   }

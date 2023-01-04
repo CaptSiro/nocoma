@@ -460,9 +460,9 @@
             <div class="dropdown">
               <button>Sort by</button>
               <div class="items">
-                <div class="change-order" data-order="0">Date added</div>
-                <div class="change-order" data-order="1">Name</div>
-                <div class="change-order" data-order="2">Size</div>
+                <div class="change-file-order" data-order="0">Date added</div>
+                <div class="change-file-order" data-order="1">Name</div>
+                <div class="change-file-order" data-order="2">Size</div>
               </div>
             </div>
           </section>

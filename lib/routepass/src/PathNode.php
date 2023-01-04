@@ -2,6 +2,7 @@
 
   require_once __DIR__ . "/Node.php";
   require_once __DIR__ . "/RequestError.php";
+  require_once __DIR__ . "/Parametric.php";
 
   class PathNode extends Node {
     // breaking chars -.~
@@ -78,16 +79,16 @@
     /**
      * @var Node[]
      */
-    public $static = [];
+    public array $static = [];
     /**
-     * @var ParametricPathNode[] $parametric
+     * @var Parametric[] $parametric
      */
-    public $parametric = [];
+    public array $parametric = [];
     /**
      * @var Closure[][]
      */
-    public $handles = [];
-    private $redirectAllToHome = false;
+    public array $handles = [];
+    private bool $redirectAllToHome = false;
   
   
     public function __construct (string $pathPart, Node $parent) {
@@ -110,7 +111,7 @@
   
       [$regex, $dict] = self::createParamFormat($part, $paramCaptureGroupMap);
       foreach ($this->parametric as $node) {
-        if ($node->regex === $regex) {
+        if ($node->getRegex() === $regex) {
           $node->createPath($uriParts, $paramCaptureGroupMap);
         }
       }
@@ -125,8 +126,8 @@
   
       //* parametric
       $node = new ParametricPathNode($regex, $this);
-      $node->paramDictionary = $dict;
-      $node->regex = $regex;
+      $node->setParamDirectory($dict);
+      $node->setRegex($regex);
       $this->parametric[] = $node;
       return $node->createPath($uriParts, $paramCaptureGroupMap);
     }
@@ -153,7 +154,7 @@
       
       [$regex, $dict] = self::createParamFormat($part, $paramCaptureGroupMap);
       foreach ($this->parametric as $node) {
-        if ($node->regex === $regex && $node->paramDictionary === $dict) {
+        if ($node->getRegex() === $regex && $node->getParamDirectory() === $dict) {
           $node->assign($httpMethod, $uriParts, $callbacks, $paramCaptureGroupMap);
         }
       }
@@ -173,8 +174,8 @@
 //      var_dump($part, $regex);
       $node = new ParametricPathNode($regex, $this);
       $node->assign($httpMethod, $uriParts, $callbacks, $paramCaptureGroupMap);
-      $node->regex = $regex;
-      $node->paramDictionary = $dict;
+      $node->setRegex($regex);
+      $node->setParamDirectory($dict);
       $this->parametric[] = $node;
     }
     
@@ -200,21 +201,19 @@
       }
       
       // breaking chars [-.~]
-      /**
-       * @var $node ParametricPathNode
-       */
+//      var_dump($this->parametric);
       foreach ($this->parametric as $node) {
-        if (!preg_match($node->regex, $part, $matches)) continue;
+        if (!preg_match($node->getRegex(), $part, $matches)) continue;
         
-        
-        if ($node instanceof Router) {
-          $node = &$node->home;
+        if ($node instanceof RouterLike) {
+          $node = $node->getHome();
         }
         
         $removeRegister = [];
         
-        foreach ($node->paramDictionary as $key => $param) {
+        foreach ($node->getParamDirectory() as $key => $param) {
           $paramLength = strlen($param);
+          
           if ($param[$paramLength - 2] == "[" && $param[$paramLength - 1] == "]") {
             $shortHand = substr($param, 0, -2);
             
@@ -224,10 +223,13 @@
                 $value[] = $matches[$key];
                 return $value;
               });
-            } else {
-              $request->param->set($shortHand, [$matches[$key]]);
-              $removeRegister[$shortHand] = [0];
+              
+              continue;
             }
+            
+            $request->param->set($shortHand, [$matches[$key]]);
+            $removeRegister[$shortHand] = [0];
+          
             continue;
           }
           
@@ -274,8 +276,8 @@
       $accumulator = [];
       
       foreach ($array as $key => $value) {
-        if ($value instanceof ParametricPathNode) {
-          $key = $value->regex . " -> " . join(", ", $value->paramDictionary);
+        if ($value instanceof Parametric && $value->isParametric()) {
+          $key = $value->getRegex() . " -> " . join(", ", $value->getParamDirectory());
           $accumulator[$key] = $value->getEndpoints();
           continue;
         }

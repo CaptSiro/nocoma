@@ -48,7 +48,7 @@
      * @param array $domainCaptureGroupMap
      * @return void
      */
-    public function domain (string $domainPattern, Router $router, array $domainCaptureGroupMap = []) {
+    public function domain (string $domainPattern, RouterLike $router, array $domainCaptureGroupMap = []) {
       if (strpos($domainPattern, "[") === false) {
         // static domain
         $this->staticDomains[$domainPattern] = $router;

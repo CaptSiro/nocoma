@@ -230,7 +230,7 @@
       }
     }
     private function routerMapper (): Closure {
-      return function (Router $router) {
+      return function (RouterLike $router) {
         return $router->getEndpoints();
       };
     }

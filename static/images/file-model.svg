@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 26.0.3, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 500 500" style="enable-background:new 0 0 500 500;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#EC0F47;}
+	.st1{fill:#B90B37;}
+	.st2{fill:none;stroke:#000000;stroke-width:8;stroke-miterlimit:10;}
+	.st3{fill:none;stroke:#000000;stroke-width:10;stroke-miterlimit:10;}
+</style>
+<g id="Vrstva_1">
+	<g id="file">
+		<path class="st0" d="M153.3,54.3c-18.4,0-33.3,14.9-33.3,33.3V413c0,18.4,14.9,33.3,33.3,33.3h193.4c18.4,0,33.3-14.9,33.3-33.3
+			V135.2l-81-81H153.3V54.3z"/>
+		<path class="st1" d="M298.5,53.7c0,0.1,0,0.2,0,0.4V102c0,18.4,14.9,33.3,33.3,33.3h47.9c0.1,0,0.2,0,0.4,0L298.5,53.7z"/>
+	</g>
+	<g id="Vrstva_2_00000042011138154146150220000009742918201005307822_">
+	</g>
+</g>
+<g id="Vrstva_2">
+	<g>
+		<rect x="175.2" y="274.8" class="st2" width="113.8" height="113.8"/>
+		<rect x="217.2" y="252.2" class="st2" width="113.8" height="113.8"/>
+		<line class="st2" x1="173.3" y1="273.9" x2="215.3" y2="251.2"/>
+		<line class="st2" x1="290.9" y1="388.6" x2="332.8" y2="366"/>
+		<line class="st2" x1="175.2" y1="388.6" x2="217.2" y2="366"/>
+		<line class="st3" x1="289" y1="274.8" x2="330.9" y2="252.2"/>
+	</g>
+</g>
+</svg>

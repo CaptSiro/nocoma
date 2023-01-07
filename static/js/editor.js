@@ -226,7 +226,7 @@ function moveSelection (direction) {
 }
 
 
-AJAX.get("/bundler/resource/*", new JSONHandler(json => {
+AJAX.get("/bundler/resource/*", JSONHandlerSync(json => {
   /** @type {Map<string, { properties: { category: string, label: string, class: string, searchIndex: string }, files: { icon: string } }[]>} */
   const grouped = Array.from(json)
     .filter(resource => resource.properties.category !== "Hidden")
@@ -245,45 +245,35 @@ AJAX.get("/bundler/resource/*", new JSONHandler(json => {
   widgetSelect.textContent = "";
   const filenameRegex = /^.*[\\\/]/;
   for (const key of Array.from(grouped.keys()).sort()) {
-    widgetSelect.appendChild(html({
-      className: "widget-category",
-      content: [{
-        className: "label",
-        content: {
-          name: "h3",
-          textContent: key
-        }
-      }, {
-        className: "content",
-        content: htmlCollection(grouped.get(key), resource => ({
-          className: "widget",
-          modify: widgetElement => {
-            widgetElement.dataset.search = resource.properties.searchIndex;
-            widgetElement.dataset.class = resource.properties.class;
-          },
-          content: [{
-            name: "img",
-            attributes: {
-              src: resource.files.icon,
-              alt: resource.files.icon.replace(filenameRegex, "")
-            }
-          }, {
-            name: "span",
-            textContent: resource.properties.label
-          }],
-          listeners: {
-            click: function () {
-              console.log(widgets.get(resource.properties.class).default(null));
+    
+    widgetSelect.appendChild(
+      Div("widget-category", [
+        Div("label",
+          Heading(3, __, key)
+        ),
+        Div("content", grouped.get(key).map(resource =>
+          Div("widget", [
+            Img(resource.files.icon, resource.files.icon.replace(filenameRegex, "")),
+            Span(__, resource.properties.label)
+          ], {
+            listeners: {
+              click: function () {
+                console.log(widgets.get(resource.properties.class).default(null));
+              },
+              mouseover: function () {
+                widgetSelect.querySelectorAll(".widget").forEach(w => w.classList.remove("selected"));
+                selectedWidget = this;
+                this.classList.add("selected");
+              }
             },
-            mouseover: function () {
-              widgetSelect.querySelectorAll(".widget").forEach(w => w.classList.remove("selected"));
-              selectedWidget = this;
-              this.classList.add("selected");
-            }
-          }
-        }))
-      }]
-    }));
+            modify: widgetElement => {
+              widgetElement.dataset.search = resource.properties.searchIndex;
+              widgetElement.dataset.class = resource.properties.class;
+            },
+          })
+        ))
+      ])
+    );
   }
 }));
 window.addEventListener("load", () => {
@@ -324,4 +314,81 @@ function moveWidgetSelect (to) {
   
   console.log("visible")
   widgetSelect.style.visibility = "visible";
+}
+
+
+
+
+
+
+
+
+
+
+
+//* inspector
+const inspectorRoot = $(".table > .inspector");
+inspectorRoot.textContent = "";
+
+const methods = () => false
+
+inspectorRoot.append(
+  CheckboxInspector(false, methods),
+  CheckboxInspector(true, methods, "Hello"),
+  TitleInspector("Hey i m a title"),
+  RadioGroupInspector(methods, [{
+    text: "Male",
+    value: "male"
+  }, {
+    text: "Female",
+    value: "female"
+  }, {
+    text: "Other",
+    value: "other",
+  }], "Gender"),
+  HR(),
+  TextFieldInspector(__, methods, "Label:", "MY next project..."),
+  TextAreaInspector(__, methods),
+  TextAreaInspector("Hello there!", methods, "My area"),
+  TextAreaInspector("Obi van Keno bi", methods, "My area", "Message"),
+  NumberInspector(50, methods, "Age", "18", "lmaosobad"),
+  NumberInspector(__, methods, "Width:", "20",
+    SelectInspector(methods, [{
+      text: "px",
+      value: "px"
+    }, {
+      text: "in",
+      value: "in"
+    }, {
+      text: "%",
+      value: "%",
+      selected: true
+    }], __, "small")
+  ),
+  DateInspector("2020-01-01", methods, "Date of upload"),
+  SelectInspector(methods, [{
+    text: "Male",
+    value: "male"
+  }, {
+    text: "Female",
+    value: "female",
+    selected: true
+  }, {
+    text: "Other",
+    value: "other"
+  }], "My select", "x-large"),
+  NotInspectorAble(),
+  TextAreaInspector(__, methods),
+  TextAreaInspector(__, methods),
+  TextAreaInspector(__, methods),
+  TextAreaInspector(__, methods),
+  TextAreaInspector(__, methods),
+);
+
+/**
+ * @param {Widget} widget
+ */
+function inspect (widget) {
+  inspectorRoot.textContent = "";
+  inspectorRoot.append(...parseComponentContent(widget.inspectorHTML));
 }

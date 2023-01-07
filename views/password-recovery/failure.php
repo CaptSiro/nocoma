@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="<?=$GLOBALS["__HOME__"]?>/public/css/forms.css">
   <link rel="stylesheet" href="<?=$GLOBALS["__HOME__"]?>/public/css/login-register.css">
   
-  <script src="<?=$GLOBALS["__HOME__"]?>/public/js/main.js"></script>
+  <script src="<?=$GLOBALS["__HOME__"]?>/public/js/main-v2.js"></script>
   <script>
     AJAX.DOMAIN_HOME = "<?=$GLOBALS["__HOME__"]?>";
     AJAX.SERVER_HOME = "<?=$GLOBALS["SERVER_HOME"] ?? $GLOBALS["__HOME__"]?>";

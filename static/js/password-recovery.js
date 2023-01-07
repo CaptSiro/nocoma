@@ -36,7 +36,7 @@ submitButton.addEventListener("pointerdown", evt => {
   errorView.classList.remove("show");
   newPassword.classList.remove("invalid");
   
-  AJAX.patch("/auth/password", new JSONHandler(json => {
+  AJAX.patch("/auth/password", JSONHandlerSync(json => {
     if (json.error !== undefined) {
       errorView.textContent = json.error;
       errorView.classList.add("show");

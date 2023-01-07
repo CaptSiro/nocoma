@@ -36,11 +36,13 @@ class WHeading extends Widget { // var is used because it creates reference on g
    * @returns {WHeading}
    */
   static build (json, parent, editable = false) {
-    return new WHeading(html({
-      name: "h" + Math.min(Math.max(1, json.level ?? 3), 6),
-      textContent: json.text,
-      className: "w-heading"
-    }), parent);
+    return new WHeading(
+      Heading(
+        Number(json.level ?? 3),
+        "w-heading",
+        json.text
+      ), parent
+    );
   }
 
   /**

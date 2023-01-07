@@ -48,8 +48,8 @@
   
   
   
-  $router->get("/hash", [function (Request $request, Response $response) {
-    $response->send(password_hash($request->query->get("value"), PASSWORD_DEFAULT));
+  $router->get("/inspector", [function (Request $request, Response $response) {
+    $response->render("inspector");
   }]);
   
   

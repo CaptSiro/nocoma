@@ -1,3 +1,8 @@
+:root {
+  --input-font-size: 14px;
+}
+
+
 body {
   display: flex;
   flex-direction: column;
@@ -165,6 +170,221 @@ nav {
 
 
 
+
+.inspector {
+  min-width: 300px;
+  max-width: 300px;
+  height: 100%;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  user-select: none;
+}
+.inspector input,
+.inspector .user-select {
+  user-select: auto;
+}
+.inspector > * {
+  padding: 8px 16px;
+}
+.inspector > hr {
+  padding: unset;
+  color: var(--container-1);
+}
+
+
+
+.i-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.i-radio-group > span {
+}
+.i-radio-group > div {
+  display: flex;
+  gap: 12px;
+}
+
+
+
+.i-text-area {
+  display: flex;
+  flex-direction: column;
+}
+.i-text-area textarea {
+  background-color: var(--container-2);
+  border: 1px solid var(--container-4);
+  resize: none;
+
+  padding: 4px;
+  margin-top: 4px;
+
+  transition: background-color 250ms linear, border-color 250ms linear;
+}
+.i-text-area textarea:focus {
+  background-color: var(--container-1);
+  border-color: var(--container-3);
+  outline: unset;
+}
+
+
+
+.i-number {
+  display: flex;
+  align-items: center;
+}
+.i-number label {
+  margin-right: auto;
+}
+.i-number input {
+  width: 4em;
+  border: 1px solid var(--container-3);
+  padding: 0.25em 0.5em;
+  font-size: var(--input-font-size);
+  background-color: var(--container-2);
+
+  transition: background-color 250ms linear, border-color 250ms linear;
+}
+.i-number input:focus {
+  background-color: var(--container-1);
+  border-color: var(--container-3);
+  outline: unset;
+}
+.i-number input + * {
+  margin-left: 4px;
+  min-width: 3em;
+}
+.i-number input + *.dont-force {
+  margin-left: 4px;
+  min-width: unset;
+}
+.i-number input::-webkit-outer-spin-button,
+.i-number input::-webkit-inner-spin-button {
+  /* display: none; <- Crashes Chrome on hover */
+  -webkit-appearance: none;
+  margin: 0; /* <-- Apparently some margin are still there even though it's hidden */
+}
+.i-number input[type=number] {
+  -moz-appearance:textfield; /* Firefox */
+}
+
+
+
+.i-text-field {
+  display: flex;
+  align-items: center;
+}
+.i-text-field label {
+  margin-right: 8px;
+}
+.i-text-field input {
+  width: 100%;
+  background-color: var(--container-2) !important;
+  border: 1px solid var(--container-4) !important;
+  border-radius: unset !important;
+  font-size: var(--input-font-size);
+
+  transition: background-color 250ms linear, border-color 250ms linear;
+}
+.i-text-field input:focus {
+  background-color: var(--container-1) !important;
+  border-color: var(--container-3) !important;
+  outline: unset !important;
+}
+
+
+
+.i-select {
+  display: flex;
+  align-items: center;
+}
+.i-select label {
+  margin-right: auto;
+}
+.i-select select {
+  appearance: none;
+  background-color: transparent;
+  border: none;
+  padding: 0 1em 0 0;
+  margin: 0;
+  width: 100%;
+  font-family: inherit;
+  font-size: inherit;
+  cursor: inherit;
+  line-height: inherit;
+  outline: none;
+}
+.i-select .select-container {
+  width: 5em;
+  border: 1px solid var(--container-3);
+  padding: 0.25em 0.5em;
+  font-size: var(--input-font-size);
+  cursor: pointer;
+  background-color: var(--container-2);
+  display: grid;
+  grid-template-areas: "select";
+  align-items: center;
+
+  transition: background-color 250ms linear, border-color 250ms linear;
+}
+.i-select.x-large .select-container {
+  width: 10em;
+}
+.i-select.large .select-container {
+  width: 7.1em;
+}
+.i-select.small .select-container {
+  width: 3em;
+}
+.i-select .select-container:focus-within {
+  background-color: var(--container-1);
+  border-color: var(--container-3);
+  outline: unset;
+}
+.i-select .select-container::after {
+  content: "";
+  width: 0.55em;
+  height: 0.35em;
+  background-color: var(--text-color);
+  clip-path: polygon(100% 0%, 0 0%, 50% 100%);
+  justify-self: end;
+}
+.i-select select,
+.i-select .select-container:after {
+  grid-area: select;
+}
+
+
+
+.i-date {
+  display: flex;
+  align-items: center;
+}
+.i-date label {
+  margin-right: auto;
+}
+.i-date input {
+  width: 10em;
+  border: 1px solid var(--container-3);
+  padding: 0.25em 0.5em;
+  font-size: var(--input-font-size);
+  background-color: var(--container-2);
+
+  transition: background-color 250ms linear, border-color 250ms linear;
+}
+.i-date input::-moz-selection {
+  color: var(--text-color-opposite);
+  background-color: var(--container-opposite-3);
+}
+.i-date input:focus {
+  background-color: var(--container-1);
+  border-color: var(--container-3);
+  outline: unset;
+}
+.i-date input:focus-visible {
+  outline: unset;
+}
 
 
 

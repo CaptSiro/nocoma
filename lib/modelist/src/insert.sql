@@ -51,6 +51,8 @@ INSERT INTO `websites` (`ID`, `usersID`, `thumbnailSRC`, `src`, `timeCreated`, `
 
 INSERT INTO `media` (`src`, `usersID`, `basename`, `extension`, `mimeContentType`, `timeCreated`, `hash`, `size`) VALUES
 ('6Dm_APHe97', 11, 'default-tablet-area', '.json', 'text/plain', '2022-12-18 21:18:20', '928c7fcb7877ce3f8376ec7da1ab91c4f5489c76', 1591),
+('80vB_IbHsY', 9, 'testmysql', '.php', 'text/x-php', '2023-01-04 08:49:35', 'eb5cb8476f0ece9719f2651be9353a91addcc059', 810),
+('c5H2woc2Zn', 9, 'renamed', '.php', 'text/x-php', '2023-01-04 08:49:35', 'dbfc629e96a1937580951e336df36c643de86197', 2338),
 ('hDDe7zjyKC', 11, 'cetba', '.xlsm', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', '2022-12-18 21:18:20', '4656c4dbdce106850598efa1d2a5918d6de76ad5', 17029),
 ('LFg8FpB3-u', 11, 'backup-collection', '.db', 'application/octet-stream', '2022-12-18 21:18:20', '6aa5d007814dd1420ee03e93a93058999f562953', 122559),
 ('RDmkWFiKLS', 11, 'api', '.js', 'text/plain', '2022-12-18 21:18:20', '89303aae1e5195fee3549c60c8d0639e623ec792', 897),
@@ -60,11 +62,6 @@ INSERT INTO `media` (`src`, `usersID`, `basename`, `extension`, `mimeContentType
 ('TRZuXIkjW6', 11, 'Bez názvu-1', '.ai', 'application/pdf', '2022-12-18 21:18:20', 'a5047d1ab8709ff66592d3ccbd56436ea18a3a34', 255578),
 ('yPA7qmF78b', 11, 'snippets', '.json', 'text/plain', '2022-12-18 21:18:20', '02ba8c3761468dd2bd01963a5fba0c566975699a', 147);
 
-
-
-INSERT INTO `takedowns` (`websitesID`, `message`) VALUES
-(72, 'get good'),
-(71, 'get good\nlmao');
 
 
 INSERT INTO `profilepictures` (`src`, `usersID`, `hash`, `extension`) VALUES

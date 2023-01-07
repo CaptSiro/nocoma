@@ -42,7 +42,7 @@ document.querySelectorAll(".link-pointer").forEach((p, _, arr) => p.addEventList
 
 // logout user
 $("#logout").addEventListener("click", () => {
-  AJAX.delete("/auth/logout", new JSONHandler(json => {
+  AJAX.delete("/auth/logout", JSONHandlerSync(json => {
     window.location.replace(json.redirect);
   }));
 });
@@ -79,7 +79,7 @@ userName.addEventListener("blur", () => {
   }
   
   const value = userName.textContent;
-  AJAX.patch("/profile/username/", new JSONHandler(response => {
+  AJAX.patch("/profile/username/", JSONHandlerSync(response => {
     if (response.error) {
       userName.textContent = userName.dataset.temporary;
       rejected(userName.parentElement);
@@ -97,7 +97,7 @@ $("#profile .username > button").addEventListener("click", editUserName);
 
 
 $("#reset-password").addEventListener("click", () => {
-  AJAX.post("/auth/password-recovery-email", new JSONHandler(json => {
+  AJAX.post("/auth/password-recovery-email", JSONHandlerSync(json => {
     if (json.error !== undefined) {
       //TODO: custom alert
       alert(json.error);
@@ -112,7 +112,7 @@ const profilePicture = $("#profile-picture");
 const profilePictureSmall = $("#profile-picture-small");
 let profilePictureIndex = 0;
 $("#profile-picture-upload").addEventListener("change", evt => {
-  AJAX.post("/profile/picture/", new JSONHandler(response => {
+  AJAX.post("/profile/picture/", JSONHandlerSync(response => {
     if (response.error) {
       console.log(evt.target.closest("section.info"))
       rejected(evt.target.closest("section.info"));

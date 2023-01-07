@@ -7,7 +7,7 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Error - <?= $GLOBALS["message"] ?></title>
   
-  <script src="<?=$GLOBALS["__SERVER_HOME__"]?>/public/js/main.js"></script>
+  <script src="<?=$GLOBALS["__SERVER_HOME__"]?>/public/js/main-v2.js"></script>
   <script>
     AJAX.DOMAIN_HOME = "<?=$GLOBALS["__HOME__"]?>";
     AJAX.SERVER_HOME = "<?=$GLOBALS["__SERVER_HOME__"] ?? $GLOBALS["__HOME__"]?>";

@@ -7,7 +7,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title><?= htmlspecialchars($GLOBALS["webpage"]->title) ?> - Nocoma editor</title>
   
-  <script src="<?= $GLOBALS["__HOME__"] ?>/public/js/main.js"></script>
+  <script src="<?= $GLOBALS["__HOME__"] ?>/public/js/main-v2.js"></script>
   <script>
     AJAX.DOMAIN_HOME = "<?=$GLOBALS["__HOME__"]?>";
     AJAX.SERVER_HOME = "<?=$GLOBALS["SERVER_HOME"] ?? $GLOBALS["__HOME__"]?>";

@@ -35,9 +35,7 @@ class WRow extends ContainerWidget { // var is used because it creates reference
    * @returns {WRow}
    */
   static build (json, parent, editable = false) {
-    const row = new WRow(html({
-      className: "w-row"
-    }), parent);
+    const row = new WRow(Div("w-row"), parent);
 
     for (const o of json.children) {
       row.appendWidget(widgets.get(o.type).build(o, row, editable));

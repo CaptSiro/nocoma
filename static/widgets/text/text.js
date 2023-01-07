@@ -71,11 +71,10 @@ class WText extends Widget {
    * @returns {WText}
    */
   static build (json, parent, editable = false) {
-    const text = new WText(html({
-      name: "p",
-      content: this.#parseLines(json.lines, json.forceSingleLine),
-      className: "w-text",
-    }), parent);
+    const text = new WText(
+      Paragraph("w-text", this.#parseLines(json.lines, json.forceSingleLine)),
+      parent
+    );
 
     if (editable === true) {
       text.appendEditGui();
@@ -109,14 +108,11 @@ class WText extends Widget {
    * @returns {WText}
    */
   static edit (json, parent) {
-    return new WText(html({
-      name: "p",
-      content: this.#parseLines(json.lines, json.forceSingleLine),
+    return new WText(Paragraph("w-text edit", this.#parseLines(json.lines, json.forceSingleLine), {
       attributes: {
         contenteditable: true,
         spellcheck: false,
       },
-      className: ["w-text", "edit"],
       listeners: {
         blur: function () {
           console.log("save");

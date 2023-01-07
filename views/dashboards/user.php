@@ -13,7 +13,8 @@
   <link rel="stylesheet" href="<?=$GLOBALS["__HOME__"]?>/public/css/modal.css">
   <link rel="stylesheet" href="<?=$GLOBALS["__HOME__"]?>/public/css/forms.css">
   
-  <script src="<?=$GLOBALS["__HOME__"]?>/public/js/main.js"></script>
+  <script src="<?=$GLOBALS["__HOME__"]?>/public/js/main-v2.js"></script>
+  <script src="<?=$GLOBALS["__HOME__"]?>/public/js/custom.js"></script>
   <script src="<?=$GLOBALS["__HOME__"]?>/public/js/components/InfiniteScroller.js"></script>
   <script>
     AJAX.DOMAIN_HOME = "<?=$GLOBALS["__HOME__"]?>";

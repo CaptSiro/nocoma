@@ -26,11 +26,8 @@ class WLink extends Widget {
    * @returns {WLink}
    */
   static default (parent) {
-    return new WLink(html({
-      name: "a",
-      content: "link",
+    return new WLink(Link("#", "w-link", "link", {
       attributes: {
-        href: "#",
         title: "link",
         target: "_blank"
       }
@@ -45,13 +42,10 @@ class WLink extends Widget {
    * @returns {WLink}
    */
   static build (json, parent, editable = false) {
-    return new WLink(html({
-      name: "a",
-      content: json.label ?? json.title ?? json.url,
+    return new WLink(Link(json.url, "w-link", String(json.label ?? json.title ?? json.url), {
       attributes: {
-        href: json.url,
-        title: json.title ?? "",
-        target: "_blank"
+        target: "_blank",
+        title: json.title ?? ""
       }
     }), parent);
   }

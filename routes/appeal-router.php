@@ -50,7 +50,7 @@
     Middleware::authorize(Middleware::LEVEL_ADMIN),
     function (Request $request, Response $response) {
       $response->json(
-        Appeal::decline($request->param->get("id"))
+        Appeal::delete($request->param->get("id"))
           ->forwardFailure($response)
           ->getSuccess()
       );

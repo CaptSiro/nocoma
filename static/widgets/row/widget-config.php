@@ -13,5 +13,5 @@
     "styles" => "row.css" // styles scoped to element
   ]
 
-  // available libraries: html(HTMLDescription) -> HTML, widgetBuilder(WidgetDescription) -> HTML representation of widget
+  // available libraries: Component() -> HTML, widgetBuilder(WidgetDescription) -> HTML representation of widget
 ];?>

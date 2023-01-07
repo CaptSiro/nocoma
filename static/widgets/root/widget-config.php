@@ -12,5 +12,5 @@
     "styles" => "root.css", // file of class
   ]
  
-  // available libraries: html(HTMLDescription) -> HTML, widgetBuilder(WidgetDescription) -> HTML representation of widget
+  // available libraries: Component() -> HTML, widgetBuilder(WidgetDescription) -> HTML representation of widget
 ];?>

@@ -99,7 +99,7 @@
       <div id="widget-select-mount" style="visibility: hidden"></div>
     </div>
 
-    <div class="controls">
+    <div class="inspector">
       <!-- <div class="widgets">
         <div class="search-mount row-layout">
           <input type="text">

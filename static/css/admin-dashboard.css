@@ -8,6 +8,9 @@
   border: 1px solid var(--container-4);
   resize: none;
 
+  padding: 8px;
+  margin-top: 8px;
+
   transition: background-color 250ms linear, border-color 250ms linear;
 }
 
@@ -162,8 +165,17 @@
   border-bottom: unset;
 }
 .appeal .u-head {
-  background-color: inherit;
+  background-color: var(--container-opposite-3);
+  color: var(--text-color-opposite);
   border: unset;
+
+  transition: background-color 250ms linear;
+}
+.appeal.not-read .u-head {
+  background-color: var(--container-opposite-2);
+}
+.appeal .u-column span {
+  color: var(--text-color-opposite-2);
 }
 .a-body {
   display: flex;

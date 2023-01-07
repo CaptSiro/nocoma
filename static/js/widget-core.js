@@ -1,33 +1,316 @@
-class Inspector {
-  /**
-   * @typedef InspectorElement
-   * @prop {"Label"|"Checkbox"|"Radio"|"Textfield"|"Textarea"|"Number"|"Select"|"HR"|"Whitespace"} type
-   * @prop {string=} content
-   * @prop {number=} level
-   * @prop {string=} placeholder
-   * @prop {(HTMLElement)=>void=} stateChangeHandler
-   * @prop {{value: string, label: string}[]|string=} options
-   */
-  /**
-   * @typedef InspectorJSON
-   * @prop {boolean=} inspectorAble
-   * @prop {InspectorElement[]} elements
-   */
+/**
+ * @template S
+ * @callback Setter
+ * @param {S} value
+ * @returns {S} Value that have been set. To signal error: return the same value and handle error in the setter method
+ */
 
-
-  constructor (element) {
-    this.element = element;
+/**
+ * @param {Event} evt
+ * @param {Setter<string>} setter
+ * @param {string | undefined} lastValue
+ * @param {HTMLCollection} collection
+ * @returns {(function(*): (*))|*}
+ */
+function choiceChangeListener (evt, setter, lastValue, collection) {
+  if (setter(evt.target.value)) {
+    return evt.target.value;
   }
-
-
-  /**
-   * @param {InspectorJSON} json 
-   */
-  build (json) {
-    if (json.inspectorAble === false) return;
+  
+  if (collection.length === 0) {
+    return lastValue;
   }
+  
+  const attribute = collection[0].tagName === "OPTION"
+    ? "selected"
+    : "checked"
+
+  for (const element of collection) {
+    if (element.value !== lastValue) {
+      element[attribute] = false;
+      continue;
+    }
+  
+    element[attribute] = true;
+  }
+  
+  return lastValue;
 }
 
+
+//* basic inspector components
+/**
+ * @param {boolean} state
+ * @param {Setter<boolean>} setter
+ * @param {string} label
+ * @returns {HTMLElement}
+ */
+function CheckboxInspector (state, setter, label = "") {
+  const checkbox = (
+    Checkbox(label, "i-checkbox", __, {
+      listeners: {
+        change: evt => {
+          if (setter(evt.target.checked)) {
+            return;
+          }
+          
+          evt.target.checked = !evt.target.checked;
+        }
+      }
+    })
+  );
+  
+  if (state) {
+    checkbox.querySelector("input").checked = true;
+  }
+  
+  return checkbox;
+}
+
+/**
+ * @param {string} title
+ * @returns {HTMLElement}
+ */
+function TitleInspector (title) {
+  return (
+    Heading(3, "i-title", title)
+  );
+}
+
+/**
+ * @typedef KeyValuePair
+ * @property {string} text
+ * @property {string} value
+ * @property {boolean} selected
+ */
+/**
+ * @param {Setter<string>} setter
+ * @param {KeyValuePair[]} radios
+ * @param {string} label
+ * @returns {HTMLElement}
+ */
+function RadioGroupInspector (setter, radios, label = undefined) {
+  const name = guid();
+  let lastValue = radios
+    .reduce(
+      (last, current) =>
+        current.selected ? current.value : last,
+      undefined
+    );
+
+  const radioGroup =  (
+    Div("i-radio-group", [
+      OptionalComponent(label !== undefined,
+        Span(__, label)
+      ),
+      ...radios.map(radio => {
+        return (
+          Radio(radio.text, radio.value, name, __,
+            radio.selected !== undefined
+              ? {
+                attributes: {
+                  checked: radio.selected
+                }
+              }
+              : undefined
+          )
+        )
+      })
+    ], {
+      listeners: {
+        change: evt => {
+          lastValue = choiceChangeListener(evt, setter, lastValue, radioGroup.querySelectorAll(`input[name=${name}]`));
+        }
+      }
+    })
+  );
+  
+  return radioGroup;
+}
+
+/**
+ * @template S
+ * @param {string} className
+ * @param {Setter<S>} setter
+ * @param {string} label
+ * @param {HTMLElement} component
+ * @param {string | undefined} placeholder
+ * @param {ComponentOptions} options
+ * @returns {HTMLElement}
+ */
+function LabelAndComponentInspector (className, setter, label, component, placeholder, options = undefined) {
+  const id = guid();
+  
+  component.id = id;
+  if (placeholder) {
+    component.setAttribute("placeholder", placeholder);
+  }
+  
+  return (
+    Div(className, [
+      OptionalComponent(label !== undefined,
+        Label(__, label, {
+          attributes: {
+            for: id
+          }
+        })
+      ),
+      component
+    ])
+  );
+}
+
+/**
+ * @param {string | undefined} state
+ * @param {Setter<string>} setter
+ * @param {string} label
+ * @param {string} placeholder
+ * @param {ComponentOptions} options
+ * @returns {HTMLElement}
+ */
+function TextAreaInspector (state, setter, label = undefined, placeholder = undefined, options = undefined) {
+  if (!options) options = {};
+  if (!options.listeners) options.listeners = {};
+  if (!options.listeners.blur) options.listeners.blur = evt => console.log(evt.target.value);
+  
+  return (
+    LabelAndComponentInspector("i-text-area", setter, label, Component("textarea", __, state, options), placeholder)
+  );
+}
+
+/**
+ * @param {string | undefined} state
+ * @param {Setter<string>} setter
+ * @param {string} label
+ * @param {string} placeholder
+ * @returns {HTMLElement}
+ */
+function TextFieldInspector (state, setter, label = undefined, placeholder = undefined) {
+  const options = {
+    attributes: {}
+  };
+
+  if (state !== undefined) {
+    options.attributes.value = state;
+  }
+  
+  return (
+    LabelAndComponentInspector("i-text-field", setter, label, Input("text", __, options), placeholder)
+  );
+}
+
+/**
+ * @param {number | undefined} state
+ * @param {Setter<string | number>} setter
+ * @param {string} label
+ * @param {string} placeholder
+ * @param {ComponentContent} measurement
+ * @returns {HTMLElement}
+ */
+function NumberInspector (state, setter, label = undefined, placeholder = undefined, measurement = undefined) {
+  const id = guid();
+  const options = {
+    attributes: { id }
+  };
+  
+  if (placeholder) {
+    options.attributes.placeholder = placeholder;
+  }
+  
+  if (state) {
+    options.attributes.value = state;
+  }
+  
+  return (
+    Div("i-number", [
+      OptionalComponent(label !== undefined,
+        Label(__, label, {
+          attributes: {
+            for: id
+          }
+        })
+      ),
+      Input("number", __, options),
+      typeof measurement === "string"
+        ? Span(__, measurement)
+        : measurement
+    ])
+  );
+}
+
+//TODO: create custom date picker
+/**
+ * @param {string | undefined} state
+ * @param {Setter<string>} setter
+ * @param {string} label
+ * @param {string} placeholder
+ * @returns {HTMLElement}
+ */
+function DateInspector (state, setter, label = undefined, placeholder = undefined) {
+  const options = {
+    attributes: {}
+  };
+  
+  if (state) {
+    options.attributes.value = state;
+  }
+  
+  return (
+    LabelAndComponentInspector("i-date", setter, label, Input("date", __, options), placeholder)
+  );
+}
+
+/**
+ * @param {Setter<string>} setter
+ * @param {KeyValuePair[]} options
+ * @param {string} label
+ * @param {string} className
+ * @returns {HTMLElement}
+ */
+function SelectInspector (setter, options, label = undefined, className = undefined) {
+  const id = guid();
+  let lastValue = options
+    .reduce(
+      (last, current) =>
+        current.selected ? current.value : last,
+      undefined
+    );
+  
+  const select = (
+    Component("select", __,
+      options.map(option =>
+        new Option(option.text, option.value, __, option?.selected)
+      ), {
+        listeners: {
+          change: evt => {
+            lastValue = choiceChangeListener(evt, setter, lastValue, select.children);
+          }
+        }
+      }
+    )
+  );
+  
+  return (
+    Div("i-select dont-force" + (className !== undefined ? (" " + className) : ""), [
+      OptionalComponent(label !== undefined,
+        Label(__, label, {
+          attributes: {
+            for: id
+          }
+        })
+      ),
+      Div("select-container",
+        select
+      ),
+    ])
+  );
+}
+
+function NotInspectorAble () {
+  return (
+    TitleInspector("This element cannot be changed")
+  );
+}
 
 
 
@@ -98,17 +381,10 @@ class Widget {
   }
 
   /**
-   * @returns {InspectorJSON}
+   * @returns {ComponentContent}
    */
   get inspectorHTML () {
-    return {
-      elements: [
-        {
-          type: "Label",
-          content: "Widget"
-        }
-      ]
-    }
+    return NotInspectorAble();
   }
 
   /**
@@ -176,44 +452,32 @@ class Widget {
   appendEditGui () {
     this.rootElement.style.position = "relative";
     this.rootElement.classList.add("edit");
-    this.rootElement.appendChild(html({
-      className: "edit-gui",
-      content: [{
-        name: "button",
-        content: "+",
-        attributes: {
-          contenteditable: false
-        },
-        listeners: {
-          click: evt => {
-            this.parentWidget.placeCommandBlock(this);
+    
+    
+    this.rootElement.appendChild(
+      Div("edit-gui", [
+        Button(__, "+", () => this.parentWidget.placeCommandBlock(this), {
+          attributes: {
+            contenteditable: false
           }
-        }
-      }, {
-        name: "button",
-        content: "::",
-        attributes: {
-          contenteditable: false
-        }
-      }, {
-        name: "button",
-        content: "edit",
-        attributes: {
-          contenteditable: false
-        }
-      }, {
-        name: "button",
-        content: "x",
-        attributes: {
-          contenteditable: false
-        },
-        listeners: {
-          click: evt => {
-            this.remove();
+        }),
+        Button(__, "::", evt => {}, {
+          attributes: {
+            contenteditable: false
           }
-        }
-      }]
-    }));
+        }),
+        Button(__, "edit", evt => {}, {
+          attributes: {
+            contenteditable: false
+          }
+        }),
+        Button(__, "x", () => this.remove(), {
+          attributes: {
+            contenteditable: false
+          }
+        })
+      ])
+    );
   }
 
   /**

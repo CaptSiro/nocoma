@@ -26,7 +26,7 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
    */
   static async #createRoot (json, editable = false) {
     if (editable === true) {
-      const root = new WRoot(html({className: "w-root"}), null, editable);
+      const root = new WRoot(Div("w-root"), null, editable);
       for (const child of json.children) {
         root.appendWidget(widgets.get(child.type).build(child, root, editable));
       }
@@ -53,7 +53,7 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
     document.head.appendChild(script);
     document.head.appendChild(css);
     
-    const root = new WRoot(html({className: "w-root"}), null, editable);
+    const root = new WRoot(Div("w-root"), null, editable);
     
     await Promise.all([new Promise(resolve => {
       script.addEventListener("load", async _ => {

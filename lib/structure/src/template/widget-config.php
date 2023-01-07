@@ -13,5 +13,5 @@
     "styles" => "" // styles scoped to element
   ]
 
-  // available libraries: html(HTMLDescription) -> HTML, widget-core
+  // available libraries: Component() -> HTML, widget-core
 ]; ?>

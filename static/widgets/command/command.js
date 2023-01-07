@@ -58,10 +58,10 @@ class WCommand extends Widget { // var is used because it creates reference on g
    * @returns {WCommand}
    */
   static default (parent) {
-    const command = new WCommand(html({
-      name: "span",
-      className: ["w-command", "show-hint"],
-    }), parent);
+    const command = new WCommand(
+      Span("w-content show-hint"),
+      parent
+    );
 
     command.rootElement.setAttribute("contenteditable", "true");
     command.rootElement.setAttribute("spellcheck", "false");

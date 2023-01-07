@@ -1,0 +1,740 @@
+const __ = undefined;
+
+/**
+ * @param {String} css
+ * @returns {HTMLElement}
+ */
+function $ (css) {
+  return document.querySelector(css);
+}
+/**
+ * @param {String} css
+ * @returns {NodeListOf<Element>}
+ */
+function $$ (css) {
+  return document.querySelectorAll(css);
+}
+
+
+
+const GUID_CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+const guids = new Set();
+
+/**
+ * @param {number} length
+ * @returns {string | undefined}
+ */
+function guid (length = 16) {
+  let id;
+  const MAX_RETRIES = 10_000;
+  let retry = 0;
+  
+  do {
+    id = "";
+    
+    for (let i = 0; i < length; i++) {
+      id += GUID_CHARSET[flatRNG(0, GUID_CHARSET.length)];
+    }
+    
+    if (++retry === MAX_RETRIES) return undefined;
+  } while (guids.has(id));
+  
+  guids.add(id);
+  return id;
+}
+
+
+
+
+
+/**
+ * @template T
+ * @param {Object.<string, T> | undefined} object
+ * @param {(key: string, value: T)=>void} setter
+ */
+function spreadObject (object, setter) {
+  if (object === undefined) return;
+  
+  for (const key in object) {
+    setter(key, object[key]);
+  }
+}
+
+/**
+ * @param {ComponentContent} content
+ * @returns {Node[]}
+ */
+function parseComponentContent (content) {
+  if (typeof content === "string") {
+    return [document.createTextNode(content)];
+  }
+  
+  if (content instanceof Node) {
+    return [content];
+  }
+  
+  return Array.from(content)
+    .filter(node => (node instanceof Node || typeof node === "string"));
+}
+
+/**
+ * @typedef {string | Node | ArrayLike.<HTMLElement | Node | string> | HTMLElement[] | HTMLCollection | undefined} ComponentContent
+ */
+/**
+ * @typedef HTMLAttributes
+ * @prop {string=} src
+ * @prop {string=} alt
+ * @prop {string=} id
+ * @prop {string=} style
+ * @prop {string=} type
+ * @prop {string=} value
+ */
+/**
+ * @typedef ComponentOptions
+ * @property {HTMLAttributes | Object.<string, *>} attributes
+ * @property {Object.<keyof HTMLElementEventMap, (evt?: Event)=>any> | undefined} listeners
+ * @property {(element: HTMLElement)=>void=} modify
+ */
+/**
+ * @param {keyof HTMLElementTagNameMap | string} tag
+ * @param {string} className
+ * @param {ComponentContent} content
+ * @param {ComponentOptions} options
+ * @returns {HTMLElement}
+ */
+function Component (tag, className = undefined, content = undefined, options = {}) {
+  const component = document.createElement(tag);
+  
+  if (className) {
+    component.classList.add(...(
+      className
+        .split(" ")
+        .filter(string => string !== "")
+    ));
+  }
+  
+  if (content) {
+    component.append(...parseComponentContent(content))
+  }
+  
+  if (options.modify) {
+    options.modify(component);
+  }
+  
+  spreadObject(options.attributes, component.setAttribute.bind(component));
+  spreadObject(options.listeners, component.addEventListener.bind(component));
+  
+  return component;
+}
+
+
+/**
+ * @template C
+ * @param {boolean} expression
+ * @param {C} content
+ * @returns {C}
+ */
+function OptionalComponent (expression, content) {
+  return (
+    expression
+      ? content
+      : undefined
+  );
+}
+
+
+/**
+ * @param {string} className
+ * @returns {HTMLElement}
+ */
+function HR (className = undefined) {
+  return Component("hr", className);
+}
+
+/**
+ * @param {string} className
+ * @param {ComponentContent} content
+ * @param {ComponentOptions} options
+ * @returns {HTMLElement}
+ */
+function Div (className = undefined, content = undefined, options = {}) {
+  return Component("div", className, content, options);
+}
+
+/**
+ * @param {string} className
+ * @param {ComponentContent} content
+ * @param {ComponentOptions} options
+ * @returns {HTMLElement}
+ */
+function Section (className = undefined, content = undefined, options = {}) {
+  return Component("section", className, content, options);
+}
+
+/**
+ * @param {string} className
+ * @param {ComponentContent} content
+ * @param {ComponentOptions} options
+ * @returns {HTMLElement}
+ */
+function Span (className = undefined, content = undefined, options = {}) {
+  return Component("span", className, content, options);
+}
+
+/**
+ * @param {number} level
+ * @param {string} className
+ * @param {ComponentContent} content
+ * @param {ComponentOptions} options
+ * @returns {HTMLElement}
+ */
+function Heading (level, className = undefined, content = undefined, options = {}) {
+  return Component("h" + clamp(1, 6, level), className, content, options);
+}
+
+/**
+ * @param {string} className
+ * @param {ComponentContent} content
+ * @param {ComponentOptions} options
+ * @returns {HTMLElement}
+ */
+function Paragraph (className = undefined, content = undefined, options = {}) {
+  return Component("p", className, content, options);
+}
+
+/**
+ * @param {string} href
+ * @param {string} className
+ * @param {ComponentContent} content
+ * @param {ComponentOptions} options
+ * @returns {HTMLElement}
+ */
+function Link (href, className = undefined, content = undefined, options = {}) {
+  if (!options.attributes) {
+    options.attributes = {};
+  }
+  
+  options.attributes.href = href;
+  
+  return Component("a", className, content, options);
+}
+
+/**
+ * @param {string} src
+ * @param {string} alt
+ * @param {string} className
+ * @param {ComponentOptions} options
+ * @returns {HTMLElement}
+ */
+function Img (src, alt, className = undefined, options = {}) {
+  if (!options.attributes) {
+    options.attributes = {};
+  }
+  
+  options.attributes.src = src;
+  options.attributes.alt = alt;
+  
+  return Component("img", className, __, options);
+}
+
+
+
+/**
+ * @param {string} className
+ * @param {ComponentContent} content
+ * @param {(evt: Event)=>any | undefined} action
+ * @param {ComponentOptions} options
+ * @returns {HTMLElement}
+ */
+function Button (className = undefined, content = undefined, action = undefined, options = {}) {
+  if (action) {
+    if (!options.listeners) {
+      options.listeners = {};
+    }
+    
+    options.listeners.click = action;
+    options.listeners.submit = action;
+  }
+  
+  return Component("button", className, content, options);
+}
+
+/**
+ * @param {string} className
+ * @param {ComponentContent} content
+ * @param {ComponentOptions} options
+ * @returns {HTMLElement}
+ */
+function Label (className = undefined, content = undefined, options = {}) {
+  return Component("label", className, content, options);
+}
+
+/**
+ * @typedef {"button" | "checkbox" | "color" | "date" | "datetime-local" | "email" | "file" | "hidden" | "image" | "month" | "number" | "password" | "radio" | "range" | "reset" | "search" | "submit" | "tel" | "text" | "time" | "url" | "week"} InputTypes
+ */
+/**
+ * @param {InputTypes} type
+ * @param {string} className
+ * @param {ComponentOptions} options
+ * @returns {HTMLElement}
+ */
+function Input (type, className = undefined, options = {}) {
+  if (!options.attributes) {
+    options.attributes = {};
+  }
+  
+  options.attributes.type = type;
+  
+  return Component("input", className, __, options);
+}
+
+/**
+ * @param {string} label
+ * @param {string} className
+ * @param {string | any} id
+ * @param {ComponentOptions} checkboxOptions
+ */
+function Checkbox (label = "", className = undefined, id = undefined, checkboxOptions = undefined) {
+  if (!id) {
+    id = guid();
+  }
+  
+  if (!checkboxOptions) checkboxOptions = {};
+  if (!checkboxOptions.attributes) checkboxOptions.attributes = {};
+  
+  checkboxOptions.attributes.id = id;
+  
+  return (
+    Label("checkbox-container" + (className ? (" " + className) : ""), [
+      Input("checkbox", __, checkboxOptions),
+      Span(__, label)
+    ], {
+      attributes: {
+        for: id
+      }
+    })
+  );
+}
+
+/**
+ * @param {string} label
+ * @param {string} value
+ * @param {string} name
+ * @param {string} className
+ * @param {ComponentOptions} radioOptions
+ */
+function Radio (label, value, name, className = undefined, radioOptions = undefined) {
+  let id = guid();
+  
+  if (!radioOptions) radioOptions = {};
+  if (!radioOptions.attributes) radioOptions.attributes = {};
+  
+  radioOptions.attributes.name = name;
+  radioOptions.attributes.value = value;
+  
+  if (radioOptions.attributes.id) {
+    id = radioOptions.attributes.id;
+  } else {
+    radioOptions.attributes.id = id;
+  }
+  
+  return (
+    Label("radio-container" + (className ? (" " + className) : ""), [
+      Input("radio", __, radioOptions),
+      Span(__, label)
+    ], {
+      attributes: {
+        for: id
+      }
+    })
+  );
+}
+
+
+
+/**
+ * @param {string} className
+ * @param {ComponentContent} content
+ * @param {ComponentOptions} options
+ * @returns {HTMLElement}
+ */
+function ListItem (className = undefined, content = undefined, options = {}) {
+  return Component("li", className, content, options);
+}
+
+/**
+ * @param {string} className
+ * @param {ComponentContent} content
+ * @param {ComponentOptions} options
+ * @returns {HTMLElement}
+ */
+function OrderedList (className = undefined, content = undefined, options = {}) {
+  return Component("ol", className, content, options);
+}
+
+/**
+ * @param {string} className
+ * @param {ComponentContent} content
+ * @param {ComponentOptions} options
+ * @returns {HTMLElement}
+ */
+function UnorderedList (className = undefined, content = undefined, options = {}) {
+  return Component("ul", className, content, options);
+}
+
+
+
+/**
+ * @param {string} content
+ * @param {boolean} isCollection
+ * @returns {NodeListOf<ChildNode> | ChildNode}
+ */
+function HTML (content, isCollection = false) {
+  const template = document.createElement("template");
+  template.innerHTML = content.trim();
+  return isCollection
+    ? template.content.childNodes
+    : template.content.firstChild;
+}
+
+
+
+
+
+
+
+
+/**
+ * Clamps number between given bounds
+ * @param {Number} min
+ * @param {Number} max
+ * @param {Number} number
+ * @returns {Number}
+ */
+function clamp (min, max, number) {
+  if (number < min) return min;
+  return number > max ? max : number;
+}
+
+
+
+/**
+ * Adds delay to running code synchronously
+ * @param {Number} ms
+ * @returns
+ */
+function sleep (ms) {
+  return new Promise(
+    (resolve) => setTimeout(
+      () => resolve(),
+      ms
+    )
+  );
+}
+
+
+
+/**
+ * @param {number} from
+ * @param {number} to
+ * @returns {number}
+ */
+function rng (from, to) {
+  return Math.random() * (Math.max(from, to) - Math.min(from, to)) + from;
+}
+
+
+
+/**
+ * @param {number} from
+ * @param {number} to
+ * @returns {number}
+ */
+function flatRNG (from, to) {
+  return Math.floor(rng(from, to));
+}
+
+
+
+/**
+ * @param {Object.<string, string | Blob>} object
+ * @returns {FormData}
+ */
+function toFormData (object) {
+  const formData = new FormData();
+  for (const key in object) {
+    formData.append(key, object[key]);
+  }
+  return formData;
+}
+
+
+
+/**
+ * @param {HTMLElement} element
+ * @param {string[]} classes
+ * @returns {number} timeoutID
+ */
+function pulse (element, classes) {
+  element.classList.add("transition-background", ...classes);
+  
+  return setTimeout(() => {
+    element.classList.remove(...classes);
+    
+    setTimeout(() => {
+      element.classList.remove("transition-background");
+    }, 500);
+  }, 1000);
+}
+
+/**
+ * @param {HTMLElement} element
+ * @param {boolean} dark
+ * @returns {number} timeoutID
+ */
+function validated (element, dark = false) {
+  return pulse(element, ["validated", ...(dark ? ["darken"] : [])]);
+}
+
+/**
+ * @param {HTMLElement} element
+ * @param {boolean} dark
+ * @returns {number} timeoutID
+ */
+function rejected (element, dark = false) {
+  return pulse(element, ["rejected", ...(dark ? ["darken"] : [])]);
+}
+
+/**
+ * @param {string} destination
+ * @param {boolean} savePositionToHistory
+ */
+function redirect (destination, savePositionToHistory = true) {
+  if (savePositionToHistory) {
+    history.pushState({}, '', new URL(window.location));
+  }
+  
+  window.location.replace(destination);
+}
+
+/**
+ * @param {number} maxSize
+ * @returns {(function(evt: Event): void)}
+ */
+function contentEditableLimiter (maxSize = 16) {
+  return function (evt) {
+    const isRemovalKey = evt.key === "Backspace" || evt.key === "Delete";
+    const isNavigationKey = evt.key === "ArrowLeft" || evt.key === "ArrowUp" || evt.key === "ArrowDown" || evt.key === "ArrowRight";
+    const exceededLength = this.textContent.length > maxSize;
+    
+    if (exceededLength && !isRemovalKey && !isNavigationKey) {
+      evt.preventDefault();
+    }
+    
+    if (evt.key === "Enter") {
+      evt.preventDefault()
+      this.blur();
+    }
+  }
+}
+
+
+
+
+
+/**
+ * @callback Handler
+ * @param {Response} response
+ * @returns {*}
+ */
+
+/**
+ * @returns {Handler}
+ */
+function ResponseHandler () {
+  return response => response
+}
+
+/**
+ * @param {(json: *)=>void} callback
+ * @returns {Handler}
+ */
+function JSONHandlerSync (callback) {
+  return (response) => {
+    return new Promise((resolve, reject) => {
+      response.json()
+        .then(json => {
+          resolve(callback(json));
+        })
+        .catch(reason => reject(reason))
+    });
+  }
+}
+/**
+ * @returns {Handler}
+ */
+function JSONHandler () {
+  return JSONHandlerSync(json => json);
+}
+
+/**
+ * @template R
+ * @param {(text: string)=>R} callback
+ * @returns {Handler}
+ */
+function TextHandlerSync (callback) {
+  return (response) => {
+    return new Promise((resolve, reject) => {
+      response.text()
+        .then(text => {
+          resolve(callback(text));
+        })
+        .catch(reason => reject(reason))
+    });
+  }
+}
+
+/**
+ * @returns {Handler}
+ */
+function TextHandler () {
+  return TextHandlerSync(text => text);
+}
+
+class AJAX {
+  static DOMAIN_HOME = "";
+  static SERVER_HOME = "";
+  static HOST_NAME = "";
+  static PROTOCOL = "";
+  
+  static #logResponseError (response) {
+    return (text) => {
+      console.error(response.statusText);
+      console.log(text);
+    }
+  }
+  
+  /**
+   * @param {string} method
+   * @param {string} url
+   * @param {Handler} handler
+   * @param {RequestInit=} options
+   * @returns {Promise}
+   */
+  static #request (method, url, handler = response => response, options = {}) {
+    return new Promise((resolve, reject) => {
+      options.method = method;
+      
+      fetch(url, options).then((response) => {
+        const responseText = response.clone();
+        
+        if (!response.ok) {
+          responseText.text().then(this.#logResponseError(response));
+          reject(response.status + " " + response.statusText);
+          return;
+        }
+  
+        resolve(handler(response));
+      });
+    });
+  }
+  
+  /**
+   * @param {string} method
+   * @param {string} url
+   * @param {Handler} handler
+   * @param {RequestInit=} options
+   * @returns {Promise}
+   */
+  static fetch (method, url, handler = response => response, options = {}) {
+    return this.#request(method, url, handler, options);
+  }
+  
+  /**
+   * @param {string} url
+   * @param {Handler} handler
+   * @param {RequestInit=} options
+   * @param {string} home
+   * @returns {Promise}
+   */
+  static get (url, handler = response => response, options = {}, home = undefined) {
+    return this.#request("GET", ((home ?? AJAX.DOMAIN_HOME) + url), handler, options);
+  }
+  
+  /**
+   * @param {string} url
+   * @param {Handler} handler
+   * @param {RequestInit=} options
+   * @param {string} home
+   * @returns {Promise}
+   */
+  static head (url, handler = response => response, options = {}, home = undefined) {
+    return this.#request("HEAD", ((home ?? AJAX.DOMAIN_HOME) + url), handler, options);
+  }
+  
+  /**
+   * @param {string} url
+   * @param {Handler} handler
+   * @param {RequestInit=} options
+   * @param {string} home
+   * @returns {Promise}
+   */
+  static post (url, handler = response => response, options = {}, home = undefined) {
+    return this.#request("POST", ((home ?? AJAX.DOMAIN_HOME) + url), handler, options);
+  }
+  
+  /**
+   * @param {string} url
+   * @param {Handler} handler
+   * @param {RequestInit=} options
+   * @param {string} home
+   * @returns {Promise}
+   */
+  static put (url, handler = response => response, options = {}, home = undefined) {
+    return this.#request("PUT", ((home ?? AJAX.DOMAIN_HOME) + url), handler, options);
+  }
+  
+  /**
+   * @param {string} url
+   * @param {Handler} handler
+   * @param {RequestInit=} options
+   * @param {string} home
+   * @returns {Promise}
+   */
+  static delete (url, handler = response => response, options = {}, home = undefined) {
+    return this.#request("DELETE", ((home ?? AJAX.DOMAIN_HOME) + url), handler, options);
+  }
+  
+  /**
+   * @param {string} url
+   * @param {Handler} handler
+   * @param {RequestInit=} options
+   * @param {string} home
+   * @returns {Promise}
+   */
+  static connect (url, handler = response => response, options = {}, home = undefined) {
+    return this.#request("CONNECT", ((home ?? AJAX.DOMAIN_HOME) + url), handler, options);
+  }
+  
+  /**
+   * @param {string} url
+   * @param {Handler} handler
+   * @param {RequestInit=} options
+   * @param {string} home
+   * @returns {Promise}
+   */
+  static trace (url, handler = response => response, options = {}, home = undefined) {
+    return this.#request("TRACE", ((home ?? AJAX.DOMAIN_HOME) + url), handler, options);
+  }
+  
+  /**
+   * @param {string} url
+   * @param {Handler} handler
+   * @param {RequestInit=} options
+   * @param {string} home
+   * @returns {Promise}
+   */
+  static patch (url, handler = response => response, options = {}, home = undefined) {
+    return this.#request("PATCH", ((home ?? AJAX.DOMAIN_HOME) + url), handler, options);
+  }
+}

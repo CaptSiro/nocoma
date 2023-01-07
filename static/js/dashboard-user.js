@@ -21,7 +21,7 @@ createPost.querySelector("button.submit").addEventListener("click", () => {
     body[checkbox.getAttribute("name")] = +checkbox.checked;
   }
   
-  AJAX.post("/page/create", new JSONHandler(website => {
+  AJAX.post("/page/create", JSONHandlerSync(website => {
     if (website.error) {
       console.log(website);
       return;
@@ -42,8 +42,6 @@ createPost.querySelector("button.submit").addEventListener("click", () => {
 
 //* appeal for take down
 let postToAppealFor = undefined;
-/** @type {HTMLElement} */
-let postElementToAppealFor = undefined;
 const appealMessage = $("#appeal-message");
 const appealError = $("#appeal .error-modal");
 $("#appeal button[type=submit]").addEventListener("click", () => {
@@ -56,7 +54,7 @@ $("#appeal button[type=submit]").addEventListener("click", () => {
   appealError.classList.remove("show");
   appealError.textContent = "";
   
-  AJAX.post("/page/appeal", new JSONHandler(response => {
+  AJAX.post("/page/appeal", JSONHandlerSync(response => {
     if (response.error) {
       alert(response.error);
       return;
@@ -94,117 +92,49 @@ function loadPosts (index) {
   const type = localStorage.getItem("post-type") ?? "0";
   
   return new Promise(resolve => {
-    AJAX.get(`/page/${index}/?type=${type}`, new JSONHandler(posts => {
+    AJAX.get(`/page/${index}/?type=${type}`, JSONHandlerSync(posts => {
       let element = undefined;
       
       for (const post of posts) {
-        const optionsBody = html({
-          className: "menu-body",
-          content: [{
-            listeners: { click: () => redirect(AJAX.SERVER_HOME + "/editor/" + post.src) },
-            content: [{
-              name: "span",
-              className: "label",
-              textContent: "Edit"
-            }]
-          }, {
-            listeners: {
-              click: evt => {
-                AJAX.delete("/page/delete/" + post.src, new JSONHandler(response => {
-                  if (response.error !== undefined) {
-                    //TODO: create my own alert
-                    alert(response.error);
-                    return;
-                  }
-          
-                  evt.target.closest(".post").remove();
-                }));
-              }
-            },
-            content: [{
-              name: "span",
-              className: "label",
-              textContent: "Delete"
-            }]
-          }]
-        });
-        element = html({
-          className: "post",
-          content: [{
-            className: "absolute",
-            content: [{
-              name: "img",
-              attributes: {
-                src: AJAX.SERVER_HOME + "/public/images/theme-stock-pictures/__89754345.png",
-                alt: "post-image"
-              }
-            }, {
-              className: "darken"
-            }]
-          }, {
-            className: "content",
-            content: [{
-              name: "label",
-              className: "checkbox-container",
-              content: [{
-                name: "input",
-                attributes: {
-                  type: "checkbox",
-                  name: "checkbox",
-                  id: "checkbox-0"
-                }
-              }, {
-                name: "span"
-              }]
-            }, {
-              content: [{
-                className: "date",
-                textContent: post.timeCreated
-              }, {
-                name: "h3",
-                textContent: post.title,
+        element = (
+          PostComponent("page", post, [
+              OptionBodyItem("Edit", {
                 listeners: {
                   click: () => redirect(AJAX.SERVER_HOME + "/editor/" + post.src)
-                }
-              }]
-            }]
-          }, {
-            className: "option-mount",
-            content: [{
-              className: "visible",
-              content: [{
-                name: "img",
-                className: ["icon", "button-like"],
-                attributes: {
-                  src: AJAX.SERVER_HOME + "/public/images/options-white.svg",
-                  alt: "opt"
-                }
-              }]
-            }, optionsBody]
-          }],
-          modify: postElement => {
-            if (!post.isTakenDown) {
-              return;
-            }
-            
-            postElement.classList.add("taken-down");
-            optionsBody.appendChild(html({
-              content: [{
-                name: "span",
-                className: "label",
-                textContent: "Appeal to remove take down",
+                },
+              }),
+              OptionBodyItem("Delete", {
                 listeners: {
-                  click: () => {
-                    postToAppealFor = post;
-                    postElementToAppealFor = postElement;
-                    $("#post-title").textContent = post.title;
-                    showWindow("appeal");
+                  click: evt => {
+                    AJAX.delete("/page/delete/" + post.src, JSONHandlerSync(response => {
+                      if (response.error !== undefined) {
+                        //TODO: create my own alert
+                        alert(response.error);
+                        return;
+                      }
+            
+                      evt.target.closest(".post").remove();
+                    }));
                   }
-                }
-              }]
-            }));
-          }
-        });
+                },
+              }),
+              OptionalComponent(post.isTakenDown,
+                Div(__, [
+                  Span("label", "appeal to take down")
+                ], {
+                  listeners: {
+                    click: () => {
+                      postToAppealFor = post;
+                      $("#post-title").textContent = post.title;
+                      showWindow("appeal");
+                    }
+                  }
+                })
+              )
+            ]
+          )
+        );
+        
         postView.appendChild(element);
       }
       
@@ -258,36 +188,17 @@ function fileSizeFormatter (size, inPowerOfTwo = false, decimal = 1) {
  */
 function loadFiles (index) {
   return new Promise(resolve => {
-    const order = localStorage.getItem("order") !== null ? localStorage.getItem("order") : "0";
+    const order = localStorage.getItem("file-order") ?? "0";
     
-    AJAX.get(`/file/${index}/?order=${order}`, new JSONHandler(files => {
+    AJAX.get(`/file/${index}/?order=${order}`, JSONHandlerSync(files => {
       let element = undefined;
   
       for (const file of files) {
-        element = html({
-          className: "file",
-          content: [{
-            className: "start",
-            content: [{
-              name: "label",
-              className: "checkbox-container",
-              content: [{
-                name: "input",
-                attributes: {
-                  type: "checkbox",
-                  name: "checkbox",
-                  id: "checkbox-0"
-                }
-              }, {
-                name: "span"
-              }]
-            }, {
-              name: "span",
-              className: "label",
-              content: [{
-                name: "span",
-                className: "selectable",
-                textContent: file.basename,
+        element = (
+          Div("file", [
+            Div("start", [
+              Checkbox(),
+              Span("selectable", file.basename, {
                 listeners: {
                   dblclick: function () {
                     this.dataset.temporary = this.textContent;
@@ -297,16 +208,16 @@ function loadFiles (index) {
                   blur: function () {
                     this.setAttribute("contenteditable", "false");
                     if (this.textContent === this.dataset.temporary) return;
-                    
+            
                     if (this.textContent === "") {
                       this.textContent = this.dataset.temporary;
                       rejected(this.closest(".file"));
                       return;
                     }
-  
+            
                     const value = this.textContent;
                     const that = this;
-                    AJAX.patch("/file/" + file.src, new JSONHandler(response => {
+                    AJAX.patch("/file/" + file.src, JSONHandlerSync(response => {
                       if (response.error) {
                         //TODO: custom alert
                         that.textContent = that.dataset.temporary;
@@ -314,7 +225,7 @@ function loadFiles (index) {
                         alert(response.error);
                         return;
                       }
-  
+              
                       validated(that.closest(".file"));
                     }), {
                       body: JSON.stringify({ value })
@@ -322,35 +233,26 @@ function loadFiles (index) {
                   },
                   keydown: contentEditableLimiter(200)
                 }
-              }, {
-                name: "span",
-                textContent: file.extension
-              }]
-            }]
-          }, {
-            className: "end",
-            content: [{
-              name: "span",
-              textContent: fileSizeFormatter(file.size)
-            }, {
-              name: "button",
-              textContent: "X",
-              listeners: {
-                click: evt => {
-                  AJAX.delete("/file/" + file.src, new JSONHandler(response => {
-                    if (response.error) {
-                      //TODO: create custom error alert
-                      alert(response.error);
-                      return;
-                    }
-                    
-                    evt.target.closest(".file").remove();
-                  }));
-                }
-              }
-            }]
-          }]
-        });
+              }),
+              Span(__, file.extension)
+            ]),
+            Div("end", [
+              Span(__, fileSizeFormatter(file.size)),
+              Button(__, "X", evt => { //TODO: make into icon
+                AJAX.delete("/file/" + file.src, JSONHandlerSync(response => {
+                  if (response.error) {
+                    //TODO: create custom error alert
+                    alert(response.error);
+                    return;
+                  }
+          
+                  evt.target.closest(".file").remove();
+                }));
+              })
+            ])
+          ])
+        );
+        
         fileView.appendChild(element);
       }
       
@@ -379,21 +281,19 @@ const selectedFiles = $(".selected-files");
 function displaySelectedFiles () {
   selectedFiles.textContent = "";
   selectedFilesMap.forEach((file) => {
-    const fileElement = html({
-      content: [{
-        name: "button",
-        textContent: "X",
-        listeners: {
-          click: () => {
-            selectedFilesMap.delete(file.lastModified);
-            fileElement.remove();
+    const fileElement = (
+      Div(__, [
+        Button(__, "X", {
+          listeners: {
+            click: () => {
+              selectedFilesMap.delete(file.lastModified);
+              fileElement.remove();
+            }
           }
-        }
-      }, {
-        name: "span",
-        textContent: file.name
-      }]
-    });
+        }),
+        Span(__, file.name)
+      ])
+    );
     
     selectedFiles.appendChild(fileElement);
   });
@@ -444,7 +344,7 @@ $("#upload-files button[type=submit]").addEventListener("click", () => {
     body.append("uploaded[]", file);
   });
 
-  AJAX.post("/file/collect", new JSONHandler(files => {
+  AJAX.post("/file/collect", JSONHandlerSync(files => {
     if (files.error) {
       fileUploadError.textContent = files.error;
       fileUploadError.classList.add("show");
@@ -464,4 +364,4 @@ $("#upload-files .cancel-modal").addEventListener("click", () => {
   selectedFiles.textContent = "";
 });
 
-changeUserPreferredSetting(".change-order", "order", "order");
+changeUserPreferredSetting(".change-file-order", "order", "file-order", filesInfiniteScroller);

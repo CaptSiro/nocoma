@@ -7,6 +7,7 @@
   require_once __DIR__ . "/Middleware.php";
   
   require_once __DIR__ . "/../models/User.php";
+  require_once __DIR__ . "/../models/Website.php";
   
   //[website].host/
   $domainRouter = new Router();

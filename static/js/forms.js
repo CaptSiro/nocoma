@@ -12,6 +12,8 @@ $$(".form").forEach(form => {
       || evt.target.getAttribute("do-submit") === "never"
     ) return;
     
+    evt.preventDefault();
+    
     submitter.dispatchEvent(new CustomEvent("submit"));
     submitter.dispatchEvent(new CustomEvent("click"));
     submitter.dispatchEvent(new CustomEvent("pointerdown"));

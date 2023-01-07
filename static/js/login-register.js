@@ -12,7 +12,7 @@ loginSubmit.addEventListener("click", evt => {
     return;
   }
   
-  AJAX.post("/auth/login", new JSONHandler(json => {
+  AJAX.post("/auth/login", JSONHandlerSync(json => {
     if (json.error !== undefined) {
       loginError.textContent = json.error;
       loginError.classList.add("show");
@@ -141,7 +141,7 @@ registerSubmit.addEventListener("click", evt => {
   
   console.log(body);
 
-  AJAX.post("/auth/register", new JSONHandler(json => {
+  AJAX.post("/auth/register", JSONHandlerSync(json => {
     if (json.error !== undefined) {
       registerErrorView.textContent = "Server: " + json.error;
       registerErrorView.classList.add("show");
@@ -179,7 +179,7 @@ forgorSubmit.addEventListener("click", evt => {
     return;
   }
   
-  AJAX.post("/auth/password-recovery-email", new JSONHandler(json => {
+  AJAX.post("/auth/password-recovery-email", JSONHandlerSync(json => {
     if (json.error !== undefined) {
       forgorError.classList.add("show");
       forgorError.textContent = json.error;
@@ -222,7 +222,7 @@ requestCode.addEventListener("pointerdown", evt => {
     return;
   }
   
-  AJAX.get("/auth/verification-code", new JSONHandler(json => {
+  AJAX.get("/auth/verification-code", JSONHandlerSync(json => {
     console.log(json);
     
     if (json.error !== undefined) {
@@ -250,7 +250,7 @@ verificationSubmit.addEventListener("pointerdown", evt => {
     return;
   }
   
-  AJAX.patch("/auth/verification", new JSONHandler(json => {
+  AJAX.patch("/auth/verification", JSONHandlerSync(json => {
     if (json.error !== undefined) {
       verificationError.textContent = json.error;
       verificationError.classList.add("show");

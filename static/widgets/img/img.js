@@ -38,29 +38,23 @@ class WImage extends Widget {
    * @returns {WImage}
    */
   static build (json, parent, editable = false) {
-    const img =  new WImage(html({
-      className: "w-image-container",
-      content: {
-        name: "img",
-        className: (()=>{
-          const a = ["w-image"];
+    
+    
+    const img =  new WImage(Div("w-image-container",
+      Img(json.src, json.alt ?? "Unnamed image",
+        "w-image"
+        + (json.height !== undefined || json.width !== undefined
+          ? " obey"
+          : "")
+      ), {
+        modify: container => {
           if (json.height !== undefined || json.width !== undefined) {
-            a.push("obey");
+            container.style.width = json.width ?? container.style.width;
+            container.style.height = json.height ?? container.style.height;
           }
-          return a;
-        })(),
-        attributes: {
-          src: json.src,
-          alt: json.alt ?? "Unnamed image",
         }
-      },
-      modify: container => {
-        if (json.height !== undefined || json.width !== undefined) {
-          container.style.width = json.width ?? container.style.width;
-          container.style.height = json.height ?? container.style.height;
-        }
-      },
-    }), parent);
+      }
+    ), parent);
 
     if (editable === true) {
       img.appendEditGui();

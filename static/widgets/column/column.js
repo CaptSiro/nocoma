@@ -24,9 +24,10 @@ class WColumn extends ContainerWidget { // var is used because it creates refere
    * @returns {WColumn}
    */
   static default (parent) {
-    return new WColumn(html({
-      className: "w-column"
-    }), parent);
+    return new WColumn(
+      Div("w-column"),
+      parent
+    );
   }
 
   /**
@@ -37,9 +38,10 @@ class WColumn extends ContainerWidget { // var is used because it creates refere
    * @returns {WColumn}
    */
   static build (json, parent, editable = false) {
-    const col = new WColumn(html({
-      className: "w-column"
-    }), parent);
+    const col = new WColumn(
+      Div("w-column"),
+      parent
+    );
 
     for (const o of json.children) {
       col.appendWidget(widgets.get(o.type).build(o, col, editable));

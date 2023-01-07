@@ -52,18 +52,15 @@
       if ($appealResult->isFailure()) {
         return $appealResult;
       }
+      
       /**
        * @var Appeal $appeal
        */
       $appeal = $appealResult->getSuccess();
-      Website::removeTakeDown($appeal->takedownsID);
       
-      return success(Database::get()->statement(
-        "DELETE FROM `appeals` WHERE `ID` = :id LIMIT 1",
-        [new DatabaseParam("id", $id)]
-      ));
+      return Website::removeTakeDown($appeal->takedownsID);
     }
-    public static function decline (int $id): Result {
+    public static function delete (int $id): Result {
       return success(Database::get()->statement(
         "DELETE FROM `appeals` WHERE `ID` = :id LIMIT 1",
         [new DatabaseParam("id", $id)]

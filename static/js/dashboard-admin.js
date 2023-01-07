@@ -24,7 +24,7 @@ $("#take-down-window button[type=submit]").addEventListener("click", () => {
   takeDownError.classList.remove("show");
   takeDownError.textContent = "";
   
-  AJAX.post("/page/take-down", new JSONHandler(response => {
+  AJAX.post("/page/take-down", JSONHandlerSync(response => {
     if (response.error) {
       alert(response.error);
       return;
@@ -57,44 +57,41 @@ $("#take-down-window button.cancel-modal").addEventListener("click", () => {
  * @returns {HTMLElement}
  */
 function takeDownElement (post) {
-  const label = html({
-    name: "span",
-    className: ["label", "take-down-label"],
-    textContent: post.isTakenDown ? "Remove take down" : "Take down"
-  });
-  const element = html({
-    content: label
-  });
+  const label = Span("label take-down-label", post.isTakenDown ? "Remove take down" : "Take down");
   
-  element.onclick = () => {
-    if (!post.isTakenDown) {
-      postToTakeDown = post;
-      postElementToTakeDown = element.closest(".post");
-      $("#post-title").textContent = post.title;
-      showWindow("take-down-window");
-      takeDownMessage.focus();
-      return;
+  const element = Div(__, label, {
+    listeners: {
+      click: async () => {
+        if (!post.isTakenDown) {
+          postToTakeDown = post;
+          postElementToTakeDown = element.closest(".post");
+          $("#post-title").textContent = post.title;
+          showWindow("take-down-window");
+          takeDownMessage.focus();
+          return;
+        }
+  
+        await AJAX.delete(`/page/take-down/`, JSONHandlerSync(response => {
+          if (response.error) {
+            alert(response.error);
+            return;
+          }
+    
+          if (response.rowCount !== 1) {
+            return;
+          }
+    
+          post.isTakenDown = false;
+          element.closest(".post").classList.remove("taken-down");
+          label.textContent = "Take down";
+        }), {
+          body: JSON.stringify({
+            id: post.ID
+          })
+        });
+      }
     }
-    
-    AJAX.delete(`/page/take-down/`, new JSONHandler(response => {
-      if (response.error) {
-        alert(response.error);
-        return;
-      }
-    
-      if (response.rowCount !== 1) {
-        return;
-      }
-  
-      post.isTakenDown = false;
-      element.closest(".post").classList.remove("taken-down");
-      label.textContent = "Take down";
-    }), {
-      body: JSON.stringify({
-        id: post.ID
-      })
-    });
-  }
+  });
   
   return element;
 }
@@ -116,85 +113,23 @@ function createPostLink (userWebsite, postSRC) {
 function loadUsersPosts (user, container) {
   return index => {
     return new Promise(resolve => {
-      AJAX.get(`/users/${user.ID}/${index}`, new JSONHandler(posts => {
+      AJAX.get(`/users/${user.ID}/${index}`, JSONHandlerSync(posts => {
         let element = undefined;
         
         for (const post of posts) {
           const postsURL = createPostLink(user.website, post.src);
-          element = html({
-            className: "post",
-            modify: postHTMLElement => {
-              if (!post.isTakenDown) {
-                return;
-              }
-    
-              postHTMLElement.classList.add("taken-down");
-            },
-            content: [{
-              className: "absolute",
-              content: [{
-                name: "img",
-                attributes: {
-                  //TODO: posts image
-                  src: AJAX.SERVER_HOME + "/public/images/theme-stock-pictures/__7612349654.png",
-                  alt: "posts-bg"
+          
+          element = (
+            PostComponent("users", post, [
+              OptionBodyItem("View", {
+                listeners: {
+                  click: () => window.open(postsURL, '_blank')
                 }
-              }, {
-                className: "darken"
-              }]
-            }, {
-              className: "content",
-              content: [{
-                name: "label",
-                className: "checkbox-container",
-                content: [{
-                  name: "input",
-                  attributes: {
-                    type: "checkbox",
-                    id: "checkbox-0"
-                  }
-                }, {
-                  name: "span"
-                }]
-              }, {
-                content: [{
-                  className: "date",
-                  textContent: post.timeCreated
-                }, {
-                  name: "h3",
-                  textContent: post.title,
-                  listeners: {
-                    click: () => window.open(postsURL, '_blank')
-                  }
-                }]
-              }]
-            }, {
-              className: "option-mount",
-              content: [{
-                className: "visible",
-                content: {
-                  name: "img",
-                  className: ["icon", "button-like"],
-                  attributes: {
-                    src: AJAX.SERVER_HOME + "/public/images/options-white.svg",
-                    alt: "options"
-                  }
-                }
-              }, {
-                className: "menu-body",
-                content: [{
-                  content: [{
-                    name: "span",
-                    className: "label",
-                    textContent: "View"
-                  }],
-                  listeners: {
-                    click: () => window.open(postsURL, '_blank')
-                  }
-                }, takeDownElement(post)]
-              }]
-            }]
-          });
+              }),
+              takeDownElement(post)
+            ])
+          );
+          
           container.appendChild(element);
         }
         
@@ -212,104 +147,65 @@ function loadUsers (index) {
   const type = localStorage.getItem("user-type") ?? "0";
   
   return new Promise(resolve => {
-    AJAX.get(`/users/${index}/?type=${type}`, new JSONHandler(users => {
+    AJAX.get(`/users/${index}/?type=${type}`, JSONHandlerSync(users => {
       let element = undefined;
       
       for (const user of users) {
-        const userPosts = html({
-          className: "u-posts"
-        });
-  
-        const userElement = html({
-          className: "user",
-          modify: userHTMLElement => {
-            if (!user.isDisabled) {
-              return;
-            }
-            
-            userHTMLElement.classList.add("banned");
-          },
-          content: [{
-            className: "u-head",
-            content: [{
-              className: "start",
-              content: [{
-                name: "img",
-                className: "expand",
-                attributes: {
-                  src: AJAX.SERVER_HOME + "/public/images/expand.svg",
-                  alt: "expand"
-                },
+        const userPosts = Div("u-posts");
+        
+        const userElement = Div("user" + (user.isDisabled ? " banned" : ""), [
+          Div("u-head", [
+            Div("start", [
+              Img(AJAX.SERVER_HOME + "/public/images/expand.svg", "expand", "expand", {
                 listeners: {
-                  click: evt => {
-                    userElement.classList.toggle("expanded");
-                  }
+                  click: () => userElement.classList.toggle("expanded")
                 }
-              }, {
-                name: "img",
-                attributes: {
-                  src: AJAX.SERVER_HOME + "/profile/picture/" + user.ID,
-                  alt: "pfp"
-                }
-              }, {
-                className: "u-column",
-                content: [{
-                  name: "h4",
-                  textContent: user.username
-                }, {
-                  name: "span",
-                  textContent: user.website
-                }]
-              }]
-            }, {
-              className: "end",
-              content: {
-                className: "option-mount",
-                content: [{
-                  className: "visible",
-                  content: {
-                    name: "img",
-                    className: ["icon", "button-like"],
-                    attributes: {
-                      src: AJAX.SERVER_HOME + "/public/images/options-white.svg",
-                      alt: "options"
-                    }
-                  }
-                }, {
-                  className: "menu-body",
-                  content: [{
-                    content: [{
-                      name: "span",
-                      className: "label",
-                      textContent: !user.isDisabled ? "Ban" : "Unban"
-                    }],
-                    modify: banOption => {
-                      let banned = user.isDisabled;
-                      const label = banOption.children[0];
-                      
-                      banOption.onclick = () => {
-                        AJAX.patch(`/users/isDisabled/${user.ID}/${!banned}`, new JSONHandler(response => {
-                          if (response.error) {
-                            alert(response.error);
-                            return;
-                          }
+              }),
+              Img(AJAX.SERVER_HOME + "/profile/picture/" + user.ID, "pfp"),
+              Div("u-column", [
+                Heading(4, user.username),
+                Span(__, user.website)
+              ])
+            ]),
+            Div("end", [
+              Div("option-mount", [
+                OptionVisible(),
+                Div("menu-body", [
+                  OptionBodyItem(
+                    !user.isDisabled
+                      ? "Ban"
+                      : "Unban",
+                    {
+                      modify: banOption => {
+                        let banned = user.isDisabled;
+                        const label = banOption.children[0];
       
-                          if (response.rowCount !== 1) {
-                            return;
-                          }
-      
-                          banned = !banned;
-                          userElement.classList.toggle("banned", banned);
-                          label.textContent = banned ? "Unban" : "Ban";
-                        }));
+                        banOption.onclick = () => {
+                          AJAX.patch(`/users/isDisabled/${user.ID}/${!banned}`, JSONHandlerSync(response => {
+                            if (response.error) {
+                              alert(response.error);
+                              return;
+                            }
+          
+                            if (response.rowCount !== 1) {
+                              return;
+                            }
+          
+                            banned = !banned;
+                            userElement.classList.toggle("banned", banned);
+                            label.textContent = banned ? "Unban" : "Ban";
+                          }));
+                        }
                       }
                     }
-                  }]
-                }]
-              }
-            }]
-          }, userPosts]
-        });
+                  )
+                ])
+              ])
+            ])
+          ]),
+          userPosts
+        ]);
+        
         new InfiniteScroller(userElement, loadUsersPosts(user, userPosts), () => {});
   
         element = userElement;
@@ -340,7 +236,7 @@ const appealView = $(".appeals-view");
  */
 function setAsReadFactory (appealID, appealElement) {
   return function __listener () {
-    AJAX.patch(`/page/appeal/${appealID}/`, new JSONHandler(response => {
+    AJAX.patch(`/page/appeal/${appealID}/`, JSONHandlerSync(response => {
       if (response.error) {
         alert(response.error);
         return;
@@ -359,114 +255,76 @@ function setAsReadFactory (appealID, appealElement) {
 const appealScroll = new InfiniteScroller(appealView, (index) => {
   const type = localStorage.getItem("appeal-type") ?? "0";
 
-  return new Promise(resolve => AJAX.get(`/page/appeal/${index}/?type=${type}`, new JSONHandler(appeals => {
+  return new Promise(resolve => AJAX.get(`/page/appeal/${index}/?type=${type}`, JSONHandlerSync(appeals => {
     let element = undefined;
 
     for (const appeal of appeals) {
-      const appealElement = html({
-        className: "appeal",
-        content: [{
-          className: "a-head",
-          content: [{
-            className: ["u-head"],
-            content: [{
-              className: "start",
-              content: [{
-                name: "img",
-                attributes: {
-                  src: AJAX.SERVER_HOME + "/profile/picture/" + appeal.usersID,
-                  alt: "pfp for " + appeal.username
+      const appealElement = (
+        Div("appeal", [
+          Div("a-head", [
+            Div("u-head", [
+              Div("start", [
+                Img(AJAX.SERVER_HOME + "/profile/picture/" + appeal.usersID, "pfp for " + appeal.username),
+                Div("u-column", [
+                  Heading(4, __, appeal.username),
+                  Span(__, appeal.website)
+                ])
+              ])
+            ])
+          ]),
+          Div("a-body", [
+            Div("related-post", [
+              Heading(3, __, appeal.title)
+            ]),
+            Div("a-msg" + (appeal.message == null || appeal.message === "" ? " null" : ""), String(appeal.message)),
+            Div("a-controls", [
+              Button(__, "View post", () => window.open(createPostLink(appeal.website, appeal.src), "_blank")),
+              Button(__, "Accept", evt => {
+                if (!confirm("Are sure you want to ACCEPT appeal for " + appeal.title + " by " + appeal.username + "/" + appeal.website)) {
+                  return;
                 }
-              }, {
-                className: "u-column",
-                content: [{
-                  name: "h4",
-                  textContent: appeal.username
-                }, {
-                  name: "span",
-                  textContent: appeal.website
-                }]
-              }]
-            }]
-          }]
-        }, {
-          className: "a-body",
-          content: [{
-            className: "related-post",
-            content: {
-              name: "h3",
-              textContent: appeal.title
-            }
-          }, {
-            className: "a-msg",
-            textContent: appeal.message,
-            modify: messageElement => {
-              if (appeal.message == null || appeal.message === "") {
-                messageElement.classList.add("null");
-              }
-            }
-          }, {
-            className: "a-controls",
-            content: [{
-              name: "button",
-              textContent: "View post",
-              listeners: {
-                click: () => {
-                  window.open(createPostLink(appeal.website, appeal.src), "_blank");
-                }
-              }
-            }, {
-              name: "button",
-              textContent: "Accept",
-              listeners: {
-                click: (evt) => {
-                  if (!confirm("Are sure you want to ACCEPT appeal for " + appeal.title + " by " + appeal.username + "/" + appeal.website)) {
+                
+                evt.stopPropagation();
+          
+                AJAX.delete(`/page/appeal/${appeal.ID}/accept`, JSONHandlerSync(response => {
+                  if (response.error) {
+                    alert(response.error);
                     return;
                   }
-  
-                  AJAX.delete(`/page/appeal/${appeal.ID}/accept`, new JSONHandler(response => {
-                    if (response.error) {
-                      alert(response.error);
-                      return;
-                    }
-  
-                    if (response.rowCount !== 1) {
-                      alert("Internal server error");
-                      return;
-                    }
-                    
-                    evt.target.closest(".appeal").remove();
-                  }))
-                }
-              }
-            }, {
-              name: "button",
-              textContent: "Decline",
-              listeners: {
-                click: (evt) => {
-                  if (!confirm("Are sure you want to DECLINE appeal for " + appeal.title + " by " + appeal.username + "/" + appeal.website)) {
+            
+                  if (response.rowCount !== 1) {
+                    alert("Internal server error");
                     return;
                   }
-    
-                  AJAX.delete(`/page/appeal/${appeal.ID}/decline`, new JSONHandler(response => {
-                    if (response.error) {
-                      alert(response.error);
-                      return;
-                    }
-      
-                    if (response.rowCount !== 1) {
-                      alert("Internal server error");
-                      return;
-                    }
-      
-                    evt.target.closest(".appeal").remove();
-                  }))
+            
+                  evt.target.closest(".appeal").remove();
+                }))
+              }),
+              Button(__, "Decline", (evt) => {
+                if (!confirm("Are sure you want to DECLINE appeal for " + appeal.title + " by " + appeal.username + "/" + appeal.website)) {
+                  return;
                 }
-              }
-            }]
-          }]
-        }]
-      });
+                
+                evt.stopPropagation();
+          
+                AJAX.delete(`/page/appeal/${appeal.ID}/decline`, JSONHandlerSync(response => {
+                  if (response.error) {
+                    alert(response.error);
+                    return;
+                  }
+            
+                  if (response.rowCount !== 1) {
+                    alert("Internal server error");
+                    return;
+                  }
+            
+                  evt.target.closest(".appeal").remove();
+                }))
+              })
+            ])
+          ])
+        ])
+      );
   
       if (appeal.hasBeenRead === false) {
         appealElement.addEventListener("click", setAsReadFactory(appeal.ID, appealElement));

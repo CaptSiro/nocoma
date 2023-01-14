@@ -26,12 +26,18 @@
   border-bottom: unset;
 }
 .u-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   padding: 16px;
   background-color: var(--container-1);
   border-bottom: 1px solid var(--container-3);
+}
+.u-head > div:not(.start) {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
 }
 .user.banned .u-head {
   background-color: #FFCCCC !important;
@@ -122,7 +128,12 @@
   flex: 1;
   z-index: 2;
   display: flex;
+  flex-direction: row;
+  justify-content: space-between;
   align-items: center;
+  max-width: 850px;
+  margin-right: auto;
+  margin-left: auto;
 }
 .post .content > div {
   display: flex;

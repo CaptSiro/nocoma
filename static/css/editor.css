@@ -548,6 +548,7 @@ input[type=text].invalid {
 #widget-select-mount {
   padding: 8px 0;
   position: absolute;
+  z-index: 10; /*TODO: z-index */
   top: 50px;
   left: 50px;
   max-height: 300px;
@@ -597,7 +598,7 @@ input[type=text].invalid {
   margin-left: 16px;
 }
 
-.widget-category .content .widget {
+.widget-category .content .widget-option {
   display: flex;
   gap: 0.5em;
   align-items: center;
@@ -606,15 +607,15 @@ input[type=text].invalid {
   transition: background-color 150ms linear;
 }
 
-.widget-category .content .widget:hover,
-.widget-category .content .widget.selected {
+.widget-category .content .widget-option:hover,
+.widget-category .content .widget-option.selected {
   background-color: var(--container-2);
   cursor: pointer;
 
   transition: background-color 0ms linear;
 }
 
-.widget-category .content .widget img {
+.widget-category .content .widget-option img {
   width: 1.5em;
   height: 1.5em;
   margin-right: 0.5em;

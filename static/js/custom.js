@@ -52,20 +52,19 @@ function PostComponent (idGroup, post, optionBodyItems, postOptions = undefined)
         Div("darken")
       ]),
       Div("content", [
-        Checkbox(),
-        Div(__, [
+        Div("post-info", [
           Div("date", "Created " + formatDate(new Date(post.timeCreated))),
           Heading(3, __, post.title, {
             listeners: {
               click: () => redirect(AJAX.SERVER_HOME + "/editor/" + post.src)
             }
           })
+        ]),
+        Div("option-mount", [
+          OptionVisible(),
+          Div("menu-body", optionBodyItems)
         ])
       ]),
-      Div("option-mount", [
-        OptionVisible(),
-        Div("menu-body", optionBodyItems)
-      ])
     ], postOptions)
   );
 }

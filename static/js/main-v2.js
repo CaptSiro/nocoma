@@ -739,7 +739,10 @@ class AJAX {
         
         value
           .then(resolve)
-          .catch(() => reject(responseText))
+          .catch(() => {
+            responseText.text().then(this.#logResponseError(response));
+            reject(responseText);
+          })
       });
     });
   }

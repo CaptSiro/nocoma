@@ -196,59 +196,61 @@ function loadFiles (index) {
       for (const file of files) {
         element = (
           Div("file", [
-            Div("start", [
-              Checkbox(),
-              Span("selectable", file.basename, {
-                listeners: {
-                  dblclick: function () {
-                    this.dataset.temporary = this.textContent;
-                    this.setAttribute("contenteditable", "true");
-                    this.focus();
-                  },
-                  blur: function () {
-                    this.setAttribute("contenteditable", "false");
-                    if (this.textContent === this.dataset.temporary) return;
-            
-                    if (this.textContent === "") {
-                      this.textContent = this.dataset.temporary;
-                      rejected(this.closest(".file"));
-                      return;
-                    }
-            
-                    const value = this.textContent;
-                    const that = this;
-                    AJAX.patch("/file/" + file.src, JSONHandlerSync(response => {
-                      if (response.error) {
-                        //TODO: custom alert
-                        that.textContent = that.dataset.temporary;
-                        rejected(this.closest(".file"));
-                        alert(response.error);
+            Div(__, [
+              Div("start", [
+                FileIcon(file.mimeContentType),
+                Span("selectable", file.basename, {
+                  listeners: {
+                    dblclick: function () {
+                      this.dataset.temporary = this.textContent;
+                      this.setAttribute("contenteditable", "true");
+                      this.focus();
+                    },
+                    blur: function () {
+                      this.setAttribute("contenteditable", "false");
+                      if (this.textContent === this.dataset.temporary) return;
+              
+                      if (this.textContent === "") {
+                        this.textContent = this.dataset.temporary;
+                        rejected(this.closest(".file > div"));
                         return;
                       }
               
-                      validated(that.closest(".file"));
-                    }), {
-                      body: JSON.stringify({ value })
-                    });
-                  },
-                  keydown: contentEditableLimiter(200)
-                }
-              }),
-              Span(__, file.extension)
-            ]),
-            Div("end", [
-              Span(__, fileSizeFormatter(file.size)),
-              Button(__, "X", evt => { //TODO: make into icon
-                AJAX.delete("/file/" + file.src, JSONHandlerSync(response => {
-                  if (response.error) {
-                    //TODO: create custom error alert
-                    alert(response.error);
-                    return;
+                      const value = this.textContent;
+                      const that = this;
+                      AJAX.patch("/file/" + file.src, JSONHandlerSync(response => {
+                        if (response.error) {
+                          //TODO: custom alert
+                          that.textContent = that.dataset.temporary;
+                          rejected(that.closest(".file > div"));
+                          alert(response.error);
+                          return;
+                        }
+                
+                        validated(that.closest(".file > div"));
+                      }), {
+                        body: JSON.stringify({ value })
+                      });
+                    },
+                    keydown: contentEditableLimiter(200)
                   }
-          
-                  evt.target.closest(".file").remove();
-                }));
-              })
+                }),
+                Span(__, file.extension)
+              ]),
+              Div("end", [
+                Span(__, fileSizeFormatter(file.size)),
+                Button(__, "X", evt => { //TODO: make into icon
+                  AJAX.delete("/file/" + file.src, JSONHandlerSync(response => {
+                    if (response.error) {
+                      //TODO: create custom error alert
+                      alert(response.error);
+                      return;
+                    }
+            
+                    evt.target.closest(".file").remove();
+                  }));
+                })
+              ])
             ])
           ])
         );
@@ -275,7 +277,7 @@ const filesInfiniteScroller = new InfiniteScroller(fileView, loadFiles);
 
 
 
-//* Galery
+//* Gallery
 const selectedFilesMap = new Map();
 const selectedFiles = $(".selected-files");
 function displaySelectedFiles () {
@@ -365,3 +367,28 @@ $("#upload-files .cancel-modal").addEventListener("click", () => {
 });
 
 changeUserPreferredSetting(".change-file-order", "order", "file-order", filesInfiniteScroller);
+
+
+const zipFileMIMEs = ["application/gzip", "application/vnd.rar", "application/x-freearc", "application/x-bzip", "application/x-bzip2", "application/x-tar", "application/zip", "application/x-7z-compressed"];
+const mimeRegex = /([a-z]+)\/.*/;
+const supportedMIMEs = ["application", "audio", "font", "image", "model", "text", "video"];
+/**
+ * @param {string} mimeType
+ */
+function FileIcon (mimeType) {
+  const matches = mimeRegex.exec(mimeType);
+  let iconURL = AJAX.SERVER_HOME + "/public/images/file-blank.svg";
+  if (matches !== null) {
+    if (supportedMIMEs.includes(matches[1])) {
+      iconURL = AJAX.SERVER_HOME + `/public/images/file-${matches[1]}.svg`;
+    }
+    
+    if (zipFileMIMEs.includes(mimeType)) {
+      iconURL = AJAX.SERVER_HOME + `/public/images/file-archive.svg`;
+    }
+  }
+  
+  return (
+    Img(iconURL, "file icon", "file-icon")
+  );
+}

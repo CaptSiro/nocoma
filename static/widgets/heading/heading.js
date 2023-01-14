@@ -25,7 +25,11 @@ class WHeading extends Widget { // var is used because it creates reference on g
     );
     this.childSupport = 1;
     
-    this.appendWidget(WSingleLine.build({ text: json.text }, this, editable));
+    this.appendWidget(WTextEditor.build({
+      content: [json.text],
+      forceSingleLine: true,
+      mode: "simple"
+    }, this, editable));
     
     if (editable) {
       this.appendEditGui();

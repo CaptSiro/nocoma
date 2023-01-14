@@ -122,7 +122,7 @@ $("#profile-picture-upload").addEventListener("change", evt => {
     }
     
     validated(evt.target.closest("section.info"));
-    profilePicture.src = AJAX.SERVER_HOME + "/profile/picture";
+    profilePicture.src = AJAX.SERVER_HOME + `/profile/picture/?index=${profilePictureIndex++}`;
     profilePictureSmall.style.backgroundImage = `url(${AJAX.SERVER_HOME}/profile/picture/?index=${profilePictureIndex++})`;
   }), {
     body: toFormData({

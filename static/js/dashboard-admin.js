@@ -152,56 +152,58 @@ function loadUsers (index) {
       
       for (const user of users) {
         const userPosts = Div("u-posts");
-        
+  
         const userElement = Div("user" + (user.isDisabled ? " banned" : ""), [
           Div("u-head", [
-            Div("start", [
-              Img(AJAX.SERVER_HOME + "/public/images/expand.svg", "expand", "expand", {
-                listeners: {
-                  click: () => userElement.classList.toggle("expanded")
-                }
-              }),
-              Img(AJAX.SERVER_HOME + "/profile/picture/" + user.ID, "pfp"),
-              Div("u-column", [
-                Heading(4, user.username),
-                Span(__, user.website)
-              ])
-            ]),
-            Div("end", [
-              Div("option-mount", [
-                OptionVisible(),
-                Div("menu-body", [
-                  OptionBodyItem(
-                    !user.isDisabled
-                      ? "Ban"
-                      : "Unban",
-                    {
-                      modify: banOption => {
-                        let banned = user.isDisabled;
-                        const label = banOption.children[0];
-      
-                        banOption.onclick = () => {
-                          AJAX.patch(`/users/isDisabled/${user.ID}/${!banned}`, JSONHandlerSync(response => {
-                            if (response.error) {
-                              alert(response.error);
-                              return;
-                            }
-          
-                            if (response.rowCount !== 1) {
-                              return;
-                            }
-          
-                            banned = !banned;
-                            userElement.classList.toggle("banned", banned);
-                            label.textContent = banned ? "Unban" : "Ban";
-                          }));
+            Div(__, [
+              Div("start", [
+                Img(AJAX.SERVER_HOME + "/public/images/expand.svg", "expand", "expand", {
+                  listeners: {
+                    click: () => userElement.classList.toggle("expanded")
+                  }
+                }),
+                Img(AJAX.SERVER_HOME + "/profile/picture/" + user.ID, "pfp"),
+                Div("u-column", [
+                  Heading(4, user.username),
+                  Span(__, user.website)
+                ]),
+              ]),
+              Div("end", [
+                Div("option-mount", [
+                  OptionVisible(),
+                  Div("menu-body", [
+                    OptionBodyItem(
+                      !user.isDisabled
+                        ? "Ban"
+                        : "Unban",
+                      {
+                        modify: banOption => {
+                          let banned = user.isDisabled;
+                          const label = banOption.children[0];
+        
+                          banOption.onclick = () => {
+                            AJAX.patch(`/users/isDisabled/${user.ID}/${!banned}`, JSONHandlerSync(response => {
+                              if (response.error) {
+                                alert(response.error);
+                                return;
+                              }
+            
+                              if (response.rowCount !== 1) {
+                                return;
+                              }
+            
+                              banned = !banned;
+                              userElement.classList.toggle("banned", banned);
+                              label.textContent = banned ? "Unban" : "Ban";
+                            }));
+                          }
                         }
                       }
-                    }
-                  )
+                    )
+                  ])
                 ])
-              ])
-            ])
+              ]),
+            ]),
           ]),
           userPosts
         ]);

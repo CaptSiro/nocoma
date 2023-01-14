@@ -189,8 +189,8 @@ function setSearchMode (isInSearch) {
 function moveSelection (direction) {
   if (selectedWidget === undefined) {
     const widgetPool = isInSearchMode
-      ? widgetSelect.querySelectorAll(".widget.search-satisfactory")
-      : widgetSelect.querySelectorAll(".widget")
+      ? widgetSelect.querySelectorAll(".widget-option.search-satisfactory")
+      : widgetSelect.querySelectorAll(".widget-option")
     
     selectedWidget = widgetPool[!direction ? 0 : (widgetPool.length - 1)];
     selectedWidget.classList.add("selected");
@@ -198,7 +198,7 @@ function moveSelection (direction) {
   }
   
   selectedWidget.classList.remove("selected");
-  let selectionPool = Array.from(widgetSelect.querySelectorAll(".widget"));
+  let selectionPool = Array.from(widgetSelect.querySelectorAll(".widget-option"));
   if (direction) {
     selectionPool = selectionPool.reverse();
   }
@@ -247,7 +247,7 @@ AJAX.get("/bundler/resource/*", JSONHandlerSync(json => {
           Heading(3, __, key)
         ),
         Div("content", grouped.get(key).map(resource =>
-          Div("widget", [
+          Div("widget-option", [
             Img(resource.files.icon, resource.files.icon.replace(filenameRegex, "")),
             Span(__, resource.properties.label)
           ], {
@@ -256,7 +256,7 @@ AJAX.get("/bundler/resource/*", JSONHandlerSync(json => {
                 console.log(widgets.get(resource.properties.class).default(null));
               },
               mouseover: function () {
-                widgetSelect.querySelectorAll(".widget").forEach(w => w.classList.remove("selected"));
+                widgetSelect.querySelectorAll(".widget-option").forEach(w => w.classList.remove("selected"));
                 selectedWidget = this;
                 this.classList.add("selected");
               }
@@ -307,7 +307,6 @@ function moveWidgetSelect (to) {
   widgetSelect.style.left = left + "%";
   widgetSelect.style.top = top + "%";
   
-  console.log("visible")
   widgetSelect.style.visibility = "visible";
 }
 

@@ -4,28 +4,42 @@ class WHeading extends Widget { // var is used because it creates reference on g
   // or json.children for array of widgets
   /**
    * @typedef HeadingJSONType
-   * @prop {string} text
-   * @prop {number} level
+   * @property {string} text
+   * @property {number} level
    * 
    * @typedef {HeadingJSONType & WidgetJSON} HeadingJSON
    */
-
+  
   /**
-   * @param {HTMLElement} root
+   * @param {HeadingJSON} json
    * @param {Widget} parent
+   * @param {boolean} editable
    */
-  constructor (root, parent) {
-    super(root, parent);
-    this.childSupport = "none";
+  constructor (json, parent, editable = false) {
+    super(
+      Heading(
+        Number(json.level ?? 3),
+        "w-heading"
+      ),
+      parent
+    );
+    this.childSupport = 1;
+    
+    this.appendWidget(WSingleLine.build({ text: json.text }, this, editable));
+    
+    if (editable) {
+      this.appendEditGui();
+    }
   }
 
   /**
    * @override
    * @param {Widget} parent
+   * @param {boolean} editable
    * @returns {WHeading}
    */
-  static default (parent) {
-    return this.build({ level: 3, text: "Lorem ipsum" }, parent);
+  static default (parent, editable = false) {
+    return this.build({ level: 3, text: "Lorem ipsum" }, parent, editable);
   }
 
   /**
@@ -36,26 +50,17 @@ class WHeading extends Widget { // var is used because it creates reference on g
    * @returns {WHeading}
    */
   static build (json, parent, editable = false) {
-    return new WHeading(
-      Heading(
-        Number(json.level ?? 3),
-        "w-heading",
-        json.text
-      ), parent
-    );
+    return new WHeading(json, parent, editable);
   }
 
   /**
    * @override
-   * @returns {InspectorJSON}
+   * @returns {ComponentContent}
    */
-  get inspectorJSON () {
-    return {
-      elements: [{
-        type: "Label",
-        content: "Heading"
-      }]
-    };
+  get inspectorHTML () {
+    return (
+      NotInspectorAble()
+    );
   }
 
   /**
@@ -64,7 +69,9 @@ class WHeading extends Widget { // var is used because it creates reference on g
    */
   save () {
     return {
-      type: "WHeading"
+      type: "WHeading",
+      level: Number(this.rootElement.tagName[1]),
+      text: this.children[0].rootElement.textContent
     };
   }
 }

@@ -4,30 +4,35 @@ class WColumn extends ContainerWidget { // var is used because it creates refere
   // or json.children for array of widgets
   /**
    * @typedef ColumnJSONType
-   * @prop {{type: string}[]} children
+   * @property {WidgetJSON[]} children
    * 
    * @typedef {ColumnJSONType & WidgetJSON} ColumnJSON
    */
-
+  
   /**
-   * @param {HTMLElement} root
+   * @param {ColumnJSON} json
    * @param {Widget} parent
+   * @param {boolean} editable
    */
-  constructor (root, parent) {
-    super(root, parent);
+  constructor (json, parent, editable = false) {
+    super(Div("w-column"), parent);
     this.childSupport = "multiple";
+  
+    for (const o of json.children) {
+      this.appendWidget(widgets.get(o.type).build(o, this, editable));
+    }
   }
 
   /**
    * @override
    * @param {Widget} parent
+   * @param {boolean} editable
    * @returns {WColumn}
    */
-  static default (parent) {
-    return new WColumn(
-      Div("w-column"),
-      parent
-    );
+  static default (parent, editable = false) {
+    return new WColumn({
+      children: []
+    }, parent);
   }
 
   /**
@@ -38,29 +43,17 @@ class WColumn extends ContainerWidget { // var is used because it creates refere
    * @returns {WColumn}
    */
   static build (json, parent, editable = false) {
-    const col = new WColumn(
-      Div("w-column"),
-      parent
-    );
-
-    for (const o of json.children) {
-      col.appendWidget(widgets.get(o.type).build(o, col, editable));
-    }
-
-    return col;
+    return new WColumn(json, parent);
   }
 
   /**
    * @override
-   * @returns {InspectorJSON}
+   * @returns {ComponentContent}
    */
-  get inspectorJSON () {
-    return {
-      elements: [{
-        type: "Label",
-        content: "Column"
-      }]
-    };
+  get inspectorHTML () {
+    return (
+      NotInspectorAble()
+    );
   }
 
   /**

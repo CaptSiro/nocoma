@@ -14,8 +14,8 @@ class SequantialAnimation {
 
   /** 
    * @typedef SequantialAnimationReturn
-   * @prop {boolean} isFinished
-   * @prop {number=} timeout
+   * @property {boolean} isFinished
+   * @property {number=} timeout
    */
   /**
    * @callback SequantialAnimationStep

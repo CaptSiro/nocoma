@@ -8,8 +8,8 @@ class FireAble {
 
   /**
    * @typedef ListenerNode
-   * @prop {boolean} deleteAfterCalled
-   * @prop {Listener} callback
+   * @property {boolean} deleteAfterCalled
+   * @property {Listener} callback
    */
   
   /** @type {ListenerNode[]} */

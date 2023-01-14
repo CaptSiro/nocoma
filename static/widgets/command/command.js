@@ -7,13 +7,14 @@ class WCommand extends Widget { // var is used because it creates reference on g
    * 
    * @typedef {CommandJSONType & WidgetJSON} CommandJSON
    */
-
+  
   /**
-   * @param {HTMLElement} root
+   * @param {CommandJSON} json
    * @param {Widget} parent
+   * @param {boolean} editable
    */
-  constructor (root, parent) {
-    super(root, parent);
+  constructor (json, parent, editable = false) {
+    super(Span("w-command show-hint"), parent);
     this.childSupport = "none";
   }
 
@@ -55,13 +56,11 @@ class WCommand extends Widget { // var is used because it creates reference on g
   /**
    * @override
    * @param {Widget} parent
+   * @param {boolean} editable
    * @returns {WCommand}
    */
-  static default (parent) {
-    const command = new WCommand(
-      Span("w-content show-hint"),
-      parent
-    );
+  static default (parent, editable = false) {
+    const command = new WCommand({}, parent);
 
     command.rootElement.setAttribute("contenteditable", "true");
     command.rootElement.setAttribute("spellcheck", "false");
@@ -179,9 +178,14 @@ class WCommand extends Widget { // var is used because it creates reference on g
         
         const textWidget = WText.build({
           type: "WText",
-          lines
+          textEditor: {
+            content: lines,
+            mode: "fancy"
+          }
         }, command.parentWidget, true);
+        
         command.replaceSelf(textWidget);
+        
         textWidget.focus();
       }
     });
@@ -202,12 +206,12 @@ class WCommand extends Widget { // var is used because it creates reference on g
 
   /**
    * @override
-   * @returns {InspectorJSON}
+   * @returns {ComponentContent}
    */
-  get inspectorJSON () {
-    return {
-      inspectorAble: false,
-    };
+  get inspectorHTML () {
+    return (
+      NotInspectorAble()
+    );
   }
 
   /**
@@ -215,6 +219,7 @@ class WCommand extends Widget { // var is used because it creates reference on g
    * @returns {WidgetJSON}
    */
   save () {
+    //TODO: when content => save as text (more on Notion)
     return {
       type: "WCommand"
     };
@@ -226,5 +231,7 @@ class WCommand extends Widget { // var is used because it creates reference on g
   appendEditGui () {
     console.error("Can not add edit GUI to WCommand, because this object will not be saved.");
   }
+  
+  focus() {}
 }
 widgets.define("WCommand", WCommand);

@@ -4,7 +4,7 @@ class WRow extends ContainerWidget { // var is used because it creates reference
   // or json.children for array of widgets
   /**
    * @typedef RowJSONType
-   * @prop {WidgetJSON[]} children
+   * @property {WidgetJSON[]} children
    * 
    * @typedef {RowJSONType & WidgetJSON} RowJSON
    */
@@ -46,15 +46,12 @@ class WRow extends ContainerWidget { // var is used because it creates reference
 
   /**
    * @override
-   * @returns {InspectorJSON}
+   * @returns {ComponentContent}
    */
-  get inspectorJSON () {
-    return {
-      elements: [{
-        type: "Label",
-        content: "Row"
-      }]
-    };
+  get inspectorHTML () {
+    return (
+      TitleInspector("Row")
+    );
   }
 
   /**

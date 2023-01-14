@@ -4,30 +4,56 @@ class WImage extends Widget {
   // or json.children for array of widgets
   /**
    * @typedef ImageJSONType
-   * @prop {string} src
-   * @prop {string=} alt
-   * @prop {string=} width
-   * @prop {string=} height
+   * @property {string} src
+   * @property {string=} alt
+   * @property {string=} width
+   * @property {string=} height
    * 
    * @typedef {ImageJSONType & WidgetJSON} ImageJSON
    */
-
+  
   /**
-   * @param {HTMLElement} root
+   * @param {ImageJSON} json
    * @param {Widget} parent
+   * @param {boolean} editable
    */
-  constructor (root, parent) {
-    super(root, parent);
+  constructor (json, parent, editable = false) {
+    super(
+      Div("w-image-container",
+        Img(json.src, json.alt ?? "Unnamed image",
+          "w-image"
+          + (json.height !== undefined || json.width !== undefined
+            ? " obey"
+            : "")
+        ), {
+          modify: container => {
+            if (json.height !== undefined || json.width !== undefined) {
+              container.style.width = json.width ?? container.style.width;
+              container.style.height = json.height ?? container.style.height;
+            }
+          }
+        }
+      ),
+      parent
+    );
     this.childSupport = "none";
+    
+    if (editable) {
+      this.appendEditGui();
+    }
   }
 
   /**
    * @override
    * @param {Widget} parent
+   * @param {boolean} editable
    * @returns {WImage}
    */
-  static default (parent) {
-    return this.build({ src: AJAX.SERVER_HOME + "/public/images/theme-stock-pictures/__8219034641.png", alt: "Unnamed image" }, parent, true);
+  static default (parent, editable = false) {
+    return this.build({
+      src: AJAX.SERVER_HOME + "/public/images/theme-stock-pictures/__8219034641.png",
+      alt: "Unnamed image"
+    }, parent, editable);
   }
 
   /**
@@ -38,42 +64,17 @@ class WImage extends Widget {
    * @returns {WImage}
    */
   static build (json, parent, editable = false) {
-    
-    
-    const img =  new WImage(Div("w-image-container",
-      Img(json.src, json.alt ?? "Unnamed image",
-        "w-image"
-        + (json.height !== undefined || json.width !== undefined
-          ? " obey"
-          : "")
-      ), {
-        modify: container => {
-          if (json.height !== undefined || json.width !== undefined) {
-            container.style.width = json.width ?? container.style.width;
-            container.style.height = json.height ?? container.style.height;
-          }
-        }
-      }
-    ), parent);
-
-    if (editable === true) {
-      img.appendEditGui();
-    }
-
-    return img;
+    return new WImage(json, parent);
   }
 
   /**
    * @override
-   * @returns {InspectorJSON}
+   * @returns {ComponentContent}
    */
-  get inspectorJSON () {
-    return {
-      elements: [{
-        type: "Label",
-        content: "Image"
-      }]
-    };
+  get inspectorHTML () {
+    return (
+      TitleInspector("Image")
+    );
   }
 
   /**

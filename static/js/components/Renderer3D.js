@@ -348,10 +348,10 @@ class Vector3D {
 class Line {
   /**
    * @typedef LineOptions
-   * @prop {Visibility} visibility
-   * @prop {string} p
-   * @prop {string} color
-   * @prop {string} label 
+   * @property {Visibility} visibility
+   * @property {string} p
+   * @property {string} color
+   * @property {string} label 
    */
   /** @type {LineOptions} */
   options;
@@ -389,25 +389,25 @@ class Line {
 
 /**
  * @typedef DisplayVertex
- * @prop {number} x
- * @prop {number} y
- * @prop {number} size 
- * @prop {boolean} doRender
- * @prop {VertexOptions} options
+ * @property {number} x
+ * @property {number} y
+ * @property {number} size 
+ * @property {boolean} doRender
+ * @property {VertexOptions} options
  */
 /**
  * @typedef Edges
- * @prop {Vertex} top
- * @prop {Vertex} bottom
- * @prop {Vertex} leftTD left edge converted to top down view
- * @prop {Vertex} rightTD right edge converted to top down view
+ * @property {Vertex} top
+ * @property {Vertex} bottom
+ * @property {Vertex} leftTD left edge converted to top down view
+ * @property {Vertex} rightTD right edge converted to top down view
  */
 /**
  * @typedef Viewport
- * @prop {{width: number, height: number}} screen
- * @prop {number} width
- * @prop {Vector2D} horizontalVector
- * @prop {Vector2D} verticalVector
+ * @property {{width: number, height: number}} screen
+ * @property {number} width
+ * @property {Vector2D} horizontalVector
+ * @property {Vector2D} verticalVector
  */
 /**
  * @typedef {Object.<string, Vertex>} VertexTable
@@ -418,11 +418,11 @@ class Line {
 class Vertex {
   /**
    * @typedef VertexOptions
-   * @prop {string} p
-   * @prop {string} color
-   * @prop {number} size
-   * @prop {Visibility} visibility
-   * @prop {string} label
+   * @property {string} p
+   * @property {string} color
+   * @property {number} size
+   * @property {Visibility} visibility
+   * @property {string} label
    */
   /** @type {VertexOptions} */
   options = {};

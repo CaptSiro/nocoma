@@ -4,34 +4,43 @@ class WLink extends Widget {
   // or json.children for array of widgets
   /**
    * @typedef LinkJSONType
-   * @prop {string} label
-   * @prop {string} url
-   * @prop {string=} title
+   * @property {string} label
+   * @property {string} url
+   * @property {string=} title
    * 
    * @typedef {LinkJSONType & WidgetJSON} LinkJSON
    */
-
+  
   /**
-   * @param {HTMLElement} root
+   * @param {LinkJSON} json
    * @param {Widget} parent
+   * @param {boolean} editable
    */
-  constructor (root, parent) {
-    super(root, parent);
+  constructor (json, parent, editable = false) {
+    super(
+      Link(json.url, "w-link", String(json.label ?? json.title ?? json.url), {
+        attributes: {
+          target: "_blank",
+          title: json.title ?? ""
+        }
+      }),
+      parent
+    );
     this.childSupport = "none";
   }
 
   /**
    * @override
    * @param {Widget} parent
+   * @param {boolean} editable
    * @returns {WLink}
    */
-  static default (parent) {
-    return new WLink(Link("#", "w-link", "link", {
-      attributes: {
-        title: "link",
-        target: "_blank"
-      }
-    }), parent);
+  static default (parent, editable = false) {
+    return this.build({
+      url: "",
+      label: "link",
+      title: "link",
+    }, parent, editable);
   }
 
   /**
@@ -42,25 +51,17 @@ class WLink extends Widget {
    * @returns {WLink}
    */
   static build (json, parent, editable = false) {
-    return new WLink(Link(json.url, "w-link", String(json.label ?? json.title ?? json.url), {
-      attributes: {
-        target: "_blank",
-        title: json.title ?? ""
-      }
-    }), parent);
+    return new WLink(json, parent);
   }
 
   /**
    * @override
-   * @returns {InspectorJSON}
+   * @returns {ComponentContent}
    */
-  get inspectorJSON () {
-    return {
-      elements: [{
-        type: "Label",
-        content: "Link"
-      }]
-    };
+  get inspectorHTML () {
+    return (
+      TitleInspector("Link")
+    );
   }
 
   /**

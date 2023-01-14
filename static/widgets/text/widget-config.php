@@ -6,6 +6,7 @@
   ],
   "imports" => [
     // widget->class, widget->class, ... (in order)
+    "WTextEditor",
   ],
   "files" => [
     "source" => "text.js", // file of class

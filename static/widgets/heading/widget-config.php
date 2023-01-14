@@ -6,6 +6,7 @@
   ],
   "imports" => [
     // widget->class, widget->class, ... (in order)
+    "WSingleLine",
   ],
   "files" => [
     "source" => "heading.js", // file of class

@@ -163,11 +163,6 @@ $$(".controls .resize-divider").forEach(rd => {
 
 
 
-//? preloading page
-/**
- * @type {{ pageWidget: Widget, inspector: Inspector }}
- */
-window.page = {}
 
 
 
@@ -276,14 +271,14 @@ AJAX.get("/bundler/resource/*", JSONHandlerSync(json => {
     );
   }
 }));
-window.addEventListener("load", () => {
+window.addEventListener("load", async () => {
   const dataElement = $("#page-data");
-  WRoot.build(JSON.parse(dataElement.textContent), null, true).then(root => {
-    dataElement.remove();
-    window.page.pageWidget = root;
-    document.widgetElement = root;
-    document.querySelector("#viewport").appendChild(root.rootElement);
-  });
+  const root = await WRoot.build(JSON.parse(dataElement.textContent), null, true);
+  
+  dataElement.remove();
+  window.page = root;
+  document.widgetElement = root;
+  document.querySelector("#viewport").appendChild(root.rootElement);
 });
 
 
@@ -391,4 +386,44 @@ inspectorRoot.append(
 function inspect (widget) {
   inspectorRoot.textContent = "";
   inspectorRoot.append(...parseComponentContent(widget.inspectorHTML));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+document.body.addEventListener("keydown", async evt => {
+  if (evt.key === "s" && evt.ctrlKey) {
+    evt.preventDefault();
+    evt.stopImmediatePropagation();
+    await save();
+  }
+});
+async function save () {
+  //TODO: add that if last snapshot of page is same as now cancel save
+  const structure = window.page.save();
+  
+  const response = await AJAX.post("/page/" + webpage.src, JSONHandler(), {
+    body: JSON.stringify({
+      content: JSON.stringify(structure)
+    })
+  }).catch(errorResponse => {
+    errorResponse.text().then(console.log);
+  });
+  
+  if (response.error) {
+    alert(response.error);
+    return;
+  }
+  
+  alert(response.message);
 }

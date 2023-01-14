@@ -15,8 +15,8 @@
   }
 
   class Database {
-    private $con;
-    private static $instance;
+    private PDO $con;
+    private static Database $instance;
     public static function get (): Database {
       if (!isset($instance)) {
         self::$instance = new Database();

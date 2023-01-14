@@ -23,9 +23,15 @@ new ResizeObserver(entries => {
 
 
 
-
-const promise = WRoot.build(JSON.parse($("#page-data").textContent));
-promise.then(rootWidget => {
-  document.body.appendChild(rootWidget.rootElement);
-  document.widgetElement = rootWidget;
+widgets.on("WRoot", async () => {
+  const pageData = $("#page-data");
+  const json = JSON.parse(pageData.textContent);
+  json.webpage = webpage;
+  
+  const root = await WRoot.build(json);
+  pageData.remove();
+  
+  window.page = root;
+  document.body.appendChild(root.rootElement);
+  document.widgetElement = root;
 });

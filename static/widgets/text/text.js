@@ -1,56 +1,36 @@
 class WText extends Widget {
-
   // use json.child for single child widget like Center
   // or json.children for array of widgets
   /**
    * @typedef TextJSONType
-   * @prop {string[]} lines
-   * @prop {boolean=} forceSingleLine force whole content into single line
-   * 
+   * @property {TextEditorJSON} textEditor
+   *
    * @typedef {TextJSONType & WidgetJSON} TextJSON
    */
   
-  /**
-   * @param {string} content
-   * @returns {HTMLDivElement}
-   */
-  static #newLine (content) {
-    const div = document.createElement("div");
-    div.classList.add("line");
-    
-    if (content === "") {
-      div.innerHTML = "&#8203;";
-    } else {
-      div.textContent = content;
-    }
-    
-    return div;
-  }
+  
+  #textEditor;
   
   /**
-   * @param {string[]} lines
-   * @param {boolean} forceSingleLine
-   * @returns {HTMLElement|HTMLElement[]}
-   */
-  static #parseLines (lines, forceSingleLine = false) {
-    if (forceSingleLine) {
-      return this.#newLine(lines.reduce((acc, cur) => acc + cur, ""));
-    }
-
-    return lines.length !== 0
-      ? lines.map(this.#newLine)
-      : this.#newLine("");
-  }
-
-
-
-  /**
-   * @param {HTMLElement} root
+   * @param {TextJSON} json
    * @param {Widget} parent
+   * @param {boolean} editable
    */
-  constructor (root, parent) {
-    super(root, parent);
-    this.childSupport = "none";
+  constructor (json, parent, editable = false) {
+    super(Paragraph("w-text"), parent);
+    this.#textEditor = WTextEditor.build(json.textEditor, this, editable);
+    this.#textEditor.setMode("fancy");
+    this.#textEditor.setForceSingleLine(false);
+    
+    this.appendWidget(this.#textEditor);
+    this.childSupport = 1;
+  
+    if (editable !== true) {
+      return;
+    }
+  
+    this.appendEditGui();
+    this.rootElement.classList.add("edit");
   }
 
   /**
@@ -60,7 +40,7 @@ class WText extends Widget {
    * @returns {WText}
    */
   static default (parent, editable) {
-    return WText.build({ lines: [""] }, parent, editable);
+    return WText.build({ textEditor: { content: [], mode: "fancy" } }, parent, editable);
   }
 
   /**
@@ -71,126 +51,33 @@ class WText extends Widget {
    * @returns {WText}
    */
   static build (json, parent, editable = false) {
-    const text = new WText(
-      Paragraph("w-text", this.#parseLines(json.lines, json.forceSingleLine)),
-      parent
-    );
-
-    if (editable === true) {
-      text.appendEditGui();
-      text.rootElement.setAttribute("contenteditable", "true");
-      text.rootElement.setAttribute("spellcheck", "false");
-      text.rootElement.classList.add("edit");
-
-      if (text.rootElement.textContent === "") {
-        text.rootElement.classList.add("show-hint");
-      }
-
-      text.rootElement.addEventListener("input", function () {
-        if (this.textContent === "") {
-          this.classList.add("show-hint");
-          if (this.children.length === 0) {
-            this.append(document.createElement('div'));
-          }
-        } else {
-          this.classList.remove("show-hint");
-        }
-      });
-    }
-
-    return text;
+    return new WText(json, parent, editable);
   }
 
   /**
    * @override
-   * @param {TextJSON} json
-   * @param {Widget} parent
-   * @returns {WText}
+   * @returns {ComponentContent}
    */
-  static edit (json, parent) {
-    return new WText(Paragraph("w-text edit", this.#parseLines(json.lines, json.forceSingleLine), {
-      attributes: {
-        contenteditable: true,
-        spellcheck: false,
-      },
-      listeners: {
-        blur: function () {
-          console.log("save");
-          console.log(Array.from(this.childNodes).reduce((acc, cur, i, arr) => acc + cur.textContent + ((i !== arr.length - 1) ? "<nl>" : ""), ""));
-          console.dir(this);
-        }
-      }
-    }), parent);
+  get inspectorHTML () {
+    return (
+      TitleInspector("Text")
+    )
   }
 
   /**
    * @override
-   * @returns {InspectorJSON}
-   */
-  get inspectorJSON () {
-    return {
-      elements: [{
-        type: "Label",
-        content: "Text"
-      }]
-    };
-  }
-
-  /**
-   * @override
-   * @returns {WidgetJSON}
+   * @returns {TextJSON}
    */
   save () {
     return {
-      type: "WText"
+      type: "WText",
+      textEditor: this.#textEditor.save()
     };
-  }
-  
-  /**
-   * @param {number} index
-   * @returns {HTMLDivElement|undefined}
-   */
-  getLine (index) {
-    const lines = this.rootElement.querySelectorAll(".line");
-    
-    if (index < 0) {
-      return lines[lines.length + index];
-    }
-    
-    return lines[index];
-  }
-  
-  getTextContent () {
-    return Array.from(this.rootElement.querySelectorAll(".line"))
-      .reduce((content, element) => content + element.textContent, "");
   }
   
   
   focus() {
-    const range = document.createRange();
-    const selection = window.getSelection();
-  
-    console.log(this);
-  
-    const lastLine = this.getLine(-1);
-    let lastTextNode = undefined;
-    for (const childNode of Array.from(lastLine.childNodes).reverse()) {
-      if (childNode.nodeType === Node.TEXT_NODE) {
-        lastTextNode = childNode;
-      }
-    }
-    
-    if (lastTextNode === undefined) {
-      lastLine.innerHTML = "&#8203;";
-      lastTextNode = lastLine;
-    }
-    
-    range.setStart(lastTextNode, lastTextNode.textContent.length);
-    range.collapse(true);
-    selection.removeAllRanges();
-    selection.addRange(range);
-  
-    lastLine.focus();
+    this.#textEditor.focus();
   }
 }
 widgets.define("WText", WText);

@@ -3,19 +3,25 @@ body {
   height: 100vh;
 }
 
-.edit-gui {
+.gui {
   visibility: hidden;
   position: absolute;
   display: flex;
-  top: 100%;
-  right: 0;
   z-index: 2;
-  padding: 0 16px 16px 16px;
   user-select: none;
 }
 
-.widget:hover > .edit-gui,
-.widget:focus > .edit-gui {
+.edit-controls {
+  top: 100%;
+  right: 0;
+  padding: 0 16px 16px 16px;
+}
+
+.widget.margin {
+  margin-bottom: 16px;
+}
+.widget:hover > .gui,
+.widget:focus > .gui {
   visibility: visible;
 }
 
@@ -28,7 +34,7 @@ body {
   z-index: 5;
 }
 
-.edit-gui button {
+.gui button {
   user-select: none;
   padding: 4px;
   color: white;
@@ -37,7 +43,7 @@ body {
   
   transition: background-color 250ms linear;
 }
-.edit-gui button:hover {
+.gui button:hover {
   cursor: pointer;
   background-color: var(--container-opposite-0);
 
@@ -46,5 +52,5 @@ body {
 
 .w-root {
   width: 100%;
-  height: 100%;
+  padding: 0 16px;
 }

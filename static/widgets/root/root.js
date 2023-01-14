@@ -3,20 +3,96 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
   // use json.child for single child widget like Center
   // or json.children for array of widgets
   /**
+   * @typedef Webpage
+   * @property {number} ID
+   * @property {boolean} areCommentsAvailable
+   * @property {boolean} isHomePage
+   * @property {boolean} isPublic
+   * @property {boolean} isTakenDown
+   * @property {boolean} isTemplate
+   * @property {string} src
+   * @property {string} thumbnailSRC
+   * @property {string} timeCreated
+   * @property {string} title
+   * @property {number} usersID
+   */
+  /**
    * @typedef RootJSONType
-   * @prop {string} text
-   * 
+   * @property {Webpage} webpage
+   *
    * @typedef {RootJSONType & WidgetJSON} RootJSON
    */
-
+  
   /**
-   * @param {HTMLElement} root 
-   * @param {Widget} parent 
+   * @param {__class_name__JSON} json
+   * @param {Widget} parent
    * @param {boolean} editable
    */
-  constructor (root, parent, editable = false) {
-    super(root, parent, editable);
+  constructor (json, parent, editable = false) {
+    super(
+      Div("w-root no-margin"),
+      parent,
+      editable
+    );
     this.editable = editable;
+    
+    this.page = WPage.build({}, this, editable);
+    this.commentSection = WCommentSection.build({}, this, editable);
+    
+    this.appendWidget(this.page);
+    this.appendWidget(this.commentSection);
+  }
+  
+  /**
+   * @param {Set<string>} set
+   * @returns {string}
+   */
+  static stringifySet (set) {
+    let string = '';
+    for (const cls of set) {
+      string += cls + ",";
+    }
+    return string.substring(0, string.length - 1);
+  }
+  
+  /**
+   * @param {RootJSON} json
+   * @returns {Promise<Event>}
+   */
+  static #loadStyles (json) {
+    return new Promise(resolve => {
+      const css = document.createElement('link');
+      this.#walkWStructure(json, new Set(), true)
+        .then(set => {
+          css.href = AJAX.SERVER_HOME + "/bundler/css/" + this.stringifySet(set);
+        })
+      
+      css.rel = "stylesheet";
+      css.type = "text/css";
+      
+      document.head.appendChild(css);
+      
+      css.addEventListener("load", resolve);
+    });
+  }
+  
+  /**
+   * @param {RootJSON} json
+   * @returns {Promise<Event>}
+   */
+  static #loadScripts (json) {
+    return new Promise(resolve => {
+      const script = document.createElement("script");
+      this.#walkWStructure(json, new Set())
+        .then(set => {
+          script.src = AJAX.SERVER_HOME + "/bundler/js/" + this.stringifySet(set);
+        });
+      
+      script.defer = true;
+      document.head.appendChild(script);
+      
+      script.addEventListener("load", resolve);
+    });
   }
 
   /**
@@ -25,48 +101,18 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
    * @returns {Promise<WRoot>}
    */
   static async #createRoot (json, editable = false) {
-    if (editable === true) {
-      const root = new WRoot(Div("w-root"), null, editable);
-      for (const child of json.children) {
-        root.appendWidget(widgets.get(child.type).build(child, root, editable));
-      }
-      return root;
-    }
-
-    const script = document.createElement("script");
-    const set = this.#walkWStructure(json, new Set());
-    set.delete("WRoot");
-    script.defer = true;
-
-    let imports = '';
-    for (const cls of set) {
-      imports += cls + ",";
-    }
-    imports = imports.substring(0, imports.length - 1);
-    script.src = AJAX.SERVER_HOME + "/bundler/js/" + imports;
-
-
-    const css = document.createElement('link');
-    css.rel = "stylesheet";
-    css.type = "text/css";
-    css.href = AJAX.SERVER_HOME + "/bundler/css/WRoot," + imports;
-    document.head.appendChild(script);
-    document.head.appendChild(css);
+    const widgetCodeFiles = Promise.all(
+      editable
+        ? [Promise.resolve()]
+        : [this.#loadScripts(json), this.#loadStyles(json)]
+    );
     
-    const root = new WRoot(Div("w-root"), null, editable);
+    const root = new WRoot(json, null, editable);
     
-    await Promise.all([new Promise(resolve => {
-      script.addEventListener("load", async _ => {
-        for (const child of json.children) {
-          root.appendWidget(widgets.get(child.type).build(child, root, editable));
-        }
-        resolve();
-      });
-    }), new Promise((resolve) => {
-      css.addEventListener("load", _ => {
-        resolve();
-      });
-    })]);
+    await widgetCodeFiles;
+    for (const child of json.children) {
+      await root.page.appendWidget(widgets.get(child.type).build(child, root.page, editable));
+    }
     
     return root;
   }
@@ -74,19 +120,18 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
 
 
   /**
-   * @param {WidgetJSON} widget 
-   * @param {Set} importSet 
+   * @param {WidgetJSON} widget
+   * @param {Set<string>} importSet
+   * @param {boolean} bypassExistsRestriction
    */
-  static #walkWStructure (widget, importSet) {
-    importSet.add(widget.type);
-
-    if (widget.child) {
-      importSet = this.#walkWStructure(widget.child, importSet);
+  static async #walkWStructure (widget, importSet, bypassExistsRestriction = false) {
+    if (!widgets.exists(widget.type) || bypassExistsRestriction) {
+      importSet.add(widget.type);
     }
 
     if (widget.children) {
       for (const child of widget.children) {
-        importSet = this.#walkWStructure(child, importSet);
+        importSet = await this.#walkWStructure(child, importSet);
       }
     }
 
@@ -109,23 +154,21 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
   /**
    * @override
    * @param {Widget} parent
+   * @param {boolean} editable
    * @returns {Widget}
    */
-  static default (parent) {
-    new WRoot(document.createElement("div"), parent);
+  static default (parent, editable = false) {
+    return new WRoot({}, parent);
   }
 
   /**
    * @override
-   * @returns {InspectorJSON}
+   * @returns {ComponentContent}
    */
-  get inspectorJSON () {
-    return {
-      elements: [{
-        type: "Label",
-        content: "#Root"
-      }]
-    };
+  get inspectorHTML () {
+    return (
+      NotInspectorAble()
+    )
   }
 
   /**
@@ -135,7 +178,7 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
   save () {
     return {
       type: "WRoot",
-      children: this.saveChildren()
+      children: this.page.saveChildren()
     };
   }
 

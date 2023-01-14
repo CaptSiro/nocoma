@@ -51,7 +51,7 @@
         ->forwardFailure($response)
         ->getSuccess();
       
-      file_put_contents(HOSTS_DIR . "/$user->website/$source.json", '{"type": "WRoot","children": []}');
+      file_put_contents(HOSTS_DIR . "/$user->website/$source.json", '{"type": "WRoot","children": [{"type": "WHeading", "level": 1, "text": "' . $request->body->get("title") . '"}]}');
       $created = Website::getByID(Website::create(
         $user->ID,
         $request->body->get("title"),
@@ -96,6 +96,32 @@
   
   
   
+  
+  $pageRouter->post("/:source", [
+    function (Request $request, Response $response) {
+      /** @var User $user */
+      $user = $request->session->get("user");
+      
+      /** @var Website $webpage */
+      $webpage = Website::getBySource($user->website, $request->param->get("source"))
+        ->forwardFailure($response)
+        ->getSuccess();
+      
+      $sourceFile = HOSTS_DIR . "/$user->website/$webpage->src.json";
+      
+      if (!file_exists($sourceFile)) {
+        $response->setStatusCode(Response::NOT_FOUND);
+        $response->json(["error" => "Could not find website to update it's contents."]);
+      }
+      
+      file_put_contents($sourceFile, $request->body->get("content"));
+      
+      $response->json(["message" => "Successfully updated"]);
+    }
+  ], ["source" => "([0-9a-zA-Z_-]+)"]);
+  
+  
+  
 
   $pageRouter->post("/take-down", [
     Middleware::authorize(Middleware::LEVEL_ADMIN),
@@ -133,7 +159,7 @@
   
   
   
-  $pageRouter->use("/appeal", require __DIR__ . "/appeal-router.php");
+  $pageRouter->use("/appeal", new RouterPromise(__DIR__ . "/appeal-router.php"));
   
   
   //TODO: set to PATCH

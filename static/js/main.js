@@ -16,54 +16,54 @@ const $$ = (css) => document.querySelectorAll(css);
 
 /**
  * @typedef HTMLAttributes
- * @prop {String=} src
- * @prop {String=} alt
- * @prop {String=} id
- * @prop {String=} style
- * @prop {String=} type
- * @prop {String=} value
+ * @property {String=} src
+ * @property {String=} alt
+ * @property {String=} id
+ * @property {String=} style
+ * @property {String=} type
+ * @property {String=} value
  */
 /**
  * @typedef HTMLEventListeners
- * @prop {(event: Event)=>void=} load
- * @prop {(event: Event)=>void=} resize
- * @prop {(event: Event)=>void=} input
- * @prop {(event: Event)=>void=} submit
- * @prop {(event: KeyboardEvent)=>void=} keydown
- * @prop {(event: KeyboardEvent)=>void=} keyup
- * @prop {(event: KeyboardEvent)=>void=} keypress
- * @prop {(event: MouseEvent)=>void=} click
- * @prop {(event: MouseEvent)=>void=} contextmenu
- * @prop {(event: MouseEvent)=>void=} dblclick
- * @prop {(event: MouseEvent)=>void=} mousedown
- * @prop {(event: MouseEvent)=>void=} mousemove
- * @prop {(event: MouseEvent)=>void=} mouseleave
- * @prop {(event: MouseEvent)=>void=} mouseover
- * @prop {(event: MouseEvent)=>void=} mouseup
- * @prop {(event: MouseEvent)=>void=} mousewheel
- * @prop {(event: MouseEvent)=>void=} wheel
- * @prop {(event: DragEvent)=>void=} drag
- * @prop {(event: DragEvent)=>void=} scroll
- * @prop {(event: ClipboardEvent)=>void=} copy
- * @prop {(event: ClipboardEvent)=>void=} cut
- * @prop {(event: ClipboardEvent)=>void=} paste
- * @prop {(event: FocusEvent)=>void=} blur
- * @prop {(event: FocusEvent)=>void=} focus
- * @prop {(event: Event)=>void=} ended
- * @prop {(event: Event)=>void=} error
- * @prop {(event: Event)=>void=} loadeddata
- * @prop {(event: Event)=>void=} pause
- * @prop {(event: Event)=>void=} play
+ * @property {(event: Event)=>void=} load
+ * @property {(event: Event)=>void=} resize
+ * @property {(event: Event)=>void=} input
+ * @property {(event: Event)=>void=} submit
+ * @property {(event: KeyboardEvent)=>void=} keydown
+ * @property {(event: KeyboardEvent)=>void=} keyup
+ * @property {(event: KeyboardEvent)=>void=} keypress
+ * @property {(event: MouseEvent)=>void=} click
+ * @property {(event: MouseEvent)=>void=} contextmenu
+ * @property {(event: MouseEvent)=>void=} dblclick
+ * @property {(event: MouseEvent)=>void=} mousedown
+ * @property {(event: MouseEvent)=>void=} mousemove
+ * @property {(event: MouseEvent)=>void=} mouseleave
+ * @property {(event: MouseEvent)=>void=} mouseover
+ * @property {(event: MouseEvent)=>void=} mouseup
+ * @property {(event: MouseEvent)=>void=} mousewheel
+ * @property {(event: MouseEvent)=>void=} wheel
+ * @property {(event: DragEvent)=>void=} drag
+ * @property {(event: DragEvent)=>void=} scroll
+ * @property {(event: ClipboardEvent)=>void=} copy
+ * @property {(event: ClipboardEvent)=>void=} cut
+ * @property {(event: ClipboardEvent)=>void=} paste
+ * @property {(event: FocusEvent)=>void=} blur
+ * @property {(event: FocusEvent)=>void=} focus
+ * @property {(event: Event)=>void=} ended
+ * @property {(event: Event)=>void=} error
+ * @property {(event: Event)=>void=} loadeddata
+ * @property {(event: Event)=>void=} pause
+ * @property {(event: Event)=>void=} play
  */
 /**
  * @typedef HTMLDescription
- * @prop {keyof HTMLElementTagNameMap=} name Setting name to undefined will resolve to default tag name: "div"
- * @prop {String|String[]=} className
- * @prop {HTMLAttributes=} attributes
- * @prop {HTMLEventListeners=} listeners
- * @prop {String|String[]|HTMLDescription|HTMLDescription[]|HTMLElement|HTMLElement[]=} content
- * @prop {String=} textContent
- * @prop {(element: HTMLElement)=>void=} modify
+ * @property {keyof HTMLElementTagNameMap=} name Setting name to undefined will resolve to default tag name: "div"
+ * @property {String|String[]=} className
+ * @property {HTMLAttributes=} attributes
+ * @property {HTMLEventListeners=} listeners
+ * @property {String|String[]|HTMLDescription|HTMLDescription[]|HTMLElement|HTMLElement[]=} content
+ * @property {String=} textContent
+ * @property {(element: HTMLElement)=>void=} modify
  */
 /**
  * From given description creates an HTMLElement and returns it

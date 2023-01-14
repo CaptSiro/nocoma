@@ -10,23 +10,16 @@
   <script>
     AJAX.DOMAIN_HOME = "<?=$GLOBALS["__HOME__"]?>";
     AJAX.SERVER_HOME = "<?=$GLOBALS["__SERVER_HOME__"] ?? $GLOBALS["__HOME__"]?>";
+    
+    const webpage = JSON.parse(`<?= json_encode($GLOBALS["webpage"]) ?>`);
+    console.log(webpage);
   </script>
   <script src="<?= $GLOBALS["__SERVER_HOME__"] ?>/public/js/widget-core.js"></script>
-  <script src="<?= $GLOBALS["__SERVER_HOME__"] ?>/public/widgets/root/root.js"></script>
+  <script src="<?= $GLOBALS["__SERVER_HOME__"] ?>/bundler/js/WRoot" id="widgets-scripts"></script>
   
   <script src="<?= $GLOBALS["__SERVER_HOME__"] ?>/public/js/shell.js" defer></script>
   
   <link rel="stylesheet" href="<?= $GLOBALS["__SERVER_HOME__"] ?>/public/css/main.css">
-  
-  <style>
-      body {
-          background-color: #BA9673;
-      }
-
-      .display-none {
-          display: none;
-      }
-  </style>
 </head>
 <body>
   <div id="page-data" class="display-none viewport-tablet viewport-smartphone viewport-small-smartphone">

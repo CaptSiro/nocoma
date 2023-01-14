@@ -1,0 +1,8 @@
+.w-page.widget {
+    margin-right: auto !important;
+    margin-left: auto !important;
+}
+.w-page.fullscreen {
+    margin-right: unset !important;
+    margin-top: unset !important;
+}

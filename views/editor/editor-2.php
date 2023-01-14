@@ -6,7 +6,7 @@
         <div class="dropdown">
           <div class="dropdown-item"><span class="content">Undo</span><span class="hint">ctrl + z</span></div>
           <div class="dropdown-item"><span class="content">Redo</span><span class="hint">ctrl + shift + z</span></div>
-          <div class="dropdown-item next-section"><span class="content">Save</span><span class="hint">ctrl + s</span></div>
+          <div class="dropdown-item next-section" onclick="save()"><span class="content">Save</span><span class="hint">ctrl + s</span></div>
           <div class="dropdown-item inner-dropdown drop">
             <span class="content">Save as</span><span class="hint">ctrl + shift + s</span>
             <div class="dropdown">

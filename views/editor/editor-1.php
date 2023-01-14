@@ -11,6 +11,11 @@
   <script>
     AJAX.DOMAIN_HOME = "<?=$GLOBALS["__HOME__"]?>";
     AJAX.SERVER_HOME = "<?=$GLOBALS["SERVER_HOME"] ?? $GLOBALS["__HOME__"]?>";
+
+    /**
+     * @type {Webpage}
+     */
+    const webpage = JSON.parse(`<?= json_encode($GLOBALS["webpage"]) ?>`);
   </script>
   <script src="<?= $GLOBALS["__HOME__"] ?>/public/js/editor.js" defer></script>
   <script src="<?= $GLOBALS["__HOME__"] ?>/public/js/widget-core.js"></script>

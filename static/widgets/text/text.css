@@ -1,21 +1,8 @@
 .w-text {
   padding: 16px;
-  line-height: 1.1em;
-  min-height: 1.1em;
   position: relative;
 }
-.w-text > .line {
-  line-height: 1.1em;
-  min-height: 1.1em;
-}
-.w-text.show-hint::before {
-  content: "Lorem ipsum";
-  position: absolute;
-  line-height: 1.1em;
-  top: 16px;
-  left: 16px;
-  color: var(--text-color-2);
-}
+
 
 
 .viewport-tablet .w-text {

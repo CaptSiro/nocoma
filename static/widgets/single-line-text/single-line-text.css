@@ -1,0 +1,15 @@
+.w-single-line-text {
+    line-height: 1.1em;
+    min-height: 1.1em;
+    position: relative;
+}
+.w-single-line-text.show-hint::before {
+    content: "Lorem ipsum";
+    position: absolute;
+    line-height: 1.1em;
+    color: var(--text-color-2);
+}
+.w-single-line-text:hover,
+.w-single-line-text:focus {
+    outline: unset !important;
+}

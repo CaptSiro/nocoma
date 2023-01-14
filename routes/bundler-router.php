@@ -23,10 +23,14 @@
   };
   
   $recordsPreprocessor = function (Request $request, Response $response, Closure $next) use ($env, $processRecord) {
-    $widgetsDirectoryResult = $env->get("WIDGETS_DIR");
-    $widgetsDirectoryResult->forwardFailure($response);
+    $parser = new Parser(
+      $_SERVER["DOCUMENT_ROOT"]
+        . $env->get("WIDGETS_DIR")
+          ->forwardFailure($response)
+          ->getSuccess(),
+      Parser::ON_FAIL()
+    );
     
-    $parser = new Parser($_SERVER["DOCUMENT_ROOT"] . $widgetsDirectoryResult->getSuccess(), Parser::ON_FAIL());
     $importOrder = $parser->getClassSet(explode(",", $request->param->get("widgets")));
     
     $records = [];
@@ -79,10 +83,13 @@
   
   
   $bundlerRouter->get("/file/:widget", [function (Request $request, Response $response) use ($env, $processRecord) {
-    $widgetsDirectoryResult = $env->get("WIDGETS_DIR");
-    $widgetsDirectoryResult->forwardFailure($response);
-  
-    $parser = new Parser($_SERVER["DOCUMENT_ROOT"] . $widgetsDirectoryResult->getSuccess(), Parser::ON_FAIL());
+    $parser = new Parser(
+      $_SERVER["DOCUMENT_ROOT"]
+      . $env->get("WIDGETS_DIR")
+        ->forwardFailure($response)
+        ->getSuccess(),
+      Parser::ON_FAIL()
+    );
     $widget = $request->param->get("widget");
     $file = $request->query->looselyGet("f", "icon");
     
@@ -108,10 +115,13 @@
   
   
   $bundlerRouter->get("/resource/:widgets", [function (Request $request, Response $response) use ($env, $processRecord) {
-    $widgetsDirectoryResult = $env->get("WIDGETS_DIR");
-    $widgetsDirectoryResult->forwardFailure($response);
-  
-    $parser = new Parser($_SERVER["DOCUMENT_ROOT"] . $widgetsDirectoryResult->getSuccess(), Parser::ON_FAIL());
+    $parser = new Parser(
+      $_SERVER["DOCUMENT_ROOT"]
+      . $env->get("WIDGETS_DIR")
+        ->forwardFailure($response)
+        ->getSuccess(),
+      Parser::ON_FAIL()
+    );
     $widgets = explode(",", $request->param->get("widgets"));
   
     $prepared = [];

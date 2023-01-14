@@ -330,9 +330,9 @@ function NotInspectorAble () {
 
 /**
  * @typedef WidgetJSON
- * @prop {string} type
- * @prop {Object.<string, string>=} style
- * @prop {WidgetJSON[]=} children
+ * @property {string=} type
+ * @property {Object.<string, string>=} style
+ * @property {WidgetJSON[]=} children
  */
 class Widget {
   /**
@@ -354,6 +354,8 @@ class Widget {
     this.rootElement = root;
     this.rootElement.widget = this;
     this.rootElement.classList.add("widget");
+  
+    this.rootElement.classList.add("margin");
 
     this.parentWidget = parent;
 
@@ -404,7 +406,11 @@ class Widget {
    * @returns {WidgetJSON[]}
    */
   saveChildren () {
-    return this.children.reduce((arr, child) => arr.push(child.save), []);
+    return this.children
+      .reduce((accumulator, current) => {
+        accumulator.push(current.save());
+        return accumulator;
+      }, []);
   }
 
   remove () {
@@ -437,16 +443,32 @@ class Widget {
   }
   
   /**
-   * @param {Widget} widget 
+   * @param {Widget | Promise<Widget>} widget
    */
-  appendWidget (widget) {
+  #append (widget) {
     if (this.childSupport === "none" || this.children.length === this.childSupport) {
       console.warn("Trying to add child to parent, who does not accept any more children.");
       return;
     }
-
+  
     this.children.push(widget);
     this.rootElement.appendChild(widget.rootElement);
+  }
+  
+  /**
+   * @param {Widget | Promise<Widget>} widget
+   */
+  appendWidget (widget) {
+    if (widget instanceof Promise) {
+      return new Promise(resolve => {
+        widget.then(w => {
+          this.#append(w);
+          resolve();
+        });
+      });
+    }
+    
+    this.#append(widget);
   }
 
   appendEditGui () {
@@ -455,7 +477,7 @@ class Widget {
     
     
     this.rootElement.appendChild(
-      Div("edit-gui", [
+      Div("gui edit-controls", [
         Button(__, "+", () => this.parentWidget.placeCommandBlock(this), {
           attributes: {
             contenteditable: false
@@ -484,22 +506,22 @@ class Widget {
    * @param {Widget} after 
    */
   placeCommandBlock (after) {
-    if (document?.widgetElement.editable === true) {
-      const indexOfAfter = this.children.indexOf(after);
-      
-      if (this.children[indexOfAfter + 1] instanceof WCommand) return;
-      
-      const cmd = WCommand.default(this);
-      this.children.splice(indexOfAfter + 1, 0, cmd);
+    if (document?.widgetElement.editable !== true) return;
+  
+    const indexOfAfter = this.children.indexOf(after);
+    
+    if (this.children[indexOfAfter + 1] instanceof WCommand) return;
+    
+    const cmd = WCommand.default(this);
+    this.children.splice(indexOfAfter + 1, 0, cmd);
 
-      if (indexOfAfter + 2 === this.children.length) {
-        this.rootElement.appendChild(cmd.rootElement);
-      } else {
-        this.rootElement.insertBefore(cmd.rootElement, this.children[indexOfAfter + 2].rootElement);
-      }
-
-      cmd.rootElement.focus();
+    if (indexOfAfter + 2 === this.children.length) {
+      this.rootElement.appendChild(cmd.rootElement);
+    } else {
+      this.rootElement.insertBefore(cmd.rootElement, this.children[indexOfAfter + 2].rootElement);
     }
+
+    cmd.rootElement.focus();
   }
 }
 
@@ -552,7 +574,7 @@ class ContainerWidget extends Widget {
     
     // when children (Widget) length = 0 place new command block
     if (this.children.length === 0) {
-      this.appendWidget(WCommand.default(this));
+      return this.appendWidget(WCommand.default(this));
     }
   }
 
@@ -565,7 +587,7 @@ class ContainerWidget extends Widget {
       this.#doRemoveDefaultCommand = false;
     }
 
-    super.appendWidget(widget);
+    return super.appendWidget(widget);
   }
 }
 
@@ -577,7 +599,22 @@ class WidgetRegistry {
    * @type {Object.<string, typeof Widget>}
    */
   #map = {};
+  /**
+   * @callback WidgetRegistryCallback
+   * @param {typeof Widget} clazz
+   */
+  /**
+   * @type {Object.<string, WidgetRegistryCallback[] | undefined>}
+   */
+  #callbacks = {};
   
+  #setoff (className) {
+    if (this.#callbacks[className] === undefined) return;
+    
+    for (const callback of this.#callbacks[className]) {
+      callback(this.#map[className]);
+    }
+  }
   
   /**
    * @param {string} className
@@ -585,6 +622,7 @@ class WidgetRegistry {
    */
   define (className, constructor) {
     this.#map[className] = constructor;
+    this.#setoff(className);
   }
   
   
@@ -600,7 +638,25 @@ class WidgetRegistry {
    * @param {string} className
    */
   exists (className) {
-    return this.#map[className] === undefined;
+    return this.#map[className] !== undefined;
+  }
+  
+  
+  /**
+   * @param {string} className
+   * @param {WidgetRegistryCallback} callback
+   */
+  on (className, callback) {
+    if (this.#map[className] !== undefined) {
+      callback(this.#map[className]);
+      return;
+    }
+    
+    if (this.#callbacks[className] === undefined) {
+      this.#callbacks[className] = [];
+    }
+    
+    this.#callbacks[className].push(callback);
   }
 }
 const widgets = new WidgetRegistry();
@@ -609,6 +665,6 @@ const widgets = new WidgetRegistry();
 
 /**
  * @typedef Page
- * @prop {Widget} root
- * @prop {HTMLElement} inspector
+ * @property {Widget} root
+ * @property {HTMLElement} inspector
  */

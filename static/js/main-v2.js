@@ -1,4 +1,43 @@
 const __ = undefined;
+/**
+ * @type {"chrome" | "opera" | "firefox" | "safari" | "internet-explorer" | "edge" | "edge-chromium"}
+ */
+let browserType = "chrome";
+(() => {
+  if (!!document.documentMode) {
+    browserType = !!window.StyleMedia
+      ? "internet-explorer"
+      : "edge";
+    return;
+  }
+  
+  if (typeof InstallTrigger !== 'undefined') {
+    browserType = "firefox";
+    return;
+  }
+  
+  if ((!!window.opr && !!opr.addons) || !!window.opera || navigator.userAgent.indexOf(' OPR/') >= 0) {
+    browserType = "opera";
+    return;
+  }
+  
+  if (navigator.userAgent.indexOf("Edg") !== -1) {
+    browserType = "edge-chromium";
+    return;
+  }
+  
+  if (/constructor/i.test(window.HTMLElement)
+    || (function (param) {
+      return param.toString() === "[object SafariRemoteNotification]";
+    })(!window['safari'] || (typeof safari !== 'undefined' && window['safari'].pushNotification))) {
+    
+    browserType = "safari";
+  }
+})();
+
+function isChromiumBased () {
+  return browserType === "chrome" || browserType === "edge-chromium"
+};
 
 /**
  * @param {String} css
@@ -82,12 +121,12 @@ function parseComponentContent (content) {
  */
 /**
  * @typedef HTMLAttributes
- * @prop {string=} src
- * @prop {string=} alt
- * @prop {string=} id
- * @prop {string=} style
- * @prop {string=} type
- * @prop {string=} value
+ * @property {string=} src
+ * @property {string=} alt
+ * @property {string=} id
+ * @property {string=} style
+ * @property {string=} type
+ * @property {string=} value
  */
 /**
  * @typedef ComponentOptions
@@ -106,11 +145,12 @@ function Component (tag, className = undefined, content = undefined, options = {
   const component = document.createElement(tag);
   
   if (className) {
-    component.classList.add(...(
-      className
-        .split(" ")
-        .filter(string => string !== "")
-    ));
+    component.className = className;
+    // component.classList.add(...(
+    //   className
+    //     .split(" ")
+    //     .filter(string => string !== "")
+    // ));
   }
   
   if (content) {
@@ -401,6 +441,64 @@ function HTML (content, isCollection = false) {
 
 
 
+const formatter = new Intl.RelativeTimeFormat(undefined, {
+  numeric: 'auto'
+});
+
+const DIVISIONS = [{
+  amount: 60,
+  name: 'seconds'
+}, {
+  amount: 60,
+  name: 'minutes'
+}, {
+  amount: 24,
+  name: 'hours'
+}, {
+  amount: 7,
+  name: 'days'
+}, {
+  amount: 4.34524,
+  name: 'weeks'
+}, {
+  amount: 12,
+  name: 'months'
+}, {
+  amount: Number.POSITIVE_INFINITY,
+  name: 'years'
+}];
+
+function formatDate (date) {
+  let duration = (date - new Date()) / 1000;
+  
+  for (let i = 0; i <= DIVISIONS.length; i++) {
+    const division = DIVISIONS[i];
+    if (Math.abs(duration) < division.amount) {
+      return formatter.format(Math.round(duration), division.name);
+    }
+    duration /= division.amount;
+  }
+}
+
+
+
+/**
+ * @template T, R
+ * @param {T[]} array1
+ * @param {R[]}  array2
+ * @param {(a: T, b: R)=>boolean} compareFunction
+ * @returns {boolean}
+ */
+function arrayEqual (array1, array2, compareFunction = ((a, b) => a === b)) {
+  if (array1.length !== array2.length) return false;
+  
+  for (let i = 0; i < array1.length; i++) {
+    if (!compareFunction(array1[i], array2[i])) return false;
+  }
+  
+  return true;
+}
+
 
 
 
@@ -634,7 +732,14 @@ class AJAX {
           return;
         }
   
-        resolve(handler(response));
+        const value = handler(response);
+        if (!value instanceof Promise) {
+          resolve(value);
+        }
+        
+        value
+          .then(resolve)
+          .catch(() => reject(responseText))
       });
     });
   }

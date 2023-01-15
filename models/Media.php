@@ -19,7 +19,7 @@
     
     public static function save (RequestFile $file, User $user): Result {
       if ($file->error !== UPLOAD_ERR_OK) {
-        return fail(new TypeExc("Error when uploading file: '$file->fullName'. Code: '$file->error'"));
+        return fail(new TypeExc("Error when uploading file: '$file->fullName'. UPLOAD_ERROR: '$file->error'"));
       }
       
       $sourceResult = Generate::valid(

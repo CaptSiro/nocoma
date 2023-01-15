@@ -19,8 +19,10 @@ class WPage extends ContainerWidget {
   constructor (json, parent, editable = false) {
     //! NOTE: page widget does not import any children widget. That is root's job
     super(
-      Div("w-page no-margin" + (json.forceFullscreen ? " fullscreen" : "")),
-      parent
+      Div("w-page" + (json.forceFullscreen ? " fullscreen" : "")),
+      parent,
+      editable,
+      true
     );
     this.childSupport = this.childSupport;
     

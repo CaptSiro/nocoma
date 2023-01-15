@@ -16,28 +16,25 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
    * @property {string} title
    * @property {number} usersID
    */
-  /**
-   * @typedef RootJSONType
-   * @property {Webpage} webpage
-   *
-   * @typedef {RootJSONType & WidgetJSON} RootJSON
-   */
   
   /**
-   * @param {__class_name__JSON} json
+   * @param {WidgetJSON} json
    * @param {Widget} parent
    * @param {boolean} editable
    */
   constructor (json, parent, editable = false) {
     super(
-      Div("w-root no-margin"),
+      Div("w-root"),
       parent,
-      editable
+      false,
+      true
     );
     this.editable = editable;
     
     this.page = WPage.build({}, this, editable);
-    this.commentSection = WCommentSection.build({}, this, editable);
+    this.commentSection = WCommentSection.build({
+      webpage: json.webpage
+    }, this, editable);
     
     this.appendWidget(this.page);
     this.appendWidget(this.commentSection);
@@ -47,7 +44,7 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
    * @param {Set<string>} set
    * @returns {string}
    */
-  static stringifySet (set) {
+  static stringifyIterable (set) {
     let string = '';
     for (const cls of set) {
       string += cls + ",";
@@ -55,61 +52,58 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
     return string.substring(0, string.length - 1);
   }
   
-  /**
-   * @param {RootJSON} json
-   * @returns {Promise<Event>}
-   */
-  static #loadStyles (json) {
-    return new Promise(resolve => {
-      const css = document.createElement('link');
-      this.#walkWStructure(json, new Set(), true)
-        .then(set => {
-          css.href = AJAX.SERVER_HOME + "/bundler/css/" + this.stringifySet(set);
-        })
-      
-      css.rel = "stylesheet";
-      css.type = "text/css";
-      
-      document.head.appendChild(css);
-      
-      css.addEventListener("load", resolve);
-    });
-  }
+  static #requestSet = new Set();
   
   /**
-   * @param {RootJSON} json
-   * @returns {Promise<Event>}
+   * @param {...string} widgets
    */
-  static #loadScripts (json) {
-    return new Promise(resolve => {
-      const script = document.createElement("script");
-      this.#walkWStructure(json, new Set())
-        .then(set => {
-          script.src = AJAX.SERVER_HOME + "/bundler/js/" + this.stringifySet(set);
-        });
+  static requestWidgets (...widgets) {
+    let query = '';
+    for (const widget of widgets) {
+      if (this.#requestSet.has(widget)) continue;
       
-      script.defer = true;
-      document.head.appendChild(script);
-      
-      script.addEventListener("load", resolve);
+      this.#requestSet.add(widget);
+      query += widget + ",";
+    }
+    
+    if (query === "") return Promise.resolve();
+    
+    query = query.substring(0, query.length - 1);
+    
+    const css = document.createElement("link");
+    css.rel = "stylesheet";
+    css.type = "text/css";
+    
+    document.head.appendChild(css);
+    const cssPromise = new Promise(resolve => {
+      css.addEventListener("load", resolve);
     });
+    css.href = AJAX.SERVER_HOME + "/bundler/css/" + query;
+    
+    const js = document.createElement("script");
+    js.defer = true;
+    
+    document.head.appendChild(js);
+    const jsPromise = new Promise(resolve => {
+      js.addEventListener("load", resolve);
+    });
+    js.src = AJAX.SERVER_HOME + "/bundler/js/" + query;
+    
+    return Promise.all([cssPromise, jsPromise]);
   }
 
   /**
-   * @param {RootJSON} json
+   * @param {WidgetJSON} json
    * @param {boolean} editable
    * @returns {Promise<WRoot>}
    */
   static async #createRoot (json, editable = false) {
-    const widgetCodeFiles = Promise.all(
-      editable
-        ? [Promise.resolve()]
-        : [this.#loadScripts(json), this.#loadStyles(json)]
-    );
+    if (!editable) {
+      await this.requestWidgets(...await this.#walkWStructure(json, new Set()))
+    }
     
     const root = new WRoot(json, null, editable);
     
-    await widgetCodeFiles;
     for (const child of json.children) {
       await root.page.appendWidget(widgets.get(child.type).build(child, root.page, editable));
     }
@@ -142,7 +136,7 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
 
   /**
    * @override
-   * @param {RootJSON} json
+   * @param {WidgetJSON} json
    * @param {Widget} parent
    * @param {boolean} editable
    * @returns {Promise<Widget>}
@@ -173,7 +167,7 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
 
   /**
    * @override
-   * @returns {RootJSON}
+   * @returns {WidgetJSON}
    */
   save () {
     return {

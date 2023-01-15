@@ -458,14 +458,10 @@
           <section class="controls no-user-select">
             <div class="separator right">Gallery</div>
             <button id="upload-files-button">Add</button>
-            <div class="dropdown">
-              <button>Sort by</button>
-              <div class="items">
-                <div class="change-file-order" data-order="0">Date added</div>
-                <div class="change-file-order" data-order="1">Name</div>
-                <div class="change-file-order" data-order="2">Size</div>
-              </div>
-            </div>
+            <div class="separator">Sort by:</div>
+            <button class="change-file-order" data-order="0">Date added</button>
+            <button class="change-file-order" data-order="1">Name</button>
+            <button class="change-file-order" data-order="2">Size</button>
           </section>
           <section class="search-mount">
             <img src="<?= $GLOBALS["__HOME__"] ?>/public/images/search-white.svg" alt="search">

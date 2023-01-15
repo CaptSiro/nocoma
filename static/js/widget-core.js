@@ -349,13 +349,16 @@ class Widget {
   /**
    * @param {HTMLElement} root 
    * @param {Widget} parent 
+   * @param {boolean} removeDefaultMargin
    */
-  constructor (root, parent) {
+  constructor (root, parent, removeDefaultMargin = false) {
     this.rootElement = root;
     this.rootElement.widget = this;
     this.rootElement.classList.add("widget");
   
-    this.rootElement.classList.add("margin");
+    if (removeDefaultMargin !== true) {
+      this.rootElement.classList.add("margin");
+    }
 
     this.parentWidget = parent;
 
@@ -539,9 +542,10 @@ class ContainerWidget extends Widget {
    * @param {HTMLElement} root 
    * @param {Widget} parent 
    * @param {boolean} editable
+   * @param {boolean} removeDefaultMargin
    */
-  constructor (root, parent, editable = false) {
-    super(root, parent);
+  constructor (root, parent, editable = false, removeDefaultMargin = false) {
+    super(root, parent, removeDefaultMargin);
     
     if (editable) {
       this.appendWidget(WCommand.default(this));

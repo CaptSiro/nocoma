@@ -49,6 +49,14 @@ class WTextDecoration extends Widget {
     return new WTextDecoration(json, parent, editable);
   }
   
+  static unpack (descriptionArray, parent, editable = false) {
+    const classes = Object.values(WTextDecoration.types);
+    return new WTextDecoration({
+      text: descriptionArray.shift(),
+      class: descriptionArray.map(index => classes[index])
+    }, parent, editable);
+  }
+  
   /**
    * @override
    * @returns {ComponentContent}
@@ -78,6 +86,16 @@ class WTextDecoration extends Widget {
     }
     
     return this.save();
+  }
+  
+  saveCompact () {
+    const classes = this.getFilteredClasses();
+    if (classes.length === 0) {
+      return this.rootElement.textContent;
+    }
+    
+    const indexes = classes.map(c => WTextDecoration.#typesCompatibilityIndexes[c]);
+    return [this.rootElement.textContent, ...indexes];
   }
   
   focus () {

@@ -126,7 +126,7 @@ class WCommand extends Widget { // var is used because it creates reference on g
       } else {
         widgetSelect.classList.remove("no-results");
         if (satisfactoryCountGlobal === 1) {
-          widgetSelect.querySelectorAll(".widget").forEach(w => w.classList.remove("selected"));
+          widgetSelect.querySelectorAll(".widget-option").forEach(w => w.classList.remove("selected"));
           
           selectedWidget = satisfactoryWidgetGlobal;
           selectedWidget.classList.add("selected");

@@ -76,7 +76,12 @@
   flex: 1;
   z-index: 2;
   display: flex;
+  flex-direction: row;
+  justify-content: space-between;
   align-items: center;
+  max-width: 850px;
+  margin-right: auto;
+  margin-left: auto;
 }
 
 .post .content > div {
@@ -333,14 +338,18 @@
   border-bottom: unset;
 }
 .file {
+  background-color: var(--container-0);
+  border-bottom: 1px solid var(--container-2);
+  transition: background-color 250ms linear, border-bottom-color 250ms linear;
+}
+.file > div {
+  max-width: 900px;
+  margin-right: auto;
+  margin-left: auto;
   padding: 16px;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: var(--container-0);
-  border-bottom: 1px solid var(--container-2);
-
-  transition: background-color 250ms linear, border-bottom-color 250ms linear;
 }
 .file:has(span:focus) {
   background-color: var(--container-1);
@@ -353,10 +362,17 @@
   background-color: var(--container-1);
   border-bottom: 1px solid var(--container-3);
 }
-.file > div {
+.file > div > div {
   display: flex;
   align-items: center;
-  gap: 0.5em;
+}
+.file > div > div > *:first-child {
+  margin-right: 0.5em;
+}
+.file .file-icon {
+  width: 3em;
+  height: 3em;
+  object-fit: cover;
 }
 .file span.size {
   white-space: pre;

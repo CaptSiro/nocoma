@@ -6,7 +6,7 @@
   ],
   "imports" => [
     // widget->class, widget->class, ... (in order)
-    "WSingleLine",
+    "WTextEditor",
   ],
   "files" => [
     "source" => "heading.js", // file of class

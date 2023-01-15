@@ -68,6 +68,11 @@ class WTextEditor extends Widget {
           continue;
         }
         
+        if (element instanceof Array) {
+          line.appendChild(WTextDecoration.unpack(element).rootElement);
+          continue;
+        }
+        
         if (element.type !== undefined && widgets.exists(element.type)) {
           line.appendChild(widgets.get(element.type).build(element, this, this.#editable).rootElement);
         }
@@ -676,6 +681,11 @@ class WTextEditor extends Widget {
       for (const child of line.childNodes) {
         if (child.nodeType === Node.TEXT_NODE) {
           lineContents.push(child.textContent);
+          continue;
+        }
+        
+        if (child.widget instanceof WTextDecoration) {
+          lineContents.push(child.widget.saveCompact());
           continue;
         }
         

@@ -28,6 +28,18 @@
     }
     
     
+    public static function corsAllowAll ($methods = "GET, HEAD, POST, PUT, PATCH, DELETE", $doSend = true): Closure {
+      return function (Request $request, Response $response, Closure $next) use ($methods, $doSend) {
+        $response->setHeader(Response::HEADER_CORS_METHODS, $methods);
+        $response->setHeader(Response::HEADER_CORS_HEADERS, "*");
+        $response->setHeader(Response::HEADER_CORS_ORIGIN, "*");
+        
+        if ($doSend) $response->end();
+        $next();
+      };
+    }
+    
+    
     public static function requireToBeLoggedIn (int $middlewareResponseType = -1): Closure {
       return function (Request $request, Response $response, Closure $next) use ($middlewareResponseType) {
         $isUserLoggedIn = $request->session->looselyGet("user") !== null;

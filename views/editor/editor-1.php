@@ -12,15 +12,13 @@
     AJAX.DOMAIN_HOME = "<?=$GLOBALS["__HOME__"]?>";
     AJAX.SERVER_HOME = "<?=$GLOBALS["SERVER_HOME"] ?? $GLOBALS["__HOME__"]?>";
 
-    /**
-     * @type {Webpage}
-     */
-    const webpage = JSON.parse(`<?= json_encode($GLOBALS["webpage"]) ?>`);
+    const webpage = Object.freeze(JSON.parse(`<?= json_encode($GLOBALS["webpage"]) ?>`));
+    const user = Object.freeze(JSON.parse(`<?= json_encode($GLOBALS["user"]) ?>`));
   </script>
   <script src="<?= $GLOBALS["__HOME__"] ?>/public/js/editor.js" defer></script>
   <script src="<?= $GLOBALS["__HOME__"] ?>/public/js/widget-core.js"></script>
-  <script src="<?= $GLOBALS["__HOME__"] ?>/bundler/js/*" id="widgets-scripts"></script>
-  <link rel="stylesheet" href="<?= $GLOBALS["__HOME__"] ?>/bundler/css/*" id="widgets-styles">
+  <script src="<?= $GLOBALS["__HOME__"] ?>/bundler/js/?widgets=*" id="widgets-scripts"></script>
+  <link rel="stylesheet" href="<?= $GLOBALS["__HOME__"] ?>/bundler/css/?widgets=*" id="widgets-styles">
   
   <link rel="stylesheet" href="<?= $GLOBALS["__HOME__"] ?>/public/css/main.css">
   <link rel="stylesheet" href="<?= $GLOBALS["__HOME__"] ?>/public/css/editor.css">

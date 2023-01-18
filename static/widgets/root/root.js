@@ -54,42 +54,66 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
   
   static #requestSet = new Set();
   
+  static #called = false;
+  static addToRequestSet (...classes) {
+    if (WRoot.#called) return;
+    
+    WRoot.#called = true;
+  
+    for (const c of classes) {
+      WRoot.#requestSet.add(c);
+    }
+  }
+  
   /**
-   * @param {...string} widgets
+   * @param {...string} widgetsArray
    */
-  static requestWidgets (...widgets) {
+  static requestWidgets (...widgetsArray) {
     let query = '';
-    for (const widget of widgets) {
-      if (this.#requestSet.has(widget)) continue;
+    
+    let subtrahend = "";
+    if (this.#requestSet.size !== 0) {
+      subtrahend = "/" + this.stringifyIterable(this.#requestSet);
+    }
+    
+    let widgetPromises = [];
+    for (const widgetClass of widgetsArray) {
+      if (this.#requestSet.has(widgetClass)) continue;
+      console.log(widgetClass);
       
-      this.#requestSet.add(widget);
-      query += widget + ",";
+      this.#requestSet.add(widgetClass);
+      widgetPromises.push(
+        new Promise(resolve => widgets.on(widgetClass, resolve))
+      );
+      query += widgetClass + ",";
     }
     
     if (query === "") return Promise.resolve();
     
-    query = query.substring(0, query.length - 1);
+    query = query.substring(0, query.length - 1) + subtrahend;
     
+    const cssID = guid(true);
     const css = document.createElement("link");
     css.rel = "stylesheet";
     css.type = "text/css";
+    css.id = cssID;
     
     document.head.appendChild(css);
-    const cssPromise = new Promise(resolve => {
-      css.addEventListener("load", resolve);
-    });
+    const cssPromise = untilElement("#" + cssID);
+    cssPromise.then(() => freeID(cssID));
     css.href = AJAX.SERVER_HOME + "/bundler/css/" + query;
     
+    const jsID = guid(true);
     const js = document.createElement("script");
     js.defer = true;
     
     document.head.appendChild(js);
-    const jsPromise = new Promise(resolve => {
-      js.addEventListener("load", resolve);
-    });
+    const jsPromise = untilElement("#" + jsID);
+    jsPromise.then(() => freeID(jsID))
     js.src = AJAX.SERVER_HOME + "/bundler/js/" + query;
-    
-    return Promise.all([cssPromise, jsPromise]);
+  
+    console.log([cssPromise, jsPromise, ...widgetPromises]);
+    return Promise.all([cssPromise, jsPromise, ...widgetPromises]);
   }
 
   /**
@@ -99,7 +123,7 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
    */
   static async #createRoot (json, editable = false) {
     if (!editable) {
-      await this.requestWidgets(...await this.#walkWStructure(json, new Set()))
+      await widgets.request(...await this.walkWStructure(json, new Set()))
     }
     
     const root = new WRoot(json, null, editable);
@@ -118,14 +142,14 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
    * @param {Set<string>} importSet
    * @param {boolean} bypassExistsRestriction
    */
-  static async #walkWStructure (widget, importSet, bypassExistsRestriction = false) {
+  static async walkWStructure (widget, importSet, bypassExistsRestriction = false) {
     if (!widgets.exists(widget.type) || bypassExistsRestriction) {
       importSet.add(widget.type);
     }
 
     if (widget.children) {
       for (const child of widget.children) {
-        importSet = await this.#walkWStructure(child, importSet);
+        importSet = await this.walkWStructure(child, importSet);
       }
     }
 
@@ -181,4 +205,5 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
     console.error("WRoot cannot be removed.");
   }
 }
+WRoot.addToRequestSet("WRoot", "WPage", "WCommentSection", "WTextEditor", "WTextDecoration", "WComment")
 widgets.define("WRoot", WRoot);

@@ -5,7 +5,8 @@
     "category" => "Hidden", // editor category
   ],
   "imports" => [
-    "WComment"
+    "WComment",
+    "WTextEditor",
     // widget->class, widget->class, ... (in order)
   ],
   "files" => [

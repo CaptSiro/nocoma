@@ -55,31 +55,71 @@ function $$ (css) {
 }
 
 
+/**
+ * @param {string} selector
+ * @return {Promise<HTMLElement>}
+ */
+function untilElement (selector) {
+  return new Promise(resolve => {
+    if (document.querySelector(selector)) {
+      return resolve(document.querySelector(selector));
+    }
+    
+    const observer = new MutationObserver(() => {
+      if (document.querySelector(selector)) {
+        resolve(document.querySelector(selector));
+        observer.disconnect();
+      }
+    });
+    
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+  });
+}
+
+
 
 const GUID_CHARSET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
 const guids = new Set();
 
 /**
+ * @param {boolean} forceFirstLetter
  * @param {number} length
- * @returns {string | undefined}
+ * @returns {string}
  */
-function guid (length = 16) {
+function guid (forceFirstLetter = false, length = 8) {
   let id;
   const MAX_RETRIES = 10_000;
   let retry = 0;
   
   do {
-    id = "";
+    do {
+      id = "";
+      id += GUID_CHARSET[flatRNG(0, GUID_CHARSET.length)];
+    } while (forceFirstLetter && !/^[a-zA-Z]$/.test(id));
     
-    for (let i = 0; i < length; i++) {
+    for (let i = 0; i < length - 1; i++) {
       id += GUID_CHARSET[flatRNG(0, GUID_CHARSET.length)];
     }
     
-    if (++retry === MAX_RETRIES) return undefined;
+    if (++retry === MAX_RETRIES) break;
   } while (guids.has(id));
+  
+  if (retry === MAX_RETRIES) {
+    return guid(length + 1);
+  }
   
   guids.add(id);
   return id;
+}
+
+/**
+ * @param {string} id
+ */
+function freeID (id) {
+  guids.delete(id);
 }
 
 
@@ -180,6 +220,53 @@ function OptionalComponent (expression, content) {
       ? content
       : undefined
   );
+}
+
+
+/**
+ * @param {boolean} expression
+ * @param {ArrayLike<HTMLElement | Node | string> | HTMLElement[] | HTMLCollection} content
+ * @returns {[]}
+ */
+function OptionalComponents (expression, content) {
+  return (
+    expression
+      ? content
+      : []
+  );
+}
+
+
+/**
+ * Asynchronously replace placeholder element with element(s) returned by `asyncFunction`
+ * @param {()=>Promise<(Node | HTMLElement)[] | Node | HTMLElement | HTMLCollection>} asyncFunction
+ * @param {HTMLElement} placeholder
+ */
+function Async (asyncFunction, placeholder = undefined) {
+  const id = guid(true);
+  
+  if (placeholder === undefined) {
+    placeholder = Div();
+  }
+  
+  placeholder.classList.add(id);
+  
+  untilElement("." + id)
+    .then(asyncFunction)
+    .then(component => {
+      if (component instanceof Node) {
+        component = [component];
+      }
+    
+      for (const c of component) {
+        placeholder.parentElement.insertBefore(c, placeholder);
+      }
+    
+      placeholder.remove();
+      freeID(id);
+    });
+  
+  return placeholder;
 }
 
 
@@ -336,7 +423,7 @@ function Input (type, className = undefined, options = {}) {
  */
 function Checkbox (label = "", className = undefined, id = undefined, checkboxOptions = undefined) {
   if (!id) {
-    id = guid();
+    id = guid(true);
   }
   
   if (!checkboxOptions) checkboxOptions = {};
@@ -364,7 +451,7 @@ function Checkbox (label = "", className = undefined, id = undefined, checkboxOp
  * @param {ComponentOptions} radioOptions
  */
 function Radio (label, value, name, className = undefined, radioOptions = undefined) {
-  let id = guid();
+  let id = guid(true);
   
   if (!radioOptions) radioOptions = {};
   if (!radioOptions.attributes) radioOptions.attributes = {};
@@ -390,36 +477,15 @@ function Radio (label, value, name, className = undefined, radioOptions = undefi
   );
 }
 
-
-
 /**
- * @param {string} className
+ * @param {"error", "note"} type
  * @param {ComponentContent} content
- * @param {ComponentOptions} options
  * @returns {HTMLElement}
  */
-function ListItem (className = undefined, content = undefined, options = {}) {
-  return Component("li", className, content, options);
-}
-
-/**
- * @param {string} className
- * @param {ComponentContent} content
- * @param {ComponentOptions} options
- * @returns {HTMLElement}
- */
-function OrderedList (className = undefined, content = undefined, options = {}) {
-  return Component("ol", className, content, options);
-}
-
-/**
- * @param {string} className
- * @param {ComponentContent} content
- * @param {ComponentOptions} options
- * @returns {HTMLElement}
- */
-function UnorderedList (className = undefined, content = undefined, options = {}) {
-  return Component("ul", className, content, options);
+function Blockquote (type, content = undefined) {
+  return (
+    Div("blockquote " + type, content)
+  );
 }
 
 

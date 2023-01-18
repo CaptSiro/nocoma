@@ -11,11 +11,12 @@
     AJAX.DOMAIN_HOME = "<?=$GLOBALS["__HOME__"]?>";
     AJAX.SERVER_HOME = "<?=$GLOBALS["__SERVER_HOME__"] ?? $GLOBALS["__HOME__"]?>";
     
-    const webpage = JSON.parse(`<?= json_encode($GLOBALS["webpage"]) ?>`);
-    console.log(webpage);
+    const webpage = Object.freeze(JSON.parse(`<?= json_encode($GLOBALS["webpage"]) ?>`));
+    const user = Object.freeze(JSON.parse(`<?= json_encode($GLOBALS["user"]) ?>`));
   </script>
   <script src="<?= $GLOBALS["__SERVER_HOME__"] ?>/public/js/widget-core.js"></script>
-  <script src="<?= $GLOBALS["__SERVER_HOME__"] ?>/bundler/js/WRoot" id="widgets-scripts"></script>
+  <script src="<?= $GLOBALS["__SERVER_HOME__"] ?>/bundler/js/?widgets=WRoot" id="widgets-scripts"></script>
+  <link rel="stylesheet" href="<?= $GLOBALS["__SERVER_HOME__"] ?>/bundler/css/?widgets=WRoot" id="widgets-styles">
   
   <script src="<?= $GLOBALS["__SERVER_HOME__"] ?>/public/js/shell.js" defer></script>
   

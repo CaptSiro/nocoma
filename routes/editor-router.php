@@ -32,7 +32,10 @@
         ->getSuccess();
       
       $response->generateHeaders();
-      $response->render("editor/editor-1", ["webpage" => $webpage], "php", false);
+      $response->render("editor/editor-1", [
+        "webpage" => $webpage,
+        "user" => $request->session->looselyGet("user")
+      ], "php", false);
       $response->readFile($filePath, false);
       $response->render("editor/editor-2", [
         "postLink" => "$request->protocol://$user->website."

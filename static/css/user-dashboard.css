@@ -268,7 +268,7 @@
   margin-top: 8px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 16px;
   overflow: auto;
   max-height: 200px;
   padding: 2px 0;
@@ -377,4 +377,23 @@
 .file span.size {
   white-space: pre;
   padding-left: 0.5em;
+}
+
+.selected-file {
+  font-size: 0.9em;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 8px;
+}
+.selected-file .start > span {
+  max-width: 70%;
+  white-space: normal;
+}
+.selected-file > * {
+  display: flex;
+  align-items: center;
+}
+.selected-file .file-icon {
+  width: 2em;
+  height: 2em;
 }

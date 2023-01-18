@@ -164,6 +164,8 @@
         $this->getFlag(self::FLAG_SESSION_AUTO_START),
         $this->getFlag(self::FLAG_SESSION_COOKIE_PARAMS)
       );
+      
+      
   
       if ($this->getFlag(HomeRouter::FLAG_MAIN_SERVER_HOST_NAME) !== null) {
         $_SERVER["SERVER_HOME"] = "$req->protocol://" . $this->getFlag(HomeRouter::FLAG_MAIN_SERVER_HOST_NAME) . "$_SERVER[HOME_DIR]";

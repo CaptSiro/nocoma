@@ -239,7 +239,7 @@ function loadFiles (index) {
               ]),
               Div("end", [
                 Span(__, fileSizeFormatter(file.size)),
-                Button(__, "X", evt => { //TODO: make into icon
+                Button(__, "✕", evt => { //TODO: make into icon
                   AJAX.delete("/file/" + file.src, JSONHandlerSync(response => {
                     if (response.error) {
                       //TODO: create custom error alert
@@ -284,16 +284,18 @@ function displaySelectedFiles () {
   selectedFiles.textContent = "";
   selectedFilesMap.forEach((file) => {
     const fileElement = (
-      Div(__, [
-        Button(__, "X", {
-          listeners: {
-            click: () => {
-              selectedFilesMap.delete(file.lastModified);
-              fileElement.remove();
-            }
-          }
-        }),
-        Span(__, file.name)
+      Div("selected-file", [
+        Div("start", [
+          FileIcon(file.type),
+          Span(__, file.name),
+        ]),
+        Div("end", [
+          Span(__, fileSizeFormatter(file.size)),
+          Button(__, "✕", () => {
+            selectedFilesMap.delete(file.lastModified);
+            fileElement.remove();
+          })
+        ])
       ])
     );
     
@@ -318,6 +320,7 @@ dropArea.addEventListener("drop", evt => {
       if (item.kind !== "file") return;
       
       const file = item.getAsFile();
+      console.log(file)
       selectedFilesMap.set(file.lastModified, file);
     });
     
@@ -326,6 +329,7 @@ dropArea.addEventListener("drop", evt => {
 });
 $("#upload-files-input").addEventListener("change", evt => {
   [...evt.target.files].forEach(file => {
+    console.log(file)
     selectedFilesMap.set(file.lastModified, file);
   });
   

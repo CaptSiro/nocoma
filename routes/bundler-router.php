@@ -21,7 +21,6 @@
     
     $records[] = $record;
   };
-  
   $recordsPreprocessor = function (Request $request, Response $response, Closure $next) use ($env, $processRecord) {
     $parser = new Parser(
       $_SERVER["DOCUMENT_ROOT"]
@@ -31,7 +30,10 @@
       Parser::ON_FAIL()
     );
     
-    $importOrder = $parser->getClassSet(explode(",", $request->param->get("widgets")));
+    $importOrder = $parser->getClassSet(explode(",", $request->query->get("widgets")));
+    if ($request->query->isset("subtrahend")) {
+      $importOrder = array_diff($importOrder, explode(",", $request->query->get("subtrahend")));
+    }
     
     $records = [];
     foreach ($importOrder as $class) {
@@ -44,7 +46,9 @@
   
   
   
-  $bundlerRouter->get("/js/:widgets", [
+  $bundlerRouter->options("/js/", [Middleware::corsAllowAll("GET")]);
+  $bundlerRouter->get("/js/", [
+    Middleware::corsAllowAll("GET", false),
     $recordsPreprocessor,
     function (Request $request, Response $response, Closure $next, array $records) use ($env) {
       $response->setHeader("Content-Type", "text/javascript");
@@ -54,7 +58,7 @@
         $response->readFile($record->properties["cfn"], false);
         echo "\n";
       }
-      
+    
       $response->end();
     }
   ]);
@@ -62,22 +66,22 @@
   
   
   
-  
-  $bundlerRouter->get("/css/:widgets", [
+  $bundlerRouter->options("/css/", [Middleware::corsAllowAll("GET")]);
+  $bundlerRouter->get("/css/", [
+    Middleware::corsAllowAll("GET", false),
     $recordsPreprocessor,
     function (Request $request, Response $response, Closure $next, array $records) use ($env) {
       $response->setHeader("Content-Type", "text/css");
-  
+    
       /** @var Record $record */
       foreach ($records as $record) {
         $response->readFile($record->files["styles"]->filePath, false);
         echo "\n";
       }
-  
+    
       $response->end();
     }
   ]);
-  
   
   
   

@@ -16,14 +16,14 @@
 }
 
 .w-text-editor.show-hint::before {
-    content: "Lorem ipsum";
+    content: attr(hint);
     position: absolute;
     line-height: 1.1em;
     color: var(--text-color-2);
 }
 
 .w-text-editor.fancy:focus-within {
-    background-color: #F3CCFF; /*TODO make var*/
+    background-color: #F3CCFF !important; /*TODO make var*/
     outline-color: #F3CCFF;
     outline-width: 8px;
 }

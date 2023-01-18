@@ -76,7 +76,10 @@
   
     canUserAccess($request, $webpage, $response);
   
-    $response->render("shell/shell-1", ["webpage" => $webpage], "php", false);
+    $response->render("shell/shell-1", [
+      "webpage" => $webpage,
+      "user" => $request->session->looselyGet("user")
+    ], "php", false);
     $response->readFile(HOSTS_DIR . "/$website/$webpage->src.json", false);
     $response->render("shell/shell-2");
   }], ["source" => "([0-9a-zA-Z_-]+)"]);

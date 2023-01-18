@@ -139,7 +139,7 @@ function RadioGroupInspector (setter, radios, label = undefined) {
  * @returns {HTMLElement}
  */
 function LabelAndComponentInspector (className, setter, label, component, placeholder, options = undefined) {
-  const id = guid();
+  const id = guid(true);
   
   component.id = id;
   if (placeholder) {
@@ -208,7 +208,7 @@ function TextFieldInspector (state, setter, label = undefined, placeholder = und
  * @returns {HTMLElement}
  */
 function NumberInspector (state, setter, label = undefined, placeholder = undefined, measurement = undefined) {
-  const id = guid();
+  const id = guid(true);
   const options = {
     attributes: { id }
   };
@@ -268,7 +268,7 @@ function DateInspector (state, setter, label = undefined, placeholder = undefine
  * @returns {HTMLElement}
  */
 function SelectInspector (setter, options, label = undefined, className = undefined) {
-  const id = guid();
+  const id = guid(true);
   let lastValue = options
     .reduce(
       (last, current) =>
@@ -644,6 +644,58 @@ class WidgetRegistry {
   exists (className) {
     return this.#map[className] !== undefined;
   }
+  
+  
+  /**
+   * @param {...string} classNames
+   * @return {Promise<Awaited<void>[]>}
+   */
+  request (...classNames) {
+    let requestClassNames = "";
+    const widgetPromises = [];
+  
+    for (const className of classNames) {
+      if (this.exists(className)) continue;
+  
+      requestClassNames += className + ",";
+      widgetPromises.push(
+        new Promise(resolve => this.on(className, resolve))
+      );
+    }
+    
+    if (requestClassNames === "") {
+      return Promise.resolve();
+    }
+    
+    const subtrahend = Object.keys(this.#map);
+    const query = "?widgets=" + requestClassNames.substring(0, requestClassNames.length - 1) + (subtrahend.length !== 0
+      ? `&subtrahend=${subtrahend.join(",")}`
+      : "");
+    
+    AJAX.get("/bundler/css/" + query, TextHandler(), {
+      headers: {
+        "Access-Control-Allow-Origin": "*"
+      }
+    }, AJAX.SERVER_HOME)
+      .then(text => {
+        document.head.appendChild(
+          Component("style", __, HTML(text))
+        );
+      });
+    AJAX.get("/bundler/js/" + query, TextHandler(), {
+      headers: {
+        "Access-Control-Allow-Origin": "*"
+      }
+    }, AJAX.SERVER_HOME)
+      .then(text => {
+        document.head.appendChild(
+          Component("script", __, HTML(text))
+        );
+      });
+    
+    return Promise.all(widgetPromises);
+  }
+  
   
   
   /**

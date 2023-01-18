@@ -86,6 +86,9 @@
     
     
     private $headers = [];
+    const HEADER_CORS_ORIGIN = "Access-Control-Allow-Origin";
+    const HEADER_CORS_HEADERS = "Access-Control-Allow-Headers";
+    const HEADER_CORS_METHODS = "Access-Control-Allow-Methods";
   
     /**
      * @return array

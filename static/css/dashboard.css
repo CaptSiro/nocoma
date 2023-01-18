@@ -408,3 +408,8 @@ main > div > section .scrollable.full-span {
 .info .website::after {
   content: "/";
 }
+
+
+#profile-picture-small {
+  background-color: white;
+}

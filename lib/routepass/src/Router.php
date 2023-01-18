@@ -15,6 +15,10 @@
     const REGEX_SENTENCE_UPPER = "([A-Z_]+)";
     const REGEX_SENTENCE_LOWER = "([a-z_]+)";
     const REGEX_BASE64_URL_SAFE = "([a-zA-Z0-9_-]+)";
+    
+    public static function REGEX_ENUM (array $values) {
+      return "(" . join("|", $values) . ")";
+    }
   
     public PathNode $home;
     public function getHome(): PathNode {

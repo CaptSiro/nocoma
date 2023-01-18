@@ -527,6 +527,7 @@ input[type=text].invalid {
   border: 2px solid var(--container-opposite-3);
   color: var(--container-opposite-3);
   padding: 8px;
+  z-index: 12; /* TODO: z-index */
 }
 
 .table .viewport-mount .toggle-viewport:hover {

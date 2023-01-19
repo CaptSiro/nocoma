@@ -672,21 +672,13 @@ class WidgetRegistry {
       ? `&subtrahend=${subtrahend.join(",")}`
       : "");
     
-    AJAX.get("/bundler/css/" + query, TextHandler(), {
-      headers: {
-        "Access-Control-Allow-Origin": "*"
-      }
-    }, AJAX.SERVER_HOME)
+    AJAX.get("/bundler/css/" + query, TextHandler(), AJAX.CORS_OPTIONS, AJAX.SERVER_HOME)
       .then(text => {
         document.head.appendChild(
           Component("style", __, HTML(text))
         );
       });
-    AJAX.get("/bundler/js/" + query, TextHandler(), {
-      headers: {
-        "Access-Control-Allow-Origin": "*"
-      }
-    }, AJAX.SERVER_HOME)
+    AJAX.get("/bundler/js/" + query, TextHandler(), AJAX.CORS_OPTIONS, AJAX.SERVER_HOME)
       .then(text => {
         document.head.appendChild(
           Component("script", __, HTML(text))

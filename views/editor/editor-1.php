@@ -17,6 +17,7 @@
   </script>
   <script src="<?= $GLOBALS["__HOME__"] ?>/public/js/editor.js" defer></script>
   <script src="<?= $GLOBALS["__HOME__"] ?>/public/js/widget-core.js"></script>
+  <script src="<?= $GLOBALS["__SERVER_HOME__"] ?>/public/js/components/InfiniteScroller.js"></script>
   <script src="<?= $GLOBALS["__HOME__"] ?>/bundler/js/?widgets=*" id="widgets-scripts"></script>
   <link rel="stylesheet" href="<?= $GLOBALS["__HOME__"] ?>/bundler/css/?widgets=*" id="widgets-styles">
   

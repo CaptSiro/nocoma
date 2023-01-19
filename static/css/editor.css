@@ -179,6 +179,9 @@ nav {
   display: flex;
   flex-direction: column;
   user-select: none;
+  position: relative;
+  z-index: 3;
+  background-color: var(--container-0);
 }
 .inspector input,
 .inspector .user-select {
@@ -539,6 +542,7 @@ input[type=text].invalid {
 .table .viewport-mount #viewport {
   background-color: var(--container-0);
   overflow: auto;
+  box-shadow: rgba(81, 63, 110, 0.2) 0 7px 29px 0;
 }
 
 

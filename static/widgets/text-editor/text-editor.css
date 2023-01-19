@@ -20,6 +20,7 @@
     position: absolute;
     line-height: 1.1em;
     color: var(--text-color-2);
+    pointer-events: none;
 }
 
 .w-text-editor.fancy:focus-within {

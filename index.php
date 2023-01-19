@@ -54,7 +54,6 @@
   
   
   
-  
   $router->use("/auth", new RouterPromise(__DIR__ . "/routes/auth-router.php"));
   $router->use("/dashboard", new RouterPromise(__DIR__ . "/routes/dashboard-router.php"));
   $router->use("/editor", new RouterPromise(__DIR__ . "/routes/editor-router.php"));
@@ -63,6 +62,7 @@
   $router->use("/file", new RouterPromise(__DIR__ . "/routes/file-router.php"));
   $router->use("/profile", new RouterPromise(__DIR__ . "/routes/profile-router.php"));
   $router->use("/users", new RouterPromise(__DIR__ . "/routes/users-router.php"));
+  $router->use("/comments", new RouterPromise(__DIR__ . "/routes/comments-router.php"));
   
   
   

@@ -15,6 +15,7 @@
     const user = Object.freeze(JSON.parse(`<?= json_encode($GLOBALS["user"]) ?>`));
   </script>
   <script src="<?= $GLOBALS["__SERVER_HOME__"] ?>/public/js/widget-core.js"></script>
+  <script src="<?= $GLOBALS["__SERVER_HOME__"] ?>/public/js/components/InfiniteScroller.js"></script>
   <script src="<?= $GLOBALS["__SERVER_HOME__"] ?>/bundler/js/?widgets=WRoot" id="widgets-scripts"></script>
   <link rel="stylesheet" href="<?= $GLOBALS["__SERVER_HOME__"] ?>/bundler/css/?widgets=WRoot" id="widgets-styles">
   

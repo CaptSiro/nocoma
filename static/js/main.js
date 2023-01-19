@@ -336,6 +336,13 @@ class AJAX {
   static HOST_NAME = "";
   static PROTOCOL = "";
   
+  static CORS_HEADER = {
+    headers: {
+      "Access-Control-Allow-Origin": "*"
+    },
+    credentials: "include"
+  }
+  
   static #logResponseError (response) {
     return (text) => {
       console.error(response.statusText);

@@ -119,6 +119,9 @@ function loadUsersPosts (user, container) {
         for (const post of posts) {
           const postsURL = createPostLink(user.website, post.src);
           
+          post.redirectURL = postsURL;
+          post.isFromAdminView = true;
+          
           element = (
             PostComponent("users", post, [
               OptionBodyItem("View", {

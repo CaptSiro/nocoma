@@ -221,6 +221,17 @@ class WTextEditor extends Widget {
     }
   }
   
+  resetContent () {
+    this.#article.textContent = "";
+    this.#article.append(
+      ...this.#parseContent(this.#json.content, this.#json.forceSingleLine)
+    );
+  
+    if (this.#article.textContent === "" || this.#article.textContent === "​") {
+      this.rootElement.classList.add("show-hint");
+    }
+  }
+  
   forceSingleLineHandler () {
     return (evt => {
       if (evt.key === "Enter" && this.#json.forceSingleLine) {

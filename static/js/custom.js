@@ -31,6 +31,9 @@ function OptionBodyItem (label, options = undefined) {
  * @property {string} timeCreated
  * @property {string} title
  * @property {number} usersID
+ *
+ * @property {boolean} isFromAdminView
+ * @property {string} redirectURL
  */
 /**
  * @param {string} idGroup
@@ -56,7 +59,14 @@ function PostComponent (idGroup, post, optionBodyItems, postOptions = undefined)
           Div("date", "Created " + formatDate(new Date(post.timeCreated))),
           Heading(3, __, post.title, {
             listeners: {
-              click: () => redirect(AJAX.SERVER_HOME + "/editor/" + post.src)
+              click: () => {
+                if (post.isFromAdminView) {
+                  window.open(post.redirectURL, "_blank");
+                  return;
+                }
+                
+                redirect(AJAX.SERVER_HOME + "/editor/" + post.src);
+              }
             }
           })
         ]),

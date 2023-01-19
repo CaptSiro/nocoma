@@ -1,18 +1,40 @@
 class WCommentSection extends Widget {
+  
+  // use json.child for single child widget like Center
+  // or json.children for array of widgets
+  /**
+   * @typedef CommentSectionJSONType
+   *
+   * @typedef {CommentSectionJSONType & WidgetJSON} CommentSectionJSON
+   */
+  
   #commentContainer;
+  
   #topLevelInfiniteLoader;
+  
   #commentCount;
+  
+  /**
+   * @param {CommentSectionJSON} json
+   * @param {Widget} parent
+   * @param {boolean} editable
+   */
   constructor (json, parent, editable = false) {
     super(Section("w-comment-section"), parent);
     this.childSupport = this.childSupport;
+    
     if (!webpage.areCommentsAvailable) {
       this.rootElement.classList.add("display-none");
     }
+    
     this.#commentContainer = Div("comments-container");
+  
     let commentForm = undefined;
     if (user !== null) {
       commentForm = CommentForm(this, undefined, false);
     }
+    
+    
     this.rootElement.append(
       Div("comments-count", [
         "Comments: ",
@@ -24,6 +46,7 @@ class WCommentSection extends Widget {
       commentForm ?? Div("login-error", "You need to be logged to write comments."),
       this.#commentContainer
     )
+    
     if (editable === true) {
       this.#commentContainer.append(
         CommentForm(this, undefined, true),
@@ -44,10 +67,16 @@ class WCommentSection extends Widget {
       );
       return;
     }
+    
     this.#topLevelInfiniteLoader = new InfiniteScroller(this.#commentContainer, (this.topLevelCommentLoader).bind(this));
   }
+  
+  /**
+   * @param {number} index
+   */
   async topLevelCommentLoader (index) {
     const comments = await AJAX.get(`/comments/${webpage.ID}/${index}`, JSONHandler(), AJAX.CORS_OPTIONS, AJAX.SERVER_HOME);
+  
     let element;
     for (const comment of comments) {
       comment.isTopLevel = true;
@@ -55,33 +84,67 @@ class WCommentSection extends Widget {
       element = commentElement;
       this.#commentContainer.appendChild(commentElement);
     }
+    
     return element;
   }
+  
+  /**
+   * @override
+   * @param {Widget} parent
+   * @param {boolean} editable
+   * @returns {WCommentSection}
+   */
   static default (parent, editable = false) {
     return new WCommentSection({}, parent, editable);
   }
+  
+  /**
+   * @override
+   * @param {CommentSectionJSON} json
+   * @param {Widget} parent
+   * @param {boolean} editable
+   * @returns {WCommentSection}
+   */
   static build (json, parent, editable = false) {
     return new WCommentSection({}, parent, editable);
   }
+  
+  /**
+   * @override
+   * @returns {ComponentContent}
+   */
   get inspectorHTML () {
     return (
       NotInspectorAble()
     );
   }
+  
+  /**
+   * @override
+   * @returns {WidgetJSON}
+   */
   save () {
     return {
       type: "WCommentSection"
     };
   }
+  
+  /** @override */
   remove () {
     console.error("WCommentSection cannot be removed.");
   }
+  
+  /**
+   * @param {HTMLElement} commentElement
+   */
   handlePinned (commentElement) {
     const isPinned = commentElement.classList.contains("pinned");
     const likes = +commentElement.querySelector(".reaction-count").textContent;
+  
     let before;
     for (const topLevelComment of this.#commentContainer.children) {
       if (topLevelComment === commentElement) continue;
+  
       if (isPinned) {
         if (likes > +topLevelComment.querySelector(".reaction-count").textContent) {
           if (!topLevelComment.classList.contains("pinned")) {
@@ -89,15 +152,19 @@ class WCommentSection extends Widget {
             break;
           }
         }
+  
         if (topLevelComment.classList.contains("pinned")) continue;
+
         before = topLevelComment;
         break;
       } else {
         if (!(likes > +topLevelComment.querySelector(".reaction-count").textContent)) continue;
+        
         before = topLevelComment;
         break;
       }
     }
+    
     if (before !== undefined) {
       this.#commentContainer.insertBefore(commentElement, before);
     } else {
@@ -105,28 +172,63 @@ class WCommentSection extends Widget {
       this.#commentContainer.appendChild(commentElement);
     }
   }
+  
+  /**
+   * @param {HTMLElement} commentElement
+   */
   prependTopLevel (commentElement) {
     if (this.#commentContainer.children.length === 0) {
       this.#commentContainer.appendChild(commentElement);
       return;
     }
+    
     this.#commentContainer.insertBefore(commentElement, this.#commentContainer.children[0]);
   }
+  
+  /**
+   * @param {number} by
+   */
   updateCommentCount (by) {
     this.#commentCount.textContent = Number(+this.#commentCount.textContent + by).toLocaleString();
   }
 }
 widgets.define("WCommentSection", WCommentSection);
+
+
+/**
+ * @typedef DatabaseComment
+ * @property {number} ID
+ * @property {string} content
+ * @property {number} creatorID
+ * @property {boolean} isPinned
+ * @property {number} reactionCount
+ * @property {string} timePosted
+ * @property {string} username
+ * @property {number} usersID
+ * @property {number} level
+ * @property {number} reaction
+ * @property {number} childrenCount
+ *
+ * @property {boolean} isTopLevel
+ * @property {boolean} isJustForShow
+ */
+/**
+ * @param {DatabaseComment} comment
+ * @param {Widget} context
+ */
 function Comment (comment, context) {
   comment.reactionCount ||= 0;
   comment.reaction ||= 0;
+  
   const content = WTextEditor.build({
     content: JSON.parse(comment.content),
     mode: "fancy"
   }, context, false);
+  
   const id = guid(true);
   const messageBox = content.rootElement.querySelector("article");
   messageBox.id = id;
+  
   let expand = true;
   const seeMoreButton = (
     Button("see-more display-none", "(see more)", evt => {
@@ -134,51 +236,68 @@ function Comment (comment, context) {
       evt.target.textContent = expand
         ? "(see less)"
         : "(see more)"
+    
       expand = !expand;
     })
   );
+  
   untilElement("#" + messageBox.id)
     .then(() => {if (messageBox.offsetHeight < messageBox.scrollHeight) {
         seeMoreButton.classList.remove("display-none");
         return;
       }
+  
       content.rootElement.classList.add("expand");
+      
       delete messageBox.id;
       freeID(id);
     });
+  
   const yourReply = Div("replies your-reply display-none");
   const replies = Div("replies container");
+  
   const reactionCount = Div("reaction-count", String(+comment.reactionCount + +comment.reaction));
+  
   const start = (
     Div("start", [
       Button("arrow up", Span(__, "∧"), async () => {
         if (user === null) return;
+        
         if (start.dataset.reaction === "1") {
           await removeReaction();
           return;
         }
+        
         const response = await AJAX.patch(`/comments/react/${comment.ID}/like`, JSONHandler(), AJAX.CORS_OPTIONS, AJAX.SERVER_HOME)
+  
         if (response.error) {
           alert(response.error);
           return;
         }
+  
         if (response.rowCount !== 1) return;
+        
         start.dataset.reaction = "1";
         recalculate();
       }),
       reactionCount,
       Button("arrow down", Span(__, "∨"), async () => {
         if (user === null) return;
+  
         if (start.dataset.reaction === "-1") {
           await removeReaction();
           return;
         }
+  
         const response = await AJAX.patch(`/comments/react/${comment.ID}/dislike`, JSONHandler(), AJAX.CORS_OPTIONS, AJAX.SERVER_HOME)
+  
         if (response.error) {
           alert(response.error);
           return;
         }
+  
         if (response.rowCount !== 1) return;
+  
         start.dataset.reaction = "-1";
         recalculate();
       }),
@@ -187,6 +306,7 @@ function Comment (comment, context) {
         OptionalComponent(user !== null,
           Button("reply", "Reply", evt => {
             if (user === null) return;
+            
             evt.target.closest(".comment").classList.add("replying");
             yourReply.classList.toggle("display-none", false);
             if (yourReply.children.length === 0) {
@@ -196,25 +316,34 @@ function Comment (comment, context) {
         ),
         OptionalComponent(comment.childrenCount >= 1,
           Button(__, `See replies (${comment.childrenCount})`, evt => {
+            // TODO: show replies
           })
         )
       ])
     ], { attributes: { "data-reaction": String(comment.reaction) } })
   );
   start.dataset.reaction = String(comment.reaction);
+  
   async function removeReaction () {
     const response = await AJAX.patch(`/comments/react/${comment.ID}/none`, JSONHandler(), AJAX.CORS_OPTIONS, AJAX.SERVER_HOME);
+    
     if (response.error) {
       alert(response.error);
       return;
     }
+    
     if (response.rowCount !== 1) return;
+    
     start.dataset.reaction = "0";
     recalculate();
   }
+  
   function recalculate () {
     reactionCount.textContent = Number(+comment.reactionCount + +start.dataset.reaction).toLocaleString();
   }
+  
+  
+  
   return (
     Div("comment " + (comment.isPinned ? "pinned" : ""), [
       Div("published", [
@@ -246,13 +375,17 @@ function Comment (comment, context) {
           OptionalComponent(user !== null && (user.level === 0 || comment.creatorID === user.ID || user.ID === comment.usersID),
             Button("delete", "Remove", async (evt) => {
               if (!(user.level === 0 || comment.creatorID === user.ID || user.ID === comment.usersID)) return;
+              
               if (!confirm("Are you sure you want to remove comment from: " + comment.username)) return;
+              
               const response = await AJAX.delete("/comments/" + comment.ID, JSONHandler(), AJAX.CORS_OPTIONS, AJAX.SERVER_HOME);
               if (response.error) {
                 alert(response.error);
                 return;
               }
+
               if (response.rowCount !== 1) return;
+
               evt.target.closest(".comment").remove();
               context.updateCommentCount(-(comment.childrenCount + 1));
             })
@@ -260,18 +393,23 @@ function Comment (comment, context) {
           OptionalComponent(comment.isTopLevel,
             Button("star-container circular " + (user !== null && comment.creatorID === user.ID && comment.isTopLevel ? "" : "locked"), Div("star"), async evt => {
               if (!(user !== null && comment.creatorID === user.ID && comment.isTopLevel)) return;
+    
               comment.isPinned = !comment.isPinned;
               const commentElement = evt.target.closest(".comment");
               commentElement.classList.toggle("pinned", comment.isPinned);
+    
               const response = await AJAX.put(`/comments/is-pinned/${comment.ID}/${comment.isPinned ? "pin" : "unpin"}`, JSONHandler(), AJAX.CORS_OPTIONS, AJAX.SERVER_HOME)
+    
               if (response.error) {
                 alert(response.error);
                 return;
               }
+    
               if (response.rowCount !== 1) {
                 console.log(response);
                 return;
               }
+    
               if (context.handlePinned) {
                 context.handlePinned(commentElement);
               }
@@ -284,20 +422,24 @@ function Comment (comment, context) {
     ])
   );
 }
+
 function CommentForm (context, parentCommentID = undefined, isJustForShow = false) {
   const textEditor = WTextEditor.build({
     content: [],
     mode: "fancy",
     hint: "Write a comment..."
   }, context, true);
+  
   function cancelForm (evt) {
     textEditor.resetContent();
+  
     const commentElement = evt.target.closest(".your-reply");
     if (commentElement !== null) {
       commentElement.classList.add("display-none");
       commentElement.closest(".comment").classList.remove("replying");
     }
   }
+  
   return (
     Div("comment reply", [
       Div("published", [
@@ -327,11 +469,13 @@ function CommentForm (context, parentCommentID = undefined, isJustForShow = fals
           Button(__, "Cancel", cancelForm),
           Button("submit", "Submit", async (evt) => {
             if (isJustForShow === true || webpage.areCommentsAvailable === false) return;
+            
             const payload = JSON.stringify(textEditor.save().content);
             if (payload.length > 2048) {
               alert("Your message is over " + (payload.length - 2048) + " character" + (payload.length - 2048 !== 1 ? "s" : "") + ". (Styling requires additional characters.)")
               return;
             }
+            
             const comment = await AJAX.post("/comments/", JSONHandler(), AJAX.addCORSHeaders({
               body: JSON.stringify({
                 parentCommentID,
@@ -339,12 +483,15 @@ function CommentForm (context, parentCommentID = undefined, isJustForShow = fals
                 content: payload
               })
             }), AJAX.SERVER_HOME);
+            
             if (comment.error) {
               alert(comment.error);
               return;
             }
+  
             cancelForm(evt);
             context.updateCommentCount(1);
+            
             comment.creatorID = webpage.usersID;
             comment.isPinned = false;
             comment.reactionCount = 0;
@@ -353,21 +500,28 @@ function CommentForm (context, parentCommentID = undefined, isJustForShow = fals
             comment.level = user.level;
             comment.reaction = 0;
             comment.childrenCount = 0;
+            
             comment.isTopLevel = parentCommentID === undefined;
+            
             const commentElement = Comment(comment, context);
+            
             if (comment.isTopLevel) {
               context.prependTopLevel(commentElement);
               return;
             }
+  
             let commentsContainer = evt.target.closest(".your-reply");
             if (commentsContainer === null || commentsContainer.nextElementSibling === null) return;
+            
             if (commentsContainer.nextElementSibling?.classList?.contains("replies")) {
               commentsContainer = commentsContainer.nextElementSibling
             }
+            
             if (commentsContainer.children.length === 0) {
               commentsContainer.appendChild(commentElement);
               return;
             }
+  
             commentsContainer.insertBefore(commentElement, commentsContainer.children[0]);
           }),
         ])

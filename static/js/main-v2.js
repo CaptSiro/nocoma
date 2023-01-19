@@ -123,6 +123,102 @@ function freeID (id) {
 }
 
 
+/**
+ * @template S, F
+ */
+class Result {
+  /**
+   * @type {S}
+   */
+  #success;
+  
+  /**
+   * @type {F}
+   */
+  #failure;
+  
+  /**
+   * @return {S}
+   */
+  getSuccess () {
+    return this.#success;
+  }
+  
+  /**
+   * @return {F}
+   */
+  getFailure () {
+    return this.#failure;
+  }
+  
+  constructor (success, failure = undefined) {
+    this.#failure = failure;
+    this.#success = success;
+  }
+  
+  isSuccess () {
+    return this.#success !== undefined;
+  }
+  
+  isFailure () {
+    return this.#failure !== undefined;
+  }
+  
+  /**
+   * @param {(value: S)=>*} successFunction
+   * @return {Result<*, never>|Result}
+   */
+  succeeded (successFunction) {
+    if (this.isSuccess()) {
+      return success(successFunction(this.#success));
+    }
+    
+    return this;
+  }
+  
+  /**
+   * @param {(exception: F)=>*} failedFunction
+   * @return {Result|Result<never, *>}
+   */
+  failed (failedFunction) {
+    if (this.isFailure()) {
+      return fail(failedFunction(this.#failure));
+    }
+  
+    return this;
+  }
+  
+  /**
+   * @param {(exception: F)=>*} failedFunction
+   * @returns {*|S}
+   */
+  strip (failedFunction) {
+    if (this.isFailure()) {
+      return failedFunction(this.#failure);
+    }
+    
+    return this.#success;
+  }
+}
+
+/**
+ * @template V
+ * @param {V} value
+ * @return {Result<V, never>}
+ */
+function success (value) {
+  return new Result(value)
+}
+
+/**
+ * @template E
+ * @param {E} exception
+ * @return {Result<never, E>}
+ */
+function fail (exception) {
+  return new Result(undefined, exception);
+}
+
 
 
 
@@ -770,6 +866,24 @@ class AJAX {
   static SERVER_HOME = "";
   static HOST_NAME = "";
   static PROTOCOL = "";
+  
+  static CORS_OPTIONS = {
+    headers: {
+      "Access-Control-Allow-Origin": "*"
+    },
+    credentials: "include"
+  }
+  
+  static addCORSHeaders (requestOptions, addCredentials = true) {
+    requestOptions.headers ||= {};
+    requestOptions.headers["Access-Control-Allow-Origin"] = "*";
+    
+    if (addCredentials) {
+      requestOptions.credentials = "include";
+    }
+    
+    return requestOptions;
+  }
   
   static #logResponseError (response) {
     return (text) => {

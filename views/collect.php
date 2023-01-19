@@ -17,7 +17,7 @@
   </style>
 </head>
 <body>
-  <form action="<?= $GLOBALS["__SERVER_HOME__"] ?>/file/collect" method="post" enctype="multipart/form-data">
+  <form action="<?= $GLOBALS["__SERVER_HOME__"] ?>/profile/picture" method="post" enctype="multipart/form-data">
     <fieldset>
       <legend>Images</legend>
       <button id="add-file">Add file</button>
@@ -29,8 +29,8 @@
     document.querySelector("#add-file").addEventListener("click", evt => {
       const input = document.createElement("input");
       input.setAttribute("type", "file");
-      input.setAttribute("name", "uploaded[]");
-      input.setAttribute("multiple", "multiple");
+      input.setAttribute("name", "picture");
+      input.setAttribute("accept", "image/png, image/gif, image/jpeg");
       input.addEventListener("change", evt => {
         console.log(evt)
         console.log(evt.target.files)

@@ -16,6 +16,7 @@
   top: 16px;
   left: 16px;
   color: var(--text-color-2);
+  pointer-events: none;
 }
 .w-command:focus {
   outline: unset;

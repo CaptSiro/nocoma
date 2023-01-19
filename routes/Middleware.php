@@ -2,6 +2,11 @@
   
   require_once __DIR__ . "/../models/User.php";
   
+  require_once __DIR__ . "/../lib/dotenv/dotenv.php";
+  require_once __DIR__ . "/../lib/paths.php";
+  
+  $env = new Env(ENV_FILE);
+  
   
   class Middleware {
     const RESPONSE_TEXT = 0;
@@ -29,10 +34,19 @@
     
     
     public static function corsAllowAll ($methods = "GET, HEAD, POST, PUT, PATCH, DELETE", $doSend = true): Closure {
-      return function (Request $request, Response $response, Closure $next) use ($methods, $doSend) {
-        $response->setHeader(Response::HEADER_CORS_METHODS, $methods);
-        $response->setHeader(Response::HEADER_CORS_HEADERS, "*");
-        $response->setHeader(Response::HEADER_CORS_ORIGIN, "*");
+      global $env;
+      return function (Request $request, Response $response, Closure $next) use ($methods, $doSend, $env) {
+        $hostName = $env->get("HOST_NAME")
+          ->forwardFailure($response)
+          ->getSuccess();
+        if (preg_match("/^.*$hostName\/$/", $_SERVER["HTTP_REFERER"])) {
+          $response->setHeader(Response::HEADER_CORS_METHODS, $methods);
+          $response->setHeader(Response::HEADER_CORS_HEADERS, "access-control-allow-origin");
+          $response->setHeader(Response::HEADER_CORS_CREDENTIALS, "true");
+          $response->setHeader(Response::HEADER_CORS_ORIGIN,
+            substr($_SERVER["HTTP_REFERER"], 0, strlen($_SERVER["HTTP_REFERER"]) - 1)
+          );
+        }
         
         if ($doSend) $response->end();
         $next();

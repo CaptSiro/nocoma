@@ -30,8 +30,9 @@
             JOIN users ON comments.usersID = users.ID
               AND users.isDisabled = 0
               AND users.isVerified = 1
-            JOIN (
+            LEFT JOIN (
           	  SELECT SUM(reactions.value) as \"sum\", reactions.commentsID as ID FROM `reactions`
+          	  WHERE reactions.usersID != :requestUserID
               GROUP BY 2
             ) reactionSum ON reactionSum.ID = comments.ID
             JOIN websites ON websites.ID = :websiteID
@@ -46,7 +47,7 @@
             new DatabaseParam("websiteID", $websiteID),
             new DatabaseParam("requestUserID", $requestUserID),
             new DatabaseParam("parentCommentID", $parentCommentID),
-            new DatabaseParam("offset", $offset)
+            new DatabaseParam("offset", $offset * self::SET_SIZE)
           ]
         ));
       }
@@ -184,7 +185,7 @@
       );
   
       Database::get()->statement(
-        "DELETE FROM ". self::TABLE_NAME ." WHERE parentCommentID = :commentID LIMIT 1",
+        "DELETE FROM ". self::TABLE_NAME ." WHERE parentCommentID = :commentID",
         $param
       );
 

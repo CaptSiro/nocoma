@@ -82,7 +82,10 @@ class WCommentSection extends Widget {
       comment.isTopLevel = true;
       const commentElement = Comment(comment, this);
       element = commentElement;
-      this.#commentContainer.appendChild(commentElement);
+  
+      if (document.getElementById(comment.ID) === null) {
+        this.#commentContainer.appendChild(commentElement);
+      }
     }
     
     return element;
@@ -254,10 +257,12 @@ function Comment (comment, context) {
     });
   
   const yourReply = Div("replies your-reply display-none");
-  const replies = Div("replies container");
+  const replies = Div("replies container display-none");
   
   const reactionCount = Div("reaction-count", String(+comment.reactionCount + +comment.reaction));
+  let repliesScroller;
   
+  console.log(comment.childrenCount ?? 0 >= 1)
   const start = (
     Div("start", [
       Button("arrow up", Span(__, "∧"), async () => {
@@ -314,15 +319,20 @@ function Comment (comment, context) {
             }
           })
         ),
-        OptionalComponent(comment.childrenCount >= 1,
-          Button(__, `See replies (${comment.childrenCount})`, evt => {
-            // TODO: show replies
-          })
-        )
+        Button("see-replies" + ((comment.childrenCount ?? 0) < 1 ? " display-none" : ""), `See replies (${comment.childrenCount ?? 0})`, evt => {
+          if (repliesScroller === undefined) {
+            repliesScroller = new InfiniteScroller(replies, subCommentsLoader(comment.ID, context, replies));
+          }
+          
+          const isHidden = replies.classList.contains("display-none");
+          replies.classList.toggle("display-none", !isHidden);
+          evt.target.textContent = !isHidden ? `See replies (${evt.target.dataset.count})` : "Hide replies";
+        }, { attributes: {"data-count": comment.childrenCount ?? 0} })
       ])
     ], { attributes: { "data-reaction": String(comment.reaction) } })
   );
   start.dataset.reaction = String(comment.reaction);
+  
   
   async function removeReaction () {
     const response = await AJAX.patch(`/comments/react/${comment.ID}/none`, JSONHandler(), AJAX.CORS_OPTIONS, AJAX.SERVER_HOME);
@@ -385,9 +395,22 @@ function Comment (comment, context) {
               }
 
               if (response.rowCount !== 1) return;
+              
+              const parent = evt.target.closest(".comment");
+              const grandParent = parent.parentElement.closest(".comment");
+              
+              if (grandParent !== null) {
+                const seeReplies = grandParent.querySelector(".see-replies");
+                seeReplies.dataset.count--;
+                
+                if (seeReplies.dataset.count == 0) {
+                  seeReplies.classList.add("display-none");
+                }
+              }
+              
 
-              evt.target.closest(".comment").remove();
-              context.updateCommentCount(-(comment.childrenCount + 1));
+              parent.remove();
+              context.updateCommentCount(-(parent.getElementsByClassName("comment").length + 1));
             })
           ),
           OptionalComponent(comment.isTopLevel,
@@ -419,8 +442,26 @@ function Comment (comment, context) {
       ]),
       yourReply,
       replies
-    ])
+    ], { attributes: { id: comment.ID } })
   );
+}
+
+function subCommentsLoader (commentID, context, container) {
+  return async (index) => {
+    const comments = await AJAX.get(`/comments/${webpage.ID}/replies/${commentID}/${index}`, JSONHandler(), AJAX.CORS_OPTIONS, AJAX.SERVER_HOME);
+    
+    let element;
+    for (const comment of comments) {
+      const commentElement = Comment(comment, context);
+      element = commentElement;
+      
+      if (document.getElementById(comment.ID) === null) {
+        container.appendChild(commentElement);
+      }
+    }
+    
+    return element;
+  }
 }
 
 function CommentForm (context, parentCommentID = undefined, isJustForShow = false) {
@@ -516,6 +557,11 @@ function CommentForm (context, parentCommentID = undefined, isJustForShow = fals
             if (commentsContainer.nextElementSibling?.classList?.contains("replies")) {
               commentsContainer = commentsContainer.nextElementSibling
             }
+  
+            const seeReplies = commentsContainer.parentElement.querySelector(".see-replies");
+            seeReplies.classList.remove("display-none");
+            seeReplies.click();
+            seeReplies.dataset.count++;
             
             if (commentsContainer.children.length === 0) {
               commentsContainer.appendChild(commentElement);

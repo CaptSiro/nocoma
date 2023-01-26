@@ -267,7 +267,7 @@ function parseComponentContent (content) {
 /**
  * @typedef ComponentOptions
  * @property {HTMLAttributes | Object.<string, *>} attributes
- * @property {Object.<keyof HTMLElementEventMap, (evt?: Event)=>any> | undefined} listeners
+ * @property {Object.<keyof HTMLElementEventMap, (evt?: Event)=>any> | undefined | {}} listeners
  * @property {(element: HTMLElement)=>void=} modify
  */
 /**

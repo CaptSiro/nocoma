@@ -1,0 +1,14 @@
+.w-header {
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--container-0);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+.w-header h1 {
+    width: 80%;
+}
+.viewport-smartphone .w-header h1 {
+    width: 90%;
+}

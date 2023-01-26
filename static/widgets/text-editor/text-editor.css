@@ -4,8 +4,13 @@
     position: relative;
     background-color: transparent;
     outline: 4px solid transparent;
+    font: inherit;
 
     transition: background-color 250ms linear, outline-width 250ms ease-in-out, outline-color 250ms linear;
+}
+
+.w-text-editor * {
+    font: inherit;
 }
 
 .w-text-editor article:focus {
@@ -19,13 +24,13 @@
     content: attr(hint);
     position: absolute;
     line-height: 1.1em;
-    color: var(--text-color-2);
+    color: var(--text-color-1);
     pointer-events: none;
 }
 
 .w-text-editor.fancy:focus-within {
-    background-color: #F3CCFF !important; /*TODO make var*/
-    outline-color: #F3CCFF;
+    background-color: var(--container-2) !important; /*TODO make var*/
+    outline-color: var(--container-2);
     outline-width: 8px;
 }
 .w-text-editor:focus-within .fancy-controls {
@@ -47,7 +52,7 @@
 
 .w-text-editor .fancy-controls * {
     font-family: serif;
-    color: var(--text-color-opposite);
+    color: var(--text-color-opposite-0);
 }
 
 .w-text-editor .fancy-controls code {

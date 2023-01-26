@@ -6,8 +6,9 @@
   ],
   "imports" => [
     // widget->class, widget->class, ... (in order)
-    "WCommentSection",
+    "WHeader",
     "WPage",
+    "WCommentSection",
   ],
   "files" => [
     "source" => "root.js", // file of class

@@ -1,23 +1,19 @@
 .w-comment-section {
+    border-top: 2px solid var(--container-1);
+    width: 100%;
+    margin-top: 64px;
+}
+
+.w-comment-section .comment-root {
     max-width: 750px;
     margin-left: auto;
     margin-right: auto;
     padding: 16px;
 }
 
-
-
-
-
-
-
-.w-comment-section {
-    border-top: 2px solid var(--container-1);
-}
-
 .w-comment-section .login-error {
     padding-bottom: 16px;
-    color: var(--text-color-2);
+    color: var(--text-color-1);
 }
 
 .w-comment-section .comments-container {
@@ -82,8 +78,9 @@
     font-size: 0.8em;
     margin-bottom: 4px;
 }
-.comment .published .username > .column h3 {
+.comment .published .username h3 {
     font-size: 20px;
+    font-family: var(--font-1);
 }
 .comment .published .username .tags {
     display: flex;
@@ -152,6 +149,8 @@
     border: unset;
     padding: 4px 8px;
     border-radius: 999px;
+
+    color: var(--text-color-0);
 }
 
 
@@ -180,17 +179,17 @@
     cursor: unset;
 }
 .comment .comment-controls button.star-container:not(.locked):hover {
-    background-color: #f5cd73;
+    background-color: #e3b82b;
 }
 .comment.pinned .comment-controls button.star-container {
-    background-color: goldenrod !important;
+    background-color: #cca00a !important;
 }
 
 .comment .comment-controls button .star {
     clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
     width: 1.2em;
     height: 1.2em;
-    background-color: var(--text-color);
+    background-color: var(--text-color-0);
 }
 
 .comment .comment-controls button.arrow {
@@ -219,7 +218,7 @@
 }
 
 .comment .comment-controls button svg {
-    color: var(--text-color);
+    color: var(--text-color-0);
     width: 3em;
     height: 3em;
 }

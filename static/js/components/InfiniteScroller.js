@@ -16,8 +16,9 @@ class InfiniteScroller {
    * @param {HTMLElement} rootContainer
    * @param {(index: number)=>Promise<HTMLElement|undefined>} loader
    * @param {(rootContainer: HTMLElement)=>void} rootContainerReSetter
+   * @param {boolean} autoload
    */
-  constructor(rootContainer, loader, rootContainerReSetter = undefined) {
+  constructor(rootContainer, loader, rootContainerReSetter = undefined, autoload = true) {
     this.container = rootContainer;
     this.loader = loader;
     this.#rootContainerReSetter = rootContainerReSetter ?? (rootContainer => {
@@ -39,7 +40,9 @@ class InfiniteScroller {
       threshold: 0
     });
     
-    this.reset();
+    if (autoload) {
+      this.reset();
+    }
   }
   
   

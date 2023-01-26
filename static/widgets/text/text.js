@@ -40,7 +40,7 @@ class WText extends Widget {
    * @returns {WText}
    */
   static default (parent, editable) {
-    return WText.build({ textEditor: { content: [], mode: "fancy" } }, parent, editable);
+    return WText.build({ textEditor: { content: [], /* mode: "fancy" */ } }, parent, editable);
   }
 
   /**

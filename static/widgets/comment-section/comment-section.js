@@ -4,6 +4,7 @@ class WCommentSection extends Widget {
   // or json.children for array of widgets
   /**
    * @typedef CommentSectionJSONType
+   * @property {boolean} areCommentsAvailable
    *
    * @typedef {CommentSectionJSONType & WidgetJSON} CommentSectionJSON
    */
@@ -20,22 +21,31 @@ class WCommentSection extends Widget {
    * @param {boolean} editable
    */
   constructor (json, parent, editable = false) {
-    super(Section("w-comment-section"), parent);
-    this.childSupport = this.childSupport;
+    const commentRoot = Div("comment-root");
+    super(Section("w-comment-section", commentRoot), parent);
     
-    if (!webpage.areCommentsAvailable) {
+    this.removeMargin();
+    this.childSupport = this.childSupport;
+    this.commentRoot = commentRoot;
+    const root = this.getRoot();
+    
+    if (!json.areCommentsAvailable) {
       this.rootElement.classList.add("display-none");
     }
+    
+    root.addJSONListener?.call(root, json => {
+      this.rootElement.classList.toggle("display-none", !json.areCommentsAvailable);
+    });
     
     this.#commentContainer = Div("comments-container");
   
     let commentForm = undefined;
     if (user !== null) {
-      commentForm = CommentForm(this, undefined, false);
+      commentForm = CommentForm(this, undefined, editable);
     }
-    
-    
-    this.rootElement.append(
+  
+  
+    this.commentRoot.append(
       Div("comments-count", [
         "Comments: ",
         Async(async () => {
@@ -49,7 +59,20 @@ class WCommentSection extends Widget {
     
     if (editable === true) {
       this.#commentContainer.append(
-        CommentForm(this, undefined, true),
+        Comment({
+          content: `[[["THIS COMMENT SECTION IS JUST FOR PREVIEW.", 0]]]`,
+          dateAdded: Date.now(),
+          isTopLevel: true,
+          reactionCount: 177013,
+          ID: 0,
+          username: "Username",
+          usersID: 0,
+          timePosted: Date.now() - (1000 * 60 * 60 * 24 * 366),
+          creatorID: 9,
+          level: 1,
+          isPinned: true,
+          reaction: 0
+        }, this, true),
         Comment({
           content: `[["Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Duis sapien nunc, commodo et, interdum suscipit, sollicitudin et, dolor. Fusce suscipit libero eget elit. Nunc auctor. Pellentesque ipsum. Integer vulputate sem a nibh rutrum consequat. In dapibus augue non sapien. Nullam at arcu a est sollicitudin euismod. Aliquam erat volutpat. Fusce wisi. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos. Vestibulum fermentum tortor id mi. Aenean fermentum risus id tortor."]]`,
           dateAdded: Date.now(),
@@ -63,7 +86,7 @@ class WCommentSection extends Widget {
           level: 0,
           isPinned: true,
           reaction: 0
-        }, this)
+        }, this, true)
       );
       return;
     }
@@ -109,7 +132,7 @@ class WCommentSection extends Widget {
    * @returns {WCommentSection}
    */
   static build (json, parent, editable = false) {
-    return new WCommentSection({}, parent, editable);
+    return new WCommentSection(json, parent, editable);
   }
   
   /**
@@ -218,14 +241,15 @@ widgets.define("WCommentSection", WCommentSection);
 /**
  * @param {DatabaseComment} comment
  * @param {Widget} context
+ * @param {boolean} isJustForShow
  */
-function Comment (comment, context) {
+function Comment (comment, context, isJustForShow = false) {
   comment.reactionCount ||= 0;
   comment.reaction ||= 0;
   
   const content = WTextEditor.build({
     content: JSON.parse(comment.content),
-    mode: "fancy"
+    // mode: "fancy"
   }, context, false);
   
   const id = guid(true);
@@ -259,28 +283,28 @@ function Comment (comment, context) {
   const yourReply = Div("replies your-reply display-none");
   const replies = Div("replies container display-none");
   
-  const reactionCount = Div("reaction-count", String(+comment.reactionCount + +comment.reaction));
+  const reactionCount = Div("reaction-count", Number(+comment.reactionCount + +comment.reaction).toLocaleString());
   let repliesScroller;
   
-  console.log(comment.childrenCount ?? 0 >= 1)
   const start = (
     Div("start", [
       Button("arrow up", Span(__, "∧"), async () => {
         if (user === null) return;
-        
         if (start.dataset.reaction === "1") {
           await removeReaction();
           return;
         }
         
-        const response = await AJAX.patch(`/comments/react/${comment.ID}/like`, JSONHandler(), AJAX.CORS_OPTIONS, AJAX.SERVER_HOME)
-  
-        if (response.error) {
-          alert(response.error);
-          return;
+        if (isJustForShow === false) {
+          const response = await AJAX.patch(`/comments/react/${comment.ID}/like`, JSONHandler(), AJAX.CORS_OPTIONS, AJAX.SERVER_HOME)
+    
+          if (response.error) {
+            alert(response.error);
+            return;
+          }
+    
+          if (response.rowCount !== 1) return;
         }
-  
-        if (response.rowCount !== 1) return;
         
         start.dataset.reaction = "1";
         recalculate();
@@ -293,15 +317,17 @@ function Comment (comment, context) {
           await removeReaction();
           return;
         }
-  
-        const response = await AJAX.patch(`/comments/react/${comment.ID}/dislike`, JSONHandler(), AJAX.CORS_OPTIONS, AJAX.SERVER_HOME)
-  
-        if (response.error) {
-          alert(response.error);
-          return;
+        
+        if (isJustForShow === false) {
+          const response = await AJAX.patch(`/comments/react/${comment.ID}/dislike`, JSONHandler(), AJAX.CORS_OPTIONS, AJAX.SERVER_HOME)
+    
+          if (response.error) {
+            alert(response.error);
+            return;
+          }
+    
+          if (response.rowCount !== 1) return;
         }
-  
-        if (response.rowCount !== 1) return;
   
         start.dataset.reaction = "-1";
         recalculate();
@@ -310,7 +336,7 @@ function Comment (comment, context) {
         Div("separator"),
         OptionalComponent(user !== null,
           Button("reply", "Reply", evt => {
-            if (user === null) return;
+            if (user === null || isJustForShow !== false) return;
             
             evt.target.closest(".comment").classList.add("replying");
             yourReply.classList.toggle("display-none", false);
@@ -320,6 +346,8 @@ function Comment (comment, context) {
           })
         ),
         Button("see-replies" + ((comment.childrenCount ?? 0) < 1 ? " display-none" : ""), `See replies (${comment.childrenCount ?? 0})`, evt => {
+          if (isJustForShow !== false) return;
+          
           if (repliesScroller === undefined) {
             repliesScroller = new InfiniteScroller(replies, subCommentsLoader(comment.ID, context, replies));
           }
@@ -335,14 +363,16 @@ function Comment (comment, context) {
   
   
   async function removeReaction () {
-    const response = await AJAX.patch(`/comments/react/${comment.ID}/none`, JSONHandler(), AJAX.CORS_OPTIONS, AJAX.SERVER_HOME);
-    
-    if (response.error) {
-      alert(response.error);
-      return;
+    if (isJustForShow === false) {
+      const response = await AJAX.patch(`/comments/react/${comment.ID}/none`, JSONHandler(), AJAX.CORS_OPTIONS, AJAX.SERVER_HOME);
+      
+      if (response.error) {
+        alert(response.error);
+        return;
+      }
+      
+      if (response.rowCount !== 1) return;
     }
-    
-    if (response.rowCount !== 1) return;
     
     start.dataset.reaction = "0";
     recalculate();
@@ -384,8 +414,8 @@ function Comment (comment, context) {
         Div("end", [
           OptionalComponent(user !== null && (user.level === 0 || comment.creatorID === user.ID || user.ID === comment.usersID),
             Button("delete", "Remove", async (evt) => {
+              if (isJustForShow !== false) return;
               if (!(user.level === 0 || comment.creatorID === user.ID || user.ID === comment.usersID)) return;
-              
               if (!confirm("Are you sure you want to remove comment from: " + comment.username)) return;
               
               const response = await AJAX.delete("/comments/" + comment.ID, JSONHandler(), AJAX.CORS_OPTIONS, AJAX.SERVER_HOME);
@@ -415,6 +445,7 @@ function Comment (comment, context) {
           ),
           OptionalComponent(comment.isTopLevel,
             Button("star-container circular " + (user !== null && comment.creatorID === user.ID && comment.isTopLevel ? "" : "locked"), Div("star"), async evt => {
+              if (isJustForShow !== false) return;
               if (!(user !== null && comment.creatorID === user.ID && comment.isTopLevel)) return;
     
               comment.isPinned = !comment.isPinned;
@@ -467,7 +498,7 @@ function subCommentsLoader (commentID, context, container) {
 function CommentForm (context, parentCommentID = undefined, isJustForShow = false) {
   const textEditor = WTextEditor.build({
     content: [],
-    mode: "fancy",
+    // mode: "fancy",
     hint: "Write a comment..."
   }, context, true);
   
@@ -509,7 +540,7 @@ function CommentForm (context, parentCommentID = undefined, isJustForShow = fals
         Div("end", [
           Button(__, "Cancel", cancelForm),
           Button("submit", "Submit", async (evt) => {
-            if (isJustForShow === true || webpage.areCommentsAvailable === false) return;
+            if (isJustForShow === true) return;
             
             const payload = JSON.stringify(textEditor.save().content);
             if (payload.length > 2048) {

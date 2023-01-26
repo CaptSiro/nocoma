@@ -51,14 +51,13 @@
         ->forwardFailure($response)
         ->getSuccess();
       
-      file_put_contents(HOSTS_DIR . "/$user->website/$source.json", '{"type": "WRoot","children": [{"type": "WHeading", "level": 1, "text": "' . $request->body->get("title") . '"}]}');
+      file_put_contents(HOSTS_DIR . "/$user->website/$source.json", '{"type": "WRoot","areCommentsAvailable":'.json_encode(boolval($request->body->get("areCommentsAvailable"))).',"children":[{"type":"WHeading","level":1,"text":"'.$request->body->get("title").'"}]}');
       $created = Website::getByID(Website::create(
         $user->ID,
         $request->body->get("title"),
         $source,
         intval($request->body->get("isPublic")),
-        intval($request->body->get("isHomePage")),
-        intval($request->body->get("areCommentsAvailable"))
+        intval($request->body->get("isHomePage"))
       )->lastInsertedID)
         ->forwardFailure($response)
         ->getSuccess();
@@ -162,6 +161,81 @@
   $pageRouter->use("/appeal", new RouterPromise(__DIR__ . "/appeal-router.php"));
   
   
+  $editableProperties = [
+    "title" => ["string", "''"],
+    "themesSRC" => ["string", null],
+    "thumbnailSRC" => ["string", null]
+  ];
+  $pageRouter->patch("/", [
+    Middleware::requireToBeLoggedIn(),
+    function (Request $request, Response $response) use ($editableProperties) {
+      $id = $request->body->get("id");
+      $property = $request->body->get("property");
+      $value = $request->body->looselyGet("value");
+    
+      if (!is_int($id)) {
+        $response->fail(new TypeExc("ID must be integer"));
+      }
+      
+      if (!in_array($property, array_keys($editableProperties))) {
+        $response->fail(new IllegalArgumentExc("Property value must be name of editable properties."));
+      }
+      
+      if ($value === null) {
+        $response->json(Website::set(
+          intval($id),
+          $property,
+          new DatabaseParam($property, $editableProperties[$property][1], PDO::PARAM_STR)
+        ));
+      }
+      
+      if (gettype($value) !== $editableProperties[$property][0]) {
+        $response->fail(new TypeExc("Provided value is not of desired type."));
+      }
+      
+      $response->json(Website::set(
+        intval($id),
+        $property,
+        new DatabaseParam(
+          $property,
+          $value,
+          $editableProperties[$property][0] === "integer" ? PDO::PARAM_INT : PDO::PARAM_STR
+        )
+      ));
+    }
+  ]);
+  
+  $visibility = ["public", "private", "planned"];
+  $pageRouter->patch("/visibility/:visibility", [
+    Middleware::requireToBeLoggedIn(),
+    function (Request $request, Response $response) {
+      if ($request->param->get("visibility") === "planned") {
+        $response->json(Website::setAsPlanned(
+          $request->body->get("id"),
+          $request->body->looselyGet("releaseDate")
+        ));
+      }
+      
+      Website::removePlannedStatus($request->body->get("id"));
+      
+      $response->json(Website::set(
+        $request->body->get("id"),
+        "isPublic",
+        new DatabaseParam("isPublic", $request->param->get("visibility") === "public" ? 1 : 0)
+      ));
+    }
+  ], ["visibility" => Router::REGEX_ENUM($visibility)]);
+  
+  
+  $pageRouter->patch("/release-date", [
+    Middleware::requireToBeLoggedIn(),
+    function (Request $request, Response $response) {
+      $response->json(Website::setReleaseDate(
+        $request->body->get("id"),
+        $request->body->get("releaseDate")
+      ));
+    }
+  ]);
   //TODO: set to PATCH
   //TODO: refactor to -> /set/:class/:function/:argument
 //  $pageRouter->get("/set-as-home-page/:websiteID", [

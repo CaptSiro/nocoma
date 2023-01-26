@@ -138,8 +138,6 @@ registerSubmit.addEventListener("click", evt => {
   }
 
   registerErrorView.classList.remove("show");
-  
-  console.log(body);
 
   AJAX.post("/auth/register", JSONHandlerSync(json => {
     if (json.error !== undefined) {
@@ -223,8 +221,6 @@ requestCode.addEventListener("pointerdown", evt => {
   }
   
   AJAX.get("/auth/verification-code", JSONHandlerSync(json => {
-    console.log(json);
-    
     if (json.error !== undefined) {
       verificationError.textContent = json.error;
       verificationError.classList.add("show");

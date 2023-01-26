@@ -151,8 +151,8 @@ class WTextEditor extends Widget {
     this.#json = json;
     this.#editable = editable;
     
-    this.rootElement.classList.remove("margin");
-    this.rootElement.classList.remove("widget");
+    this.removeMargin();
+    this.removeMargin();
     
     this.childSupport = "none";
     
@@ -267,9 +267,9 @@ class WTextEditor extends Widget {
    * @override
    * @returns {ComponentContent}
    */
-  get inspectorJSON () {
+  get inspectorHTML () {
     return (
-      TitleInspector("Text")
+      NotInspectorAble()
     )
   }
   

@@ -4,35 +4,43 @@
   require_once __DIR__ . "/../lib/retval/retval.php";
 
   class Website extends StrictModel {
-    protected $ID, $usersID, $thumbnailSRC, $src, $timeCreated, $title,
+    protected $ID, $usersID, $website, $thumbnailSRC, $thumbnail, $src, $timeCreated, $title,
       $isTemplate, $isPublic, $areCommentsAvailable, $isHomePage, $isTakenDown, $releaseDate;
     const ALL_COLUMNS = ["ID", "usersID", "thumbnailSRC", "src", "timeCreated", "title",
-      "isTemplate", "isPublic", "areCommentsAvailable", "isHomePage"];
+      "isTemplate", "isPublic", "isHomePage"];
     
     const TABLE_NAME = "websites";
     const PLANNED_WEBSITES_TABLE_NAME = "plannedwebsites";
     
     const IS_TAKEN_DOWN_CONDITION_PROJECTION = "(takedowns.websitesID IS NOT NULL) as isTakenDown";
     const IS_TAKEN_DOWN_CONDITION = "LEFT JOIN takedowns ON websites.ID = takedowns.websitesID";
-
+    
+    const JOIN_PLANNED_WEBSITES_PROJECTION = "plannedwebsites.releaseDate releaseDate";
+    const JOIN_PLANNED_WEBSITES = "LEFT JOIN plannedwebsites ON plannedwebsites.websitesID = websites.ID";
+    
+    const THUMBNAIL_PROJECTION = "CONCAT(thumbnailMedia.src, thumbnailMedia.extension) as thumbnail";
+    const THUMBNAIL = "LEFT JOIN media as thumbnailMedia ON websites.thumbnailSRC = thumbnailMedia.src";
+  
+    const WEBSITE_PROJECTION = "websiteUsers.website website";
+    const WEBSITE = "JOIN users as websiteUsers ON websites.usersID = websiteUsers.ID";
+    
     protected static function getNumberProps (): array { return ["ID", "usersID"]; }
     protected static function getBooleanProps (): array { return [
-      "isTemplate", "isPublic", "areCommentsAvailable", "isHomePage", "isTakenDown"
+      "isTemplate", "isPublic", "isHomePage", "isTakenDown"
     ]; }
     
     
     
-    public static function create (int $userID, string $title, string $src, int $isPublic, int $isHomePage, $areCommentsAvailable): SideEffect {
+    public static function create (int $userID, string $title, string $src, int $isPublic, int $isHomePage): SideEffect {
       return Database::get()->statement(
-        "INSERT INTO websites (`usersID`, `title`, `src`, `isPublic`, `isHomePage`, `areCommentsAvailable`)
-        VALUE (:userID, :title, :src, :isPublic, :isHomePage, :areCommentsAvailable)",
+        "INSERT INTO websites (`usersID`, `title`, `src`, `isPublic`, `isHomePage`)
+        VALUE (:userID, :title, :src, :isPublic, :isHomePage)",
         [
           new DatabaseParam("userID", $userID),
           new DatabaseParam("title", $title, PDO::PARAM_STR),
           new DatabaseParam("src", $src, PDO::PARAM_STR),
           new DatabaseParam("isPublic", $isPublic),
           new DatabaseParam("isHomePage", $isHomePage),
-          new DatabaseParam("areCommentsAvailable", $areCommentsAvailable),
         ]
       );
     }
@@ -67,6 +75,45 @@
       
       return 1;
     }
+    public static function setAsPlanned (int $websiteID, $releaseDate = null): SideEffect {
+      $releaseDate = $releaseDate ?: (new DateTime())->format(DateTimeInterface::ATOM);
+      
+      $isAlreadyPlanned = Count::parseProps(Database::get()->fetch(
+        "SELECT COUNT(*) amount FROM plannedwebsites WHERE websitesID = :websiteID",
+        Count::class,
+        [new DatabaseParam("websiteID", $websiteID)]
+      ))->amount != 0;
+      
+      
+      if ($isAlreadyPlanned) {
+        return self::setReleaseDate($websiteID, $releaseDate);
+      }
+      
+      Website::set(
+        $websiteID,
+        "isPublic",
+        new DatabaseParam("isPublic", 0)
+      );
+      
+      return Database::get()->statement(
+        "INSERT INTO plannedwebsites (websitesID, releaseDate) VALUE (:websiteID, :releaseDate)",
+        [
+          new DatabaseParam("websiteID", $websiteID),
+          new DatabaseParam("releaseDate", $releaseDate, PDO::PARAM_STR)
+        ]
+      );
+    }
+    public static function setReleaseDate (int $websiteID, $releaseDate = null): SideEffect {
+      $releaseDate = $releaseDate ?: (new DateTime())->format("c");
+      
+      return Database::get()->statement(
+        "UPDATE plannedwebsites SET releaseDate = :releaseDate WHERE websitesID = :websiteID",
+        [
+          new DatabaseParam("releaseDate", $releaseDate, PDO::PARAM_STR),
+          new DatabaseParam("websiteID", $websiteID),
+        ]
+      );
+    }
     public static function takeDown (int $websiteID, string $message): Result {
       try {
         return success(Database::get()->statement(
@@ -87,6 +134,12 @@
         [new DatabaseParam("websiteID", $websiteID)]
       ));
     }
+    public static function removePlannedStatus (int $websiteID): SideEffect {
+      return Database::get()->statement(
+        "DELETE FROM plannedwebsites WHERE websitesID = :websiteID LIMIT 1",
+        [new DatabaseParam("websiteID", $websiteID)]
+      );
+    }
     
     public static function set (int $websiteID, string $column, DatabaseParam $param): SideEffect {
       return Database::get()->statement(
@@ -99,10 +152,16 @@
       $post = Database::get()->fetch(
         "SELECT
             " . self::generateSelectColumns(self::TABLE_NAME, self::ALL_COLUMNS, true) . "
-            " . self::IS_TAKEN_DOWN_CONDITION_PROJECTION . "
+            " . self::IS_TAKEN_DOWN_CONDITION_PROJECTION . ",
+            " . self::JOIN_PLANNED_WEBSITES_PROJECTION . ",
+            " . self::THUMBNAIL_PROJECTION . ",
+            " . self::WEBSITE_PROJECTION . "
         FROM
           `websites`
           " . self::IS_TAKEN_DOWN_CONDITION . "
+          " . self::JOIN_PLANNED_WEBSITES . "
+          " . self::THUMBNAIL . "
+          " . self::WEBSITE . "
         WHERE websites.ID = :id",
         self::class,
         [new DatabaseParam("id", $id)]
@@ -123,10 +182,16 @@
       $post = Database::get()->fetch(
         "SELECT
           " . self::generateSelectColumns(self::TABLE_NAME, self::ALL_COLUMNS, true) . "
-          " . self::IS_TAKEN_DOWN_CONDITION_PROJECTION . "
+          " . self::IS_TAKEN_DOWN_CONDITION_PROJECTION . ",
+          " . self::JOIN_PLANNED_WEBSITES_PROJECTION . ",
+          " . self::THUMBNAIL_PROJECTION . ",
+          " . self::WEBSITE_PROJECTION . "
         FROM
           websites
           " . self::IS_TAKEN_DOWN_CONDITION . "
+          " . self::JOIN_PLANNED_WEBSITES . "
+          " . self::THUMBNAIL . "
+          " . self::WEBSITE . "
           JOIN users ON users.ID = websites.usersID
             AND websites.isHomePage = 1
             AND users.website = :website",
@@ -149,9 +214,15 @@
       $post = Database::get()->fetch(
         "SELECT
           " . self::generateSelectColumns(self::TABLE_NAME, self::ALL_COLUMNS, true) . "
-          " . self::IS_TAKEN_DOWN_CONDITION_PROJECTION . "
+          " . self::IS_TAKEN_DOWN_CONDITION_PROJECTION . ",
+          " . self::JOIN_PLANNED_WEBSITES_PROJECTION . ",
+          " . self::THUMBNAIL_PROJECTION . ",
+          users.website website
         FROM
           `websites`
+          " . self::IS_TAKEN_DOWN_CONDITION . "
+          " . self::JOIN_PLANNED_WEBSITES . "
+          " . self::THUMBNAIL . "
           JOIN users ON users.ID = websites.usersID
             AND websites.isPublic = 1
             AND websites.isTakenDown = 0
@@ -172,10 +243,14 @@
         "SELECT
           " . self::generateSelectColumns(self::TABLE_NAME, array_diff(self::ALL_COLUMNS, ["timeCreated"]), true) . "
           " . self::IS_TAKEN_DOWN_CONDITION_PROJECTION . ",
-          MIN(websites.timeCreated) timeCreated
+          MIN(websites.timeCreated) timeCreated,
+          " . self::JOIN_PLANNED_WEBSITES_PROJECTION . ",
+          " . self::THUMBNAIL_PROJECTION . "
         FROM
           `websites`
           " . self::IS_TAKEN_DOWN_CONDITION . "
+          " . self::JOIN_PLANNED_WEBSITES . "
+          " . self::THUMBNAIL . "
           JOIN users ON users.ID = websites.usersID
             AND users.website = :website
             AND websites.src = :source",
@@ -192,6 +267,35 @@
   
       return success(self::parseProps($post));
     }
+  
+    public static function getBySourceWithUser (string $source): Result {
+      $post = Database::get()->fetch(
+        "SELECT
+          " . self::generateSelectColumns(self::TABLE_NAME, array_diff(self::ALL_COLUMNS, ["timeCreated"]), true) . "
+          " . self::IS_TAKEN_DOWN_CONDITION_PROJECTION . ",
+          MIN(websites.timeCreated) timeCreated,
+          " . self::JOIN_PLANNED_WEBSITES_PROJECTION . ",
+          " . self::THUMBNAIL_PROJECTION . ",
+          users.website website
+        FROM
+          `websites`
+          " . self::IS_TAKEN_DOWN_CONDITION . "
+          " . self::JOIN_PLANNED_WEBSITES . "
+          " . self::THUMBNAIL . "
+          JOIN users ON users.ID = websites.usersID
+            AND websites.src = :source",
+        self::class,
+        [
+          new DatabaseParam("source", $source, PDO::PARAM_STR),
+        ]
+      );
+    
+      if (!$post) {
+        return fail(new NotFoundExc("This website does not exist."));
+      }
+    
+      return success(self::parseProps($post));
+    }
     
     
     const SET_RESTRICTION_ALL = 0;
@@ -205,10 +309,14 @@
           "SELECT
           " . self::generateSelectColumns(self::TABLE_NAME, self::ALL_COLUMNS, true) . "
           " . self::IS_TAKEN_DOWN_CONDITION_PROJECTION . ",
-          `" . self::PLANNED_WEBSITES_TABLE_NAME ."`.`releaseDate` as releaseDate
+          `" . self::PLANNED_WEBSITES_TABLE_NAME ."`.`releaseDate` as releaseDate,
+          " . self::THUMBNAIL_PROJECTION . ",
+          " . self::WEBSITE_PROJECTION . "
         FROM `websites`
           JOIN `" . self::PLANNED_WEBSITES_TABLE_NAME . "` ON `" . self::PLANNED_WEBSITES_TABLE_NAME . "`.websitesID = websites.ID
-          " . self::IS_TAKEN_DOWN_CONDITION . "
+          " . self::IS_TAKEN_DOWN_CONDITION . ",
+          " . self::THUMBNAIL . "
+          " . self::WEBSITE . "
         WHERE websites.usersID = :userID
         ORDER BY timeCreated DESC
         LIMIT :offset, " . self::SET_SIZE,
@@ -226,9 +334,15 @@
       return self::parseProps(Database::get()->fetchAll(
         "SELECT
           " . self::generateSelectColumns(self::TABLE_NAME, self::ALL_COLUMNS, true) . "
-          " . self::IS_TAKEN_DOWN_CONDITION_PROJECTION . "
+          " . self::IS_TAKEN_DOWN_CONDITION_PROJECTION . ",
+          " . self::JOIN_PLANNED_WEBSITES_PROJECTION . ",
+          " . self::THUMBNAIL_PROJECTION . ",
+          " . self::WEBSITE_PROJECTION . "
         FROM `websites`
           " . self::IS_TAKEN_DOWN_CONDITION . "
+          " . self::JOIN_PLANNED_WEBSITES . "
+          " . self::THUMBNAIL . "
+          " . self::WEBSITE . "
         WHERE websites.usersID = :userID $restrictions
         ORDER BY timeCreated DESC
         LIMIT :offset, " . self::SET_SIZE,

@@ -74,7 +74,7 @@
 }
 .u-column span {
   font-size: smaller;
-  color: var(--text-color-3);
+  color: var(--text-color-2);
   text-transform: uppercase;
 }
 .u-column span::before {
@@ -177,7 +177,7 @@
 }
 .appeal .u-head {
   background-color: var(--container-opposite-3);
-  color: var(--text-color-opposite);
+  color: var(--text-color-opposite-0);
   border: unset;
 
   transition: background-color 250ms linear;
@@ -186,7 +186,7 @@
   background-color: var(--container-opposite-2);
 }
 .appeal .u-column span {
-  color: var(--text-color-opposite-2);
+  color: var(--text-color-opposite-1);
 }
 .a-body {
   display: flex;
@@ -198,7 +198,7 @@
 .a-msg.null::before {
   content: "No message";
   font-style: italic;
-  color: var(--text-color-2);
+  color: var(--text-color-1);
 }
 .a-controls {
   display: flex;

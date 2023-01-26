@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Crete+Round:ital@0;1&display=swap');
+
 * {
   padding: 0;
   margin: 0;
@@ -6,28 +8,34 @@
 }
 
 :root {
-  --text-color: #223;
-  --text-color-2: #556;
-  --text-color-3: #778;
-  --text-color-opposite: #eef;
-  --text-color-opposite-2: #ccd;
-  --container-0: #fff;
-  --container-1: #eef;
-  --container-2: #dde;
-  --container-3: #ccd;
-  --container-4: #99a;
-  --container-opposite-0: rgb(177, 59, 165);
-  --container-opposite-1: rgb(120, 37, 131);
-  --container-opposite-2: rgb(69, 20, 93);
-  --container-opposite-3: rgb(23, 5, 45);
-  --blue: #87e5ff;
-  --pink: #FFACC9;
+  --text-color-0: #ccd;
+  --text-color-1: #99a;
+  --text-color-2: #778;
+  --text-color-opposite-0: #ccd;
+  --text-color-opposite-1: #99a;
+  --container-0: #040014;
+  --container-1: #141024;
+  --container-2: #242034;
+  --container-3: #343044;
+  --container-4: #444054;
+  --container-opposite-0: #CA2FFF;
+  --container-opposite-1: #A226CC;
+  --container-opposite-2: #661880;
+  --container-opposite-3: #48115A;
+
+  --font-0: 'Inter', sans-serif;
+  --font-1: 'Crete Round', serif;
+  --font-2: 'Inter', sans-serif;
 }
 
+html {
+  background-color: var(--container-0);
+  color: var(--text-color-0);
+}
 
 ::selection {
-  color: var(--text-color-opposite);
-  background-color: var(--container-opposite-3);
+  color: var(--text-color-opposite-0);
+  background-color: var(--container-opposite-0);
 }
 .no-user-select {
   user-select: none;
@@ -87,7 +95,7 @@
 
 
 .text-icon {
-  color: var(--text-color);
+  color: var(--text-color-0);
 }
 
 
@@ -110,17 +118,18 @@ p.blockquote {
   padding: 8px;
   margin-top: 4px;
   white-space: normal;
+  color: black;
 }
 
 p.note {
-  background-color: #FFDEBE;
-  border-color: #FE8402;
+  background-color: #e1925a;
+  border-color: #c55106;
 }
 
 p.error {
   display: none;
-  background-color: #FFBABA;
-  border-color: #FF5252;
+  background-color: #f3919f;
+  border-color: #f13854;
 }
 
 .show {
@@ -167,10 +176,10 @@ input[type="checkbox"] {
   margin: 0 !important;
 
   font: inherit;
-  color: black;
+  color: var(--text-color-0);
   width: 1.15em;
   height: 1.15em;
-  border: 0.08em solid black;
+  border: 0.08em solid var(--container-opposite-3);
   border-radius: 0.15em !important;
   transform: translateY(-0.075em);
   transition: background-color 100ms linear;
@@ -219,7 +228,7 @@ input[type="radio"]:after {
   padding: 50px;
   background-color: var(--container-0);
   border-radius: 8px;
-  box-shadow: rgba(100, 100, 111, 0.2) 0 7px 29px 0;
+  box-shadow: var(--container-3) 0 7px 29px 0;
 }
 
 
@@ -244,14 +253,8 @@ input[type="radio"]:after {
   transition: background-color 500ms linear;
 }
 .validated {
-  background-color: #A5F0C5 !important;
-}
-.validated.darken {
-  background-color: #035956 !important;
+  background-color: #0aa25e !important;
 }
 .rejected {
-  background-color: #FFBABA !important;
-}
-.rejected.darken {
-  background-color: #900C3E !important;
+  background-color: #b21351 !important;
 }

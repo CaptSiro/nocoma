@@ -6,6 +6,7 @@
 
   class Router extends RouterLike implements Parametric {
     /** Try to avoid using as much as possible. May cause problems with `'internal param break character'` (characters that are not considered as valid param name. `/user/:user-id` interpreted as `/user/{space for 'user' parameter}-id`) */
+    const REGEX_DEFAULT = "([^-.~]+)";
     const REGEX_ANY = "(.*)";
     const REGEX_NUMBER = "([0-9]+)";
     const REGEX_WORD = "([a-zA-Z]+)";
@@ -14,7 +15,7 @@
     const REGEX_SENTENCE = "([a-zA-Z_]+)";
     const REGEX_SENTENCE_UPPER = "([A-Z_]+)";
     const REGEX_SENTENCE_LOWER = "([a-z_]+)";
-    const REGEX_BASE64_URL_SAFE = "([a-zA-Z0-9_-]+)";
+    const REGEX_BASE64_URL_SAFE = "([a-zA-Z0-9_\\-]+)";
     
     public static function REGEX_ENUM (array $values) {
       return "(" . join("|", $values) . ")";

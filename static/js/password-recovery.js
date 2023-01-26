@@ -17,7 +17,6 @@ newPassword.addEventListener("input", sameValues(newPassword, newPasswordAgain))
 newPasswordAgain.addEventListener("input", sameValues(newPassword, newPasswordAgain));
 
 submitButton.addEventListener("pointerdown", evt => {
-  console.log("click?")
   if (
     newPassword.value === "" || newPassword.classList.contains("invalid") ||
     newPasswordAgain.value === "" || newPasswordAgain.classList.contains("invalid")

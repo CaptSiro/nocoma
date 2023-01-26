@@ -120,7 +120,7 @@
     const ORDER_BY_NAME = "1";
     const ORDER_BY_SIZE = "2";
     
-    public static function getSet (int $userID, int $offset, string $orderBy = self::ORDER_BY_DATE_ACCEPTED) {
+    public static function getSet (int $userID, int $offset, string $orderBy = self::ORDER_BY_DATE_ACCEPTED, $type = "") {
       switch ($orderBy) {
         case self::ORDER_BY_NAME: {
           $order = "basename ASC, extension ASC";
@@ -141,12 +141,14 @@
           " . self::generateSelectColumns(self::TABLE_NAME, self::ALL_COLUMNS) . "
         FROM `media`
         WHERE media.usersID = :userID
+          AND media.mimeContentType LIKE :like
         ORDER BY $order
         LIMIT :offset, " . self::SET_SIZE,
         self::class,
         [
-          new DatabaseParam("offset", $offset * self::SET_SIZE),
           new DatabaseParam("userID", $userID),
+          new DatabaseParam("like", "$type%", PDO::PARAM_STR),
+          new DatabaseParam("offset", $offset * self::SET_SIZE),
         ]
       ));
     }

@@ -21,9 +21,9 @@ class WPage extends ContainerWidget {
     super(
       Div("w-page" + (json.forceFullscreen ? " fullscreen" : "")),
       parent,
-      editable,
-      true
+      editable
     );
+    this.removeMargin();
     this.childSupport = this.childSupport;
     
     if (json.forceFullscreen !== true) {
@@ -58,7 +58,7 @@ class WPage extends ContainerWidget {
    */
   get inspectorHTML () {
     return (
-      TitleInspector("Page")
+      NotInspectorAble()
     )
   }
 

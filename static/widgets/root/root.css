@@ -18,7 +18,7 @@ body {
 }
 
 .widget.margin {
-  margin-bottom: 16px;
+  margin: 8px 16px;
 }
 .widget:hover > .gui,
 .widget:focus > .gui {
@@ -27,7 +27,7 @@ body {
 
 .widget.edit:hover,
 .widget.edit:focus {
-  outline: 2px solid black;
+  outline: 2px solid var(--container-opposite-2);
   z-index: 3;
 }
 .widget.edit:hover {
@@ -37,7 +37,7 @@ body {
 .gui button {
   user-select: none;
   padding: 4px;
-  color: white;
+  color: var(--text-color-opposite-0);
   background-color: var(--container-opposite-2);
   border: 2px solid var(--container-opposite-3);
   
@@ -50,7 +50,15 @@ body {
   transition: background-color 0ms linear;
 }
 
+.gui button > * {
+  color: inherit;
+}
+
 .w-root {
   width: 100%;
-  padding: 0 16px;
+  min-height: 100%;
+  /*padding: 0 16px;*/
+
+  background-color: var(--container-0);
+  color: var(--text-color-0);
 }

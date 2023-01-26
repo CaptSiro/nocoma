@@ -278,6 +278,9 @@
   
       $this->send($message);
     }
+    public function fail ($exc) {
+      $this->json($exc);
+    }
     /**
      * Reads file and sends it contents to the user.
      *

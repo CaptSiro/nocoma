@@ -1,16 +1,16 @@
-INSERT INTO `users` (`ID`, `themesID`, `email`, `password`, `level`, `website`, `isVerified`, `isDisabled`, `username`) VALUES
-(1, 1, 'admin@nocoma.com', '$2y$10$2SxdsJXmXX0pQO8/hRozwexRygBiP25ObuXS6khbUTotC08ydGOf.', 0, 'admin', 1, 0, 'admin'),
-(2, 1, 'ceyif78060@edinel.com', '$2y$10$E3ipKoFt2LrvwBLhAWLwLeknI4lPUwgtKZLNQfIfSTNroCeO26C/S', 1, 'ceyif', 1, 0, 'Ceyif'),
-(3, 1, 'nibad70145@diratu.com', '$2y$10$Q1oKpaJ63H09XDnCwIoAk.tswlOSqk2JbhvE.oUsbOkZL7XXKtY..', 1, 'nibad', 1, 0, 'Nibad'),
-(6, 1, 'wifono8433@lubde.com', '$2y$10$TSN6ai2/lZ45Qe7tTl5lnO.mIK2fo2eq.GlRVqzIVxacQp/x3O5kq', 1, 'wifono', 1, 0, 'Wifono'),
-(8, 1, 'girodoy421@nazyno.com', '$2y$10$ML16xzaVCp4MTqMQsijHy.02nYYSk1dAKeIRsx/tdAKmFX7.STcSm', 1, 'giro', 1, 0, 'Girodoy'),
-(9, 1, 'user@nocoma.com', '$2y$10$xNL5JA9FYinWkOIsIFehmesCk.kNfFUQrK6z3UOnW/8UYhnnPGBoO', 1, '__test-bot__', 1, 0, 'TestBot'),
-(11, 1, 'horakja19@zaci.spse.cz', '$2y$10$sMNQPU6chgLpGX/mX/hAY.DJARLFhP4SLGFP5t6jig8UBejPI2PrS', 1, 'horakja19', 1, 0, 'Jan_Horak');
+INSERT INTO `users` (`ID`, `email`, `password`, `level`, `website`, `isVerified`, `isDisabled`, `username`) VALUES
+(1, 'admin@nocoma.com', '$2y$10$2SxdsJXmXX0pQO8/hRozwexRygBiP25ObuXS6khbUTotC08ydGOf.', 0, 'admin', 1, 0, 'admin'),
+(2, 'ceyif78060@edinel.com', '$2y$10$E3ipKoFt2LrvwBLhAWLwLeknI4lPUwgtKZLNQfIfSTNroCeO26C/S', 1, 'ceyif', 1, 0, 'Ceyif'),
+(3, 'nibad70145@diratu.com', '$2y$10$Q1oKpaJ63H09XDnCwIoAk.tswlOSqk2JbhvE.oUsbOkZL7XXKtY..', 1, 'nibad', 1, 0, 'Nibad'),
+(6, 'wifono8433@lubde.com', '$2y$10$TSN6ai2/lZ45Qe7tTl5lnO.mIK2fo2eq.GlRVqzIVxacQp/x3O5kq', 1, 'wifono', 1, 0, 'Wifono'),
+(8, 'girodoy421@nazyno.com', '$2y$10$ML16xzaVCp4MTqMQsijHy.02nYYSk1dAKeIRsx/tdAKmFX7.STcSm', 1, 'giro', 1, 0, 'Girodoy'),
+(9, 'user@nocoma.com', '$2y$10$xNL5JA9FYinWkOIsIFehmesCk.kNfFUQrK6z3UOnW/8UYhnnPGBoO', 1, '__test-bot__', 1, 0, 'TestBot'),
+(11, 'horakja19@zaci.spse.cz', '$2y$10$sMNQPU6chgLpGX/mX/hAY.DJARLFhP4SLGFP5t6jig8UBejPI2PrS', 1, 'horakja19', 1, 0, 'Jan_Horak');
 
 
 
-INSERT INTO `websites` (`ID`, `usersID`, `thumbnailSRC`, `src`, `timeCreated`, `title`, `isTemplate`, `isPublic`, `areCommentsAvailable`, `isHomepage`, `isTakenDown`) VALUES
-(1, 9, '', 'sdps8Hq3_o', '2023-01-12 19:24:11', 'Hello world!', 0, 1, 1, 1, 0);
+INSERT INTO `websites` (`ID`, `usersID`, `thumbnailSRC`, `src`, `timeCreated`, `title`, `isTemplate`, `isPublic`, `isHomepage`, `isTakenDown`) VALUES
+(1, 9, '', 'sdps8Hq3_o', '2023-01-12 19:24:11', 'Hello world!', 0, 1, 1, 0);
 
 
 
@@ -30,5 +30,5 @@ INSERT INTO `media` (`src`, `usersID`, `basename`, `extension`, `mimeContentType
 
 
 INSERT INTO `profilepictures` (`src`, `usersID`, `hash`, `extension`) VALUES
-('6TV8faYGwR', 1, '7f7a867c28f24218f89fb2938856c2b8469652f3', '.jpg'),
-('od39VPpL5b', 9, '778e2e39e4c4ed2d4af4a07bc7bec5d2f4ac2bea', '.jpg');
+('jdxFXNSMQI', 1, '6d02d033793a276359596bf81f277981b53036d7', '.png'),
+('mEazL2UHiT', 9, '28ede335f124a5b68737d71954684bc2dcef2c49', '.png');

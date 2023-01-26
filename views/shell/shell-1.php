@@ -23,5 +23,5 @@
   
   <link rel="stylesheet" href="<?= $GLOBALS["__SERVER_HOME__"] ?>/public/css/main.css">
 </head>
-<body>
+<body id="viewport">
   <div id="page-data" class="display-none viewport-tablet viewport-smartphone viewport-small-smartphone">

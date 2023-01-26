@@ -150,7 +150,7 @@
   border-bottom: 1px solid var(--container-3);
 }
 .comment-view .system-msg * {
-  color: var(--text-color-3);
+  color: var(--text-color-2);
 }
 
 
@@ -290,7 +290,7 @@
   position: absolute;
   top: calc(100%);
   left: 0;
-  box-shadow: rgba(100, 100, 111, 0.2) 0 7px 29px 0;
+  box-shadow: var(--container-3) 0 7px 29px 0;
   padding-top: 8px;
   display: none;
   flex-direction: column;

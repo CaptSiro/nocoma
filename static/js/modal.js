@@ -13,11 +13,12 @@ for (const win of container.children) {
         error.classList.remove("show");
       });
     });
-  })
+  });
 }
 
 /**
  * @param {string} id
+ * @returns {HTMLDivElement}
  */
 function showWindow (id) {
   clearWindows(false);
@@ -37,6 +38,8 @@ function showWindow (id) {
   
   container.classList.add("darken");
   win.classList.add("show");
+  
+  return win;
 }
 
 function clearWindows (includeDarken = true) {

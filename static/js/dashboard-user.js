@@ -320,7 +320,6 @@ dropArea.addEventListener("drop", evt => {
       if (item.kind !== "file") return;
       
       const file = item.getAsFile();
-      console.log(file)
       selectedFilesMap.set(file.lastModified, file);
     });
     
@@ -329,7 +328,6 @@ dropArea.addEventListener("drop", evt => {
 });
 $("#upload-files-input").addEventListener("change", evt => {
   [...evt.target.files].forEach(file => {
-    console.log(file)
     selectedFilesMap.set(file.lastModified, file);
   });
   
@@ -371,28 +369,3 @@ $("#upload-files .cancel-modal").addEventListener("click", () => {
 });
 
 changeUserPreferredSetting(".change-file-order", "order", "file-order", filesInfiniteScroller);
-
-
-const zipFileMIMEs = ["application/gzip", "application/vnd.rar", "application/x-freearc", "application/x-bzip", "application/x-bzip2", "application/x-tar", "application/zip", "application/x-7z-compressed"];
-const mimeRegex = /([a-z]+)\/.*/;
-const supportedMIMEs = ["application", "audio", "font", "image", "model", "text", "video"];
-/**
- * @param {string} mimeType
- */
-function FileIcon (mimeType) {
-  const matches = mimeRegex.exec(mimeType);
-  let iconURL = AJAX.SERVER_HOME + "/public/images/file-blank.svg";
-  if (matches !== null) {
-    if (supportedMIMEs.includes(matches[1])) {
-      iconURL = AJAX.SERVER_HOME + `/public/images/file-${matches[1]}.svg`;
-    }
-    
-    if (zipFileMIMEs.includes(mimeType)) {
-      iconURL = AJAX.SERVER_HOME + `/public/images/file-archive.svg`;
-    }
-  }
-  
-  return (
-    Img(iconURL, "file icon", "file-icon")
-  );
-}

@@ -3,22 +3,42 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
   // use json.child for single child widget like Center
   // or json.children for array of widgets
   /**
+   * @typedef RootJSONType
+   * @property {boolean=} isHeaderIncluded
+   * @property {"center" | "start" | "end"=} headerTitleAlign
+   * @property {string=} headerTitleColor
+   * @property {string=} headerImageURL
+   * @property {Webpage=} webpage
+   * @property {boolean=} areCommentsAvailable
+   *
+   * @typedef {RootJSONType & WidgetJSON} RootJSON
+   */
+  /**
    * @typedef Webpage
    * @property {number} ID
-   * @property {boolean} areCommentsAvailable
    * @property {boolean} isHomePage
    * @property {boolean} isPublic
    * @property {boolean} isTakenDown
    * @property {boolean} isTemplate
    * @property {string} src
    * @property {string} thumbnailSRC
+   * @property {string} thumbnail
    * @property {string} timeCreated
+   * @property {string} releaseDate
    * @property {string} title
    * @property {number} usersID
    */
+  #json;
+  get json () {
+    return this.#json;
+  }
+  set json (json) {
+    this.#json = json;
+    this.dispatchJSONEvent();
+  }
   
   /**
-   * @param {WidgetJSON} json
+   * @param {RootJSON} json
    * @param {Widget} parent
    * @param {boolean} editable
    */
@@ -26,30 +46,40 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
     super(
       Div("w-root"),
       parent,
-      false,
-      true
+      false
     );
-    this.editable = editable;
+    this.removeMargin();
     
+    this.#json = json;
+    this.#json.webpage = Object.assign({}, webpage);
+    // this.#json.webpage.thumbnailSRC = AJAX.SERVER_HOME + "/public/images/theme-stock-pictures/laptop.png";
+    
+    this.header = WHeader.build({
+      titleAlign: json.headerTitleAlign,
+      titleColor: json.headerTitleColor,
+    }, this, editable);
     this.page = WPage.build({}, this, editable);
     this.commentSection = WCommentSection.build({
-      webpage: json.webpage
+      areCommentsAvailable: json.areCommentsAvailable
     }, this, editable);
     
+    this.appendWidget(this.header);
     this.appendWidget(this.page);
     this.appendWidget(this.commentSection);
   }
   
+  #listeners = [];
+  
   /**
-   * @param {Set<string>} set
-   * @returns {string}
+   * @param {(json: RootJSON)=>void} callback
    */
-  static stringifyIterable (set) {
-    let string = '';
-    for (const cls of set) {
-      string += cls + ",";
+  addJSONListener (callback) {
+    this.#listeners.push(callback);
+  }
+  dispatchJSONEvent () {
+    for (const listener of this.#listeners) {
+      listener(this.#json);
     }
-    return string.substring(0, string.length - 1);
   }
   
   static #requestSet = new Set();
@@ -64,60 +94,9 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
       WRoot.#requestSet.add(c);
     }
   }
-  
-  /**
-   * @param {...string} widgetsArray
-   */
-  static requestWidgets (...widgetsArray) {
-    let query = '';
-    
-    let subtrahend = "";
-    if (this.#requestSet.size !== 0) {
-      subtrahend = "/" + this.stringifyIterable(this.#requestSet);
-    }
-    
-    let widgetPromises = [];
-    for (const widgetClass of widgetsArray) {
-      if (this.#requestSet.has(widgetClass)) continue;
-      console.log(widgetClass);
-      
-      this.#requestSet.add(widgetClass);
-      widgetPromises.push(
-        new Promise(resolve => widgets.on(widgetClass, resolve))
-      );
-      query += widgetClass + ",";
-    }
-    
-    if (query === "") return Promise.resolve();
-    
-    query = query.substring(0, query.length - 1) + subtrahend;
-    
-    const cssID = guid(true);
-    const css = document.createElement("link");
-    css.rel = "stylesheet";
-    css.type = "text/css";
-    css.id = cssID;
-    
-    document.head.appendChild(css);
-    const cssPromise = untilElement("#" + cssID);
-    cssPromise.then(() => freeID(cssID));
-    css.href = AJAX.SERVER_HOME + "/bundler/css/" + query;
-    
-    const jsID = guid(true);
-    const js = document.createElement("script");
-    js.defer = true;
-    
-    document.head.appendChild(js);
-    const jsPromise = untilElement("#" + jsID);
-    jsPromise.then(() => freeID(jsID))
-    js.src = AJAX.SERVER_HOME + "/bundler/js/" + query;
-  
-    console.log([cssPromise, jsPromise, ...widgetPromises]);
-    return Promise.all([cssPromise, jsPromise, ...widgetPromises]);
-  }
 
   /**
-   * @param {WidgetJSON} json
+   * @param {RootJSON} json
    * @param {boolean} editable
    * @returns {Promise<WRoot>}
    */
@@ -138,7 +117,7 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
 
 
   /**
-   * @param {WidgetJSON} widget
+   * @param {RootJSON} widget
    * @param {Set<string>} importSet
    * @param {boolean} bypassExistsRestriction
    */
@@ -160,7 +139,7 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
 
   /**
    * @override
-   * @param {WidgetJSON} json
+   * @param {RootJSON} json
    * @param {Widget} parent
    * @param {boolean} editable
    * @returns {Promise<Widget>}
@@ -184,18 +163,256 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
    * @returns {ComponentContent}
    */
   get inspectorHTML () {
-    return (
-      NotInspectorAble()
-    )
+    const headerTitleColorPicker = new ColorPicker(true);
+    const pickerID = guid(true);
+    headerTitleColorPicker.rootElement.id = pickerID;
+    untilElement("#" + pickerID)
+      .then(() => {
+        const formatLabel = headerTitleColorPicker.rootElement.querySelector(".format-label");
+        const revertButton = Button("button-like-main", "Revert", () => {
+          headerTitleColorPicker.setNewFromFormat("#000");
+          this.#json.headerTitleColor = undefined;
+          this.dispatchJSONEvent();
+        });
+        
+        formatLabel.parentElement.insertBefore(revertButton, formatLabel);
+        formatLabel.remove();
+      })
+    
+    headerTitleColorPicker.setNewFromFormat(this.#json.headerTitleColor ?? "#000000ff");
+    headerTitleColorPicker.rootElement.addEventListener("pick", evt => {
+      this.#json.headerTitleColor = ColorPicker.toHEX(evt.detail);
+      this.dispatchJSONEvent();
+    })
+    
+    const headerSettings = [
+      HR(this.#json.isHeaderIncluded ? "" : "display-none"),
+      TitleInspector("Header", this.#json.isHeaderIncluded ? "" : "display-none"),
+      Div("i-header-settings inner-padding" + (this.#json.isHeaderIncluded ? "" : " display-none"), [
+        Div("i-row", [
+          Span(__, "Image:"),
+          Div("i-row", [
+            Button("button-like-main", "Remove", async () => {
+              if (this.#json.webpage.thumbnail === undefined) return;
+              
+              const response = await AJAX.patch("/page/", JSONHandler(), {
+                body: JSON.stringify({
+                  id: webpage.ID,
+                  property: "thumbnailSRC",
+                  value: null
+                })
+              });
+  
+              if (response.error !== undefined) {
+                alert(response.error);
+                return;
+              }
+              
+              this.#json.webpage.thumbnail = undefined;
+              this.dispatchJSONEvent();
+            }),
+            Button("button-like-main", "Select", () => {
+              const win = showWindow("file-select");
+              win.dataset.multiple = "false";
+              win.dataset.fileType = "image";
+              win.dispatchEvent(new Event("fetch"));
+              win.onsubmit = async submitEvent => {
+                const response = await AJAX.patch("/page/", JSONHandler(), {
+                  body: JSON.stringify({
+                    id: webpage.ID,
+                    property: "thumbnailSRC",
+                    value: submitEvent.detail[0].src
+                  })
+                });
+                
+                if (response.error !== undefined) {
+                  alert(response.error);
+                  return;
+                }
+                
+                this.#json.webpage.thumbnail = submitEvent.detail[0].serverName;
+                this.dispatchJSONEvent();
+              }
+            })
+          ])
+        ]),
+        RadioGroupInspector(value => {
+          this.#json.headerTitleAlign = value;
+          this.dispatchJSONEvent();
+          return true;
+        }, selectOption([
+          { text: "Left", value: "start" },
+          { text: "Center", value: "center" },
+          { text: "Right", value: "end" },
+        ], this.#json.headerTitleAlign, "center"), "Title align:"),
+        Div(__, "Title color:"),
+        headerTitleColorPicker.rootElement,
+      ])
+    ];
+    
+    const releaseDate = DateInspector(
+      webpage.releaseDate !== undefined
+        ? new Date(webpage.releaseDate)
+        : undefined,
+      async (value, parentElement) => {
+        const response = await AJAX.patch("/page/release-date", JSONHandler(), {
+          body: JSON.stringify({
+            id: webpage.ID,
+            releaseDate: value.toISOString()
+          })
+        });
+        
+        if (response.error !== undefined || response.rowCount !== 1) {
+          rejected(parentElement);
+          console.log(response);
+          return false;
+        }
+        
+        this.#json.webpage.releaseDate = value.toISOString();
+        this.dispatchJSONEvent();
+        validated(parentElement);
+        return true;
+      },
+      "Release date:",
+      true
+    );
+    
+    const releaseDateInput = releaseDate.querySelector("input");
+    
+    if (this.#json.webpage.releaseDate === undefined) {
+      releaseDate.classList.add("display-none");
+    }
+    
+    return [
+      TitleInspector("Website"),
+  
+      HR(),
+      
+      TitleInspector("Visibility"),
+      RadioGroupInspector(async (value, parentElement) => {
+        if (value === "planned") {
+          const releaseDateString = releaseDateInput.valueAsDate !== null
+            ? releaseDateInput.valueAsDate.toISOString()
+            : undefined;
+          const plannedResponse = await AJAX.patch("/page/visibility/planned", JSONHandler(), {
+            body: JSON.stringify({
+              id: webpage.ID,
+              releaseDate: releaseDateString
+            })
+          });
+          
+          if (plannedResponse.error || plannedResponse.rowCount !== 1) {
+            rejected(parentElement);
+            return false;
+          }
+          
+          validated(parentElement);
+          releaseDate.classList.remove("display-none");
+          this.#json.webpage.releaseDate = (releaseDateInput.valueAsDate !== null ? releaseDateInput.valueAsDate : new Date()).toISOString();
+          this.dispatchJSONEvent();
+          return true;
+        }
+        
+        const visibilityResponse = await AJAX.patch(`/page/visibility/${value}`, JSONHandler(), {
+          body: JSON.stringify({
+            id: webpage.ID
+          })
+        });
+  
+        if (visibilityResponse.error) {
+          rejected(parentElement);
+          console.log(visibilityResponse);
+          return false;
+        }
+  
+        validated(parentElement);
+        releaseDate.classList.add("display-none");
+        this.#json.webpage.releaseDate = undefined;
+        this.#json.webpage.isPublic = value === "public";
+        this.dispatchJSONEvent();
+        return true;
+      }, selectOption([
+        { text: "Public", value: "public" },
+        { text: "Private", value: "private" },
+        { text: "Planned", value: "planned" },
+      ], this.#json.webpage.isPublic
+        ? "public"
+        : this.#json.webpage.releaseDate !== undefined
+          ? "planned"
+          : "private")),
+      releaseDate,
+      
+      HR(),
+      
+      TitleInspector("Properties"),
+      TextFieldInspector(webpage.title, async (value, parent) => {
+        if (value.length < 1 || value.length > 64) {
+          rejected(parent);
+          return false;
+        }
+        
+        const response = await AJAX.patch("/page/", JSONHandler(), {
+          body: JSON.stringify({
+            id: webpage.ID,
+            property: "title",
+            value
+          })
+        });
+        
+        if (response.error !== undefined) {
+          rejected(parent);
+          console.log(response);
+          return false;
+        }
+    
+        validated(parent);
+        this.#json.webpage.title = value;
+        this.dispatchJSONEvent();
+
+        return true;
+      }, "Title:"),
+      CheckboxInspector(webpage.isHomePage, () => true, "Set as homepage"),
+      CheckboxInspector(this.#json.areCommentsAvailable, (value) => {
+        this.#json.areCommentsAvailable = value;
+        this.dispatchJSONEvent();
+        return true;
+      }, "Enable comments"),
+      CheckboxInspector(this.#json.isHeaderIncluded, value => {
+        this.#json.isHeaderIncluded = value;
+        this.dispatchJSONEvent();
+        
+        headerSettings.forEach(element => element.classList.toggle("display-none", !value));
+        return true;
+      }, "Include Header"),
+      
+      ...headerSettings,
+      
+      HR(),
+      
+      TitleInspector("Theme"),
+      Div("i-row", [
+        Span(__, "Default"),
+        Button("button-like-main", "Select", () => {
+          const window = showWindow("file-select");
+          window.dataset.multiple = "false";
+          window.dataset.fileType = "theme";
+          window.dispatchEvent(new Event("fetch"));
+        }),
+      ]),
+    ];
   }
 
   /**
    * @override
-   * @returns {WidgetJSON}
+   * @returns {RootJSON}
    */
   save () {
     return {
       type: "WRoot",
+      isHeaderIncluded: this.#json.isHeaderIncluded,
+      areCommentsAvailable: this.#json.areCommentsAvailable,
+      headerTitleAlign: this.#json.headerTitleAlign,
+      headerTitleColor: this.#json.headerTitleColor,
       children: this.page.saveChildren()
     };
   }

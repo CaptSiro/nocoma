@@ -17,7 +17,7 @@ class WTextDecoration extends Widget {
    */
   constructor (json, parent, editable = false) {
     super(Span("w-text-decoration", String(json.text)), parent);
-    this.rootElement.classList.remove("margin");
+    this.removeMargin();
     
     if (json.class) {
       for (const clazz of json.class) {

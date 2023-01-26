@@ -19,19 +19,18 @@ new ResizeObserver(entries => {
     
     viewport.target.classList.remove(size.className);
   }
-}).observe(document.body);
+}).observe($("#viewport"));
 
 
 
 widgets.on("WRoot", async () => {
   const pageData = $("#page-data");
   const json = JSON.parse(pageData.textContent);
-  json.webpage = webpage;
   
   const root = await WRoot.build(json);
   pageData.remove();
   
-  window.page = root;
+  window.rootWidget = root;
   document.body.appendChild(root.rootElement);
   document.widgetElement = root;
 });

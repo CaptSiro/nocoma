@@ -1,334 +1,4 @@
 /**
- * @template S
- * @callback Setter
- * @param {S} value
- * @returns {S} Value that have been set. To signal error: return the same value and handle error in the setter method
- */
-
-/**
- * @param {Event} evt
- * @param {Setter<string>} setter
- * @param {string | undefined} lastValue
- * @param {HTMLCollection} collection
- * @returns {(function(*): (*))|*}
- */
-function choiceChangeListener (evt, setter, lastValue, collection) {
-  if (setter(evt.target.value)) {
-    return evt.target.value;
-  }
-  
-  if (collection.length === 0) {
-    return lastValue;
-  }
-  
-  const attribute = collection[0].tagName === "OPTION"
-    ? "selected"
-    : "checked"
-
-  for (const element of collection) {
-    if (element.value !== lastValue) {
-      element[attribute] = false;
-      continue;
-    }
-  
-    element[attribute] = true;
-  }
-  
-  return lastValue;
-}
-
-
-//* basic inspector components
-/**
- * @param {boolean} state
- * @param {Setter<boolean>} setter
- * @param {string} label
- * @returns {HTMLElement}
- */
-function CheckboxInspector (state, setter, label = "") {
-  const checkbox = (
-    Checkbox(label, "i-checkbox", __, {
-      listeners: {
-        change: evt => {
-          if (setter(evt.target.checked)) {
-            return;
-          }
-          
-          evt.target.checked = !evt.target.checked;
-        }
-      }
-    })
-  );
-  
-  if (state) {
-    checkbox.querySelector("input").checked = true;
-  }
-  
-  return checkbox;
-}
-
-/**
- * @param {string} title
- * @returns {HTMLElement}
- */
-function TitleInspector (title) {
-  return (
-    Heading(3, "i-title", title)
-  );
-}
-
-/**
- * @typedef KeyValuePair
- * @property {string} text
- * @property {string} value
- * @property {boolean} selected
- */
-/**
- * @param {Setter<string>} setter
- * @param {KeyValuePair[]} radios
- * @param {string} label
- * @returns {HTMLElement}
- */
-function RadioGroupInspector (setter, radios, label = undefined) {
-  const name = guid();
-  let lastValue = radios
-    .reduce(
-      (last, current) =>
-        current.selected ? current.value : last,
-      undefined
-    );
-
-  const radioGroup =  (
-    Div("i-radio-group", [
-      OptionalComponent(label !== undefined,
-        Span(__, label)
-      ),
-      ...radios.map(radio => {
-        return (
-          Radio(radio.text, radio.value, name, __,
-            radio.selected !== undefined
-              ? {
-                attributes: {
-                  checked: radio.selected
-                }
-              }
-              : undefined
-          )
-        )
-      })
-    ], {
-      listeners: {
-        change: evt => {
-          lastValue = choiceChangeListener(evt, setter, lastValue, radioGroup.querySelectorAll(`input[name=${name}]`));
-        }
-      }
-    })
-  );
-  
-  return radioGroup;
-}
-
-/**
- * @template S
- * @param {string} className
- * @param {Setter<S>} setter
- * @param {string} label
- * @param {HTMLElement} component
- * @param {string | undefined} placeholder
- * @param {ComponentOptions} options
- * @returns {HTMLElement}
- */
-function LabelAndComponentInspector (className, setter, label, component, placeholder, options = undefined) {
-  const id = guid(true);
-  
-  component.id = id;
-  if (placeholder) {
-    component.setAttribute("placeholder", placeholder);
-  }
-  
-  return (
-    Div(className, [
-      OptionalComponent(label !== undefined,
-        Label(__, label, {
-          attributes: {
-            for: id
-          }
-        })
-      ),
-      component
-    ])
-  );
-}
-
-/**
- * @param {string | undefined} state
- * @param {Setter<string>} setter
- * @param {string} label
- * @param {string} placeholder
- * @param {ComponentOptions} options
- * @returns {HTMLElement}
- */
-function TextAreaInspector (state, setter, label = undefined, placeholder = undefined, options = undefined) {
-  if (!options) options = {};
-  if (!options.listeners) options.listeners = {};
-  if (!options.listeners.blur) options.listeners.blur = evt => console.log(evt.target.value);
-  
-  return (
-    LabelAndComponentInspector("i-text-area", setter, label, Component("textarea", __, state, options), placeholder)
-  );
-}
-
-/**
- * @param {string | undefined} state
- * @param {Setter<string>} setter
- * @param {string} label
- * @param {string} placeholder
- * @returns {HTMLElement}
- */
-function TextFieldInspector (state, setter, label = undefined, placeholder = undefined) {
-  const options = {
-    attributes: {}
-  };
-
-  if (state !== undefined) {
-    options.attributes.value = state;
-  }
-  
-  return (
-    LabelAndComponentInspector("i-text-field", setter, label, Input("text", __, options), placeholder)
-  );
-}
-
-/**
- * @param {number | undefined} state
- * @param {Setter<string | number>} setter
- * @param {string} label
- * @param {string} placeholder
- * @param {ComponentContent} measurement
- * @returns {HTMLElement}
- */
-function NumberInspector (state, setter, label = undefined, placeholder = undefined, measurement = undefined) {
-  const id = guid(true);
-  const options = {
-    attributes: { id }
-  };
-  
-  if (placeholder) {
-    options.attributes.placeholder = placeholder;
-  }
-  
-  if (state) {
-    options.attributes.value = state;
-  }
-  
-  return (
-    Div("i-number", [
-      OptionalComponent(label !== undefined,
-        Label(__, label, {
-          attributes: {
-            for: id
-          }
-        })
-      ),
-      Input("number", __, options),
-      typeof measurement === "string"
-        ? Span(__, measurement)
-        : measurement
-    ])
-  );
-}
-
-//TODO: create custom date picker
-/**
- * @param {string | undefined} state
- * @param {Setter<string>} setter
- * @param {string} label
- * @param {string} placeholder
- * @returns {HTMLElement}
- */
-function DateInspector (state, setter, label = undefined, placeholder = undefined) {
-  const options = {
-    attributes: {}
-  };
-  
-  if (state) {
-    options.attributes.value = state;
-  }
-  
-  return (
-    LabelAndComponentInspector("i-date", setter, label, Input("date", __, options), placeholder)
-  );
-}
-
-/**
- * @param {Setter<string>} setter
- * @param {KeyValuePair[]} options
- * @param {string} label
- * @param {string} className
- * @returns {HTMLElement}
- */
-function SelectInspector (setter, options, label = undefined, className = undefined) {
-  const id = guid(true);
-  let lastValue = options
-    .reduce(
-      (last, current) =>
-        current.selected ? current.value : last,
-      undefined
-    );
-  
-  const select = (
-    Component("select", __,
-      options.map(option =>
-        new Option(option.text, option.value, __, option?.selected)
-      ), {
-        listeners: {
-          change: evt => {
-            lastValue = choiceChangeListener(evt, setter, lastValue, select.children);
-          }
-        }
-      }
-    )
-  );
-  
-  return (
-    Div("i-select dont-force" + (className !== undefined ? (" " + className) : ""), [
-      OptionalComponent(label !== undefined,
-        Label(__, label, {
-          attributes: {
-            for: id
-          }
-        })
-      ),
-      Div("select-container",
-        select
-      ),
-    ])
-  );
-}
-
-function NotInspectorAble () {
-  return (
-    TitleInspector("This element cannot be changed")
-  );
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/**
  * @typedef WidgetJSON
  * @property {string=} type
  * @property {Object.<string, string>=} style
@@ -348,22 +18,36 @@ class Widget {
 
   /**
    * @param {HTMLElement} root 
-   * @param {Widget} parent 
-   * @param {boolean} removeDefaultMargin
+   * @param {Widget} parent
+   * @param {boolean} editable
    */
-  constructor (root, parent, removeDefaultMargin = false) {
+  constructor (root, parent, editable = false) {
     this.rootElement = root;
     this.rootElement.widget = this;
-    this.rootElement.classList.add("widget");
+    this.editable = editable;
+    this.rootElement.classList.add("widget", "margin");
   
-    if (removeDefaultMargin !== true) {
-      this.rootElement.classList.add("margin");
+    if (window.inspect !== undefined) {
+      this.rootElement.addEventListener("click", this.inspectHandler.bind(this));
     }
 
     this.parentWidget = parent;
 
     /** @type {Widget[]} */
     this.children = [];
+  }
+  
+  /**
+   * @param {Event} evt
+   */
+  inspectHandler (evt) {
+    if (currentlyInspecting === this) return;
+    const inspectorHTML = this.inspectorHTML;
+    if (inspectorHTML === NotInspectorAble() || evt.stopInspector === true || currentlyInspecting === this) return;
+    
+    inspect(inspectorHTML, this);
+    evt.stopInspector = true;
+    // evt.stopPropagation();
   }
 
   /**
@@ -391,6 +75,17 @@ class Widget {
   get inspectorHTML () {
     return NotInspectorAble();
   }
+  
+  /**
+   * @return {WRoot | Widget}
+   */
+  getRoot () {
+    let widget = this;
+    while (widget.parentWidget !== null && widget.parentWidget !== undefined) {
+      widget = widget.parentWidget;
+    }
+    return widget;
+  }
 
   /**
    * @returns {WidgetJSON}
@@ -414,6 +109,16 @@ class Widget {
         accumulator.push(current.save());
         return accumulator;
       }, []);
+  }
+  
+  removeInspectHandler () {
+    if (window.inspect === undefined) return;
+    
+    this.rootElement.removeEventListener("click", this.inspectHandler);
+  }
+  
+  removeMargin() {
+    this.rootElement.classList.remove("margin");
   }
 
   remove () {
@@ -447,21 +152,26 @@ class Widget {
   
   /**
    * @param {Widget | Promise<Widget>} widget
+   * @param {boolean} doAppendToRootElement
    */
-  #append (widget) {
+  #append (widget, doAppendToRootElement = true) {
     if (this.childSupport === "none" || this.children.length === this.childSupport) {
       console.warn("Trying to add child to parent, who does not accept any more children.");
       return;
     }
   
     this.children.push(widget);
-    this.rootElement.appendChild(widget.rootElement);
+    
+    if (doAppendToRootElement) {
+      this.rootElement.appendChild(widget.rootElement);
+    }
   }
   
   /**
    * @param {Widget | Promise<Widget>} widget
+   * @param {boolean} doAppendToRootElement
    */
-  appendWidget (widget) {
+  appendWidget (widget, doAppendToRootElement = true) {
     if (widget instanceof Promise) {
       return new Promise(resolve => {
         widget.then(w => {
@@ -542,10 +252,9 @@ class ContainerWidget extends Widget {
    * @param {HTMLElement} root 
    * @param {Widget} parent 
    * @param {boolean} editable
-   * @param {boolean} removeDefaultMargin
    */
-  constructor (root, parent, editable = false, removeDefaultMargin = false) {
-    super(root, parent, removeDefaultMargin);
+  constructor (root, parent, editable = false) {
+    super(root, parent, editable);
     
     if (editable) {
       this.appendWidget(WCommand.default(this));

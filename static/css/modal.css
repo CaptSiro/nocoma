@@ -46,7 +46,7 @@
 .window.form.show {
     max-height: 100%;
     width: 350px;
-    padding: 50px;
+    padding: 32px;
     overflow: auto;
     animation: 300ms delay-overflow;
 

@@ -18,7 +18,7 @@
   <script src="<?=$GLOBALS["__HOME__"]?>/public/js/components/InfiniteScroller.js"></script>
   <script>
     AJAX.DOMAIN_HOME = "<?=$GLOBALS["__HOME__"]?>";
-    AJAX.SERVER_HOME = "<?=$GLOBALS["SERVER_HOME"] ?? $GLOBALS["__HOME__"]?>";
+    AJAX.SERVER_HOME = "<?=$GLOBALS["__SERVER_HOME__"] ?? $GLOBALS["__HOME__"]?>";
   </script>
   
   <script src="<?=$GLOBALS["__HOME__"]?>/public/js/grid.js" defer></script>
@@ -114,8 +114,8 @@
   <nav>
     <section>
       <button reference-to="posts" class="link-pointer active" title="Posts"><span>1</span></button>
-      <button reference-to="comments" class="link-pointer" title="Comments"><span>2</span></button>
-      <button reference-to="themes" class="link-pointer" title="Themes"><span>3</span></button>
+<!--      <button reference-to="comments" class="link-pointer" title="Comments"><span>2</span></button>-->
+<!--      <button reference-to="themes" class="link-pointer" title="Themes"><span>3</span></button>-->
       <button reference-to="gallery" class="link-pointer" title="Gallery"><span>4</span></button>
       <button
         reference-to="profile"
@@ -142,10 +142,10 @@
             <button class="change-post-type" data-type="3">Private</button>
             <!-- <button>?Templates?</button> -->
           </section>
-          <section class="search-mount">
-            <img src="<?= $GLOBALS["__HOME__"] ?>/public/images/search-white.svg" alt="search">
-            <input type="text">
-          </section>
+<!--          <section class="search-mount">-->
+<!--            <img src="--><?//= $GLOBALS["__HOME__"] ?><!--/public/images/search-white.svg" alt="search">-->
+<!--            <input type="text">-->
+<!--          </section>-->
         </header>
         
         <div class="scrollable full-span post-view no-mg"></div>
@@ -157,299 +157,299 @@
     </div>
     
     
-    <div columns="4" class="c-grid link-element" auto-fill="true" id="comments">
-      <section column="0-4" row="0-4">
-        <header class="no-mg">
-          <section class="controls">
-            <div class="separator right">Comments</div>
-            <button>Show not seen</button>
-          </section>
-          <section class="search-mount">
-            <img src="<?= $GLOBALS["__HOME__"] ?>/public/images/search-white.svg" alt="search">
-            <input type="text">
-          </section>
-        </header>
-        
-        <div class="scrollable comment-view no-mg">
-          <div class="comment new">
-            <div class="c-head">
-              <h4 class="sender">Mr. Nobody</h4>
-            </div>
-            <p class="c-msg">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo labore error, temporibus molestias quod corrupti consectetur distinctio autem tempore. Ipsa ex non architecto nulla laudantium, dicta libero sit delectus autem.
-              Impedit doloribus nulla numquam explicabo rem aliquam, ad sed magnam molestiae veniam! Quidem, natus ad non quasi tempora, eos rem assumenda, placeat asperiores dolor soluta. Ab vitae expedita corrupti iste?
-              Provident expedita magnam, voluptas nostrum quidem suscipit recusandae tempora beatae sunt iusto architecto autem, vitae tempore sint et corporis necessitatibus veritatis qui illum officia hic facere. Nihil similique rerum quo!</p>
-            <div class="c-controls">
-              <button>Reply</button>
-              <button>Take down</button>
-            </div>
-            <div class="c-reply">
-              <h4 class="c-head">You:</h4>
-              <p class="c-msg">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quod asperiores, tempora molestias numquam dolor eligendi magni officiis explicabo? Quibusdam nisi praesentium tempore suscipit sunt itaque consequatur officia veritatis natus a.
-                Voluptatem, nobis. Amet quia dolore, a dolores aperiam molestias repellat magnam iste quos facilis! Tempora, enim neque eligendi porro, repudiandae illum eum earum error officiis nam totam cupiditate odio inventore.
-                Eveniet doloremque similique deserunt praesentium, fuga pariatur ad odit provident, veritatis nisi placeat vero itaque rerum in minima perspiciatis, quam tempora quibusdam eum. Molestias similique provident voluptatum id perferendis suscipit.
-                Sit nesciunt ab provident, quam eligendi, a rerum facere aliquid adipisci similique id repudiandae soluta sapiente placeat neque. Incidunt modi eos quia dolore molestiae sapiente officiis saepe iure adipisci odio.
-                Totam iste, ipsam laborum nihil dolor libero ut ipsum illum eum non consectetur qui aperiam quas. Commodi maiores necessitatibus sunt dicta non a molestias labore, cupiditate voluptate quos aspernatur illo.
-                Nisi, atque in facere vitae velit cum molestiae qui. Numquam temporibus dicta, magni fugiat nostrum iusto asperiores, sint aspernatur non quod in doloribus modi similique at ut reiciendis hic consequuntur?</p>
-              <div class="c-controls">
-                <button>Edit</button>
-              </div>
-            </div>
-          </div>
-          
-          <div class="comment new">
-            <div class="c-head">
-              <h4 class="sender">Mr. Nobody</h4>
-            </div>
-            <p class="c-msg">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo labore error, temporibus molestias quod corrupti consectetur distinctio autem tempore. Ipsa ex non architecto nulla laudantium, dicta libero sit delectus autem.
-              Impedit doloribus nulla numquam explicabo rem aliquam, ad sed magnam molestiae veniam! Quidem, natus ad non quasi tempora, eos rem assumenda, placeat asperiores dolor soluta. Ab vitae expedita corrupti iste?
-              Provident expedita magnam, voluptas nostrum quidem suscipit recusandae tempora beatae sunt iusto architecto autem, vitae tempore sint et corporis necessitatibus veritatis qui illum officia hic facere. Nihil similique rerum quo!</p>
-            <div class="c-controls">
-              <button>Reply</button>
-              <button>Take down</button>
-            </div>
-          </div>
-          
-          <div class="comment">
-            <div class="c-head">
-              <h4 class="sender">Mr. Nobody</h4>
-            </div>
-            <p class="c-msg">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo labore error, temporibus molestias quod corrupti consectetur distinctio autem tempore. Ipsa ex non architecto nulla laudantium, dicta libero sit delectus autem.
-              Impedit doloribus nulla numquam explicabo rem aliquam, ad sed magnam molestiae veniam! Quidem, natus ad non quasi tempora, eos rem assumenda, placeat asperiores dolor soluta. Ab vitae expedita corrupti iste?
-              Provident expedita magnam, voluptas nostrum quidem suscipit recusandae tempora beatae sunt iusto architecto autem, vitae tempore sint et corporis necessitatibus veritatis qui illum officia hic facere. Nihil similique rerum quo!</p>
-            <div class="c-controls">
-              <button>Reply</button>
-              <button>Take down</button>
-            </div>
-            <div class="c-reply">
-              <h4 class="c-head">You:</h4>
-              <p class="c-msg">Lorem ipsum dolor sit amet consectetur adipisicing elit. Beatae, eaque nostrum error ea nemo cum et ipsa eligendi nam? In ullam, commodi quasi magnam aperiam minus eum rem sed aut.</p>
-              <div class="c-controls">
-                <button>Edit</button>
-              </div>
-            </div>
-          </div>
-          
-          <div class="comment">
-            <div class="c-head">
-              <h4 class="sender">Mr. Nobody</h4>
-            </div>
-            <p class="c-msg">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo labore error, temporibus molestias quod corrupti consectetur distinctio autem tempore. Ipsa ex non architecto nulla laudantium, dicta libero sit delectus autem.
-              Impedit doloribus nulla numquam explicabo rem aliquam, ad sed magnam molestiae veniam! Quidem, natus ad non quasi tempora, eos rem assumenda, placeat asperiores dolor soluta. Ab vitae expedita corrupti iste?
-              Provident expedita magnam, voluptas nostrum quidem suscipit recusandae tempora beatae sunt iusto architecto autem, vitae tempore sint et corporis necessitatibus veritatis qui illum officia hic facere. Nihil similique rerum quo!</p>
-            <div class="c-controls">
-              <button>Reply</button>
-              <button>Take down</button>
-            </div>
-            <div class="c-reply">
-              <h4 class="c-head">You:</h4>
-              <p class="c-msg">Lorem ipsum dolor sit amet consectetur adipisicing elit. Beatae, eaque nostrum error ea nemo cum et ipsa eligendi nam? In ullam, commodi quasi magnam aperiam minus eum rem sed aut.</p>
-              <div class="c-controls">
-                <button>Edit</button>
-              </div>
-            </div>
-          </div>
-          
-          <div class="comment">
-            <div class="c-head">
-              <h4 class="sender">Mr. Nobody</h4>
-            </div>
-            <p class="c-msg">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo labore error, temporibus molestias quod corrupti consectetur distinctio autem tempore. Ipsa ex non architecto nulla laudantium, dicta libero sit delectus autem.
-              Impedit doloribus nulla numquam explicabo rem aliquam, ad sed magnam molestiae veniam! Quidem, natus ad non quasi tempora, eos rem assumenda, placeat asperiores dolor soluta. Ab vitae expedita corrupti iste?
-              Provident expedita magnam, voluptas nostrum quidem suscipit recusandae tempora beatae sunt iusto architecto autem, vitae tempore sint et corporis necessitatibus veritatis qui illum officia hic facere. Nihil similique rerum quo!</p>
-            <div class="c-controls">
-              <button>Reply</button>
-              <button>Take down</button>
-            </div>
-          </div>
-          
-          <div class="comment">
-            <div class="c-head">
-              <h4 class="sender">Mr. Nobody</h4>
-            </div>
-            <p class="c-msg">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo labore error, temporibus molestias quod corrupti consectetur distinctio autem tempore. Ipsa ex non architecto nulla laudantium, dicta libero sit delectus autem.
-              Impedit doloribus nulla numquam explicabo rem aliquam, ad sed magnam molestiae veniam! Quidem, natus ad non quasi tempora, eos rem assumenda, placeat asperiores dolor soluta. Ab vitae expedita corrupti iste?
-              Provident expedita magnam, voluptas nostrum quidem suscipit recusandae tempora beatae sunt iusto architecto autem, vitae tempore sint et corporis necessitatibus veritatis qui illum officia hic facere. Nihil similique rerum quo!</p>
-            <div class="c-controls">
-              <button>Reply</button>
-              <button>Take down</button>
-            </div>
-          </div>
-          
-          <div class="comment">
-            <div class="c-head">
-              <h4 class="sender">Mr. Nobody</h4>
-            </div>
-            <p class="c-msg">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo labore error, temporibus molestias quod corrupti consectetur distinctio autem tempore. Ipsa ex non architecto nulla laudantium, dicta libero sit delectus autem.
-              Impedit doloribus nulla numquam explicabo rem aliquam, ad sed magnam molestiae veniam! Quidem, natus ad non quasi tempora, eos rem assumenda, placeat asperiores dolor soluta. Ab vitae expedita corrupti iste?
-              Provident expedita magnam, voluptas nostrum quidem suscipit recusandae tempora beatae sunt iusto architecto autem, vitae tempore sint et corporis necessitatibus veritatis qui illum officia hic facere. Nihil similique rerum quo!</p>
-            <div class="c-controls">
-              <button>Reply</button>
-              <button>Take down</button>
-            </div>
-            <div class="c-reply">
-              <h4 class="c-head">You:</h4>
-              <p class="c-msg">Lorem ipsum dolor sit amet consectetur adipisicing elit. Beatae, eaque nostrum error ea nemo cum et ipsa eligendi nam? In ullam, commodi quasi magnam aperiam minus eum rem sed aut.</p>
-              <div class="c-controls">
-                <button>Edit</button>
-              </div>
-            </div>
-          </div>
-          
-          <div class="system-msg loading">
-            <p>Loading more comments...</p>
-          </div>
-          
-          <div class="system-msg empty">
-            <p>No comments?</p>
-          </div>
-        </div>
-      </section>
-    </div>
+<!--    <div columns="4" class="c-grid link-element" auto-fill="true" id="comments">-->
+<!--      <section column="0-4" row="0-4">-->
+<!--        <header class="no-mg">-->
+<!--          <section class="controls">-->
+<!--            <div class="separator right">Comments</div>-->
+<!--            <button>Show not seen</button>-->
+<!--          </section>-->
+<!--          <section class="search-mount">-->
+<!--            <img src="--><?//= $GLOBALS["__HOME__"] ?><!--/public/images/search-white.svg" alt="search">-->
+<!--            <input type="text">-->
+<!--          </section>-->
+<!--        </header>-->
+<!--        -->
+<!--        <div class="scrollable comment-view no-mg">-->
+<!--          <div class="comment new">-->
+<!--            <div class="c-head">-->
+<!--              <h4 class="sender">Mr. Nobody</h4>-->
+<!--            </div>-->
+<!--            <p class="c-msg">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo labore error, temporibus molestias quod corrupti consectetur distinctio autem tempore. Ipsa ex non architecto nulla laudantium, dicta libero sit delectus autem.-->
+<!--              Impedit doloribus nulla numquam explicabo rem aliquam, ad sed magnam molestiae veniam! Quidem, natus ad non quasi tempora, eos rem assumenda, placeat asperiores dolor soluta. Ab vitae expedita corrupti iste?-->
+<!--              Provident expedita magnam, voluptas nostrum quidem suscipit recusandae tempora beatae sunt iusto architecto autem, vitae tempore sint et corporis necessitatibus veritatis qui illum officia hic facere. Nihil similique rerum quo!</p>-->
+<!--            <div class="c-controls">-->
+<!--              <button>Reply</button>-->
+<!--              <button>Take down</button>-->
+<!--            </div>-->
+<!--            <div class="c-reply">-->
+<!--              <h4 class="c-head">You:</h4>-->
+<!--              <p class="c-msg">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quod asperiores, tempora molestias numquam dolor eligendi magni officiis explicabo? Quibusdam nisi praesentium tempore suscipit sunt itaque consequatur officia veritatis natus a.-->
+<!--                Voluptatem, nobis. Amet quia dolore, a dolores aperiam molestias repellat magnam iste quos facilis! Tempora, enim neque eligendi porro, repudiandae illum eum earum error officiis nam totam cupiditate odio inventore.-->
+<!--                Eveniet doloremque similique deserunt praesentium, fuga pariatur ad odit provident, veritatis nisi placeat vero itaque rerum in minima perspiciatis, quam tempora quibusdam eum. Molestias similique provident voluptatum id perferendis suscipit.-->
+<!--                Sit nesciunt ab provident, quam eligendi, a rerum facere aliquid adipisci similique id repudiandae soluta sapiente placeat neque. Incidunt modi eos quia dolore molestiae sapiente officiis saepe iure adipisci odio.-->
+<!--                Totam iste, ipsam laborum nihil dolor libero ut ipsum illum eum non consectetur qui aperiam quas. Commodi maiores necessitatibus sunt dicta non a molestias labore, cupiditate voluptate quos aspernatur illo.-->
+<!--                Nisi, atque in facere vitae velit cum molestiae qui. Numquam temporibus dicta, magni fugiat nostrum iusto asperiores, sint aspernatur non quod in doloribus modi similique at ut reiciendis hic consequuntur?</p>-->
+<!--              <div class="c-controls">-->
+<!--                <button>Edit</button>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          -->
+<!--          <div class="comment new">-->
+<!--            <div class="c-head">-->
+<!--              <h4 class="sender">Mr. Nobody</h4>-->
+<!--            </div>-->
+<!--            <p class="c-msg">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo labore error, temporibus molestias quod corrupti consectetur distinctio autem tempore. Ipsa ex non architecto nulla laudantium, dicta libero sit delectus autem.-->
+<!--              Impedit doloribus nulla numquam explicabo rem aliquam, ad sed magnam molestiae veniam! Quidem, natus ad non quasi tempora, eos rem assumenda, placeat asperiores dolor soluta. Ab vitae expedita corrupti iste?-->
+<!--              Provident expedita magnam, voluptas nostrum quidem suscipit recusandae tempora beatae sunt iusto architecto autem, vitae tempore sint et corporis necessitatibus veritatis qui illum officia hic facere. Nihil similique rerum quo!</p>-->
+<!--            <div class="c-controls">-->
+<!--              <button>Reply</button>-->
+<!--              <button>Take down</button>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          -->
+<!--          <div class="comment">-->
+<!--            <div class="c-head">-->
+<!--              <h4 class="sender">Mr. Nobody</h4>-->
+<!--            </div>-->
+<!--            <p class="c-msg">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo labore error, temporibus molestias quod corrupti consectetur distinctio autem tempore. Ipsa ex non architecto nulla laudantium, dicta libero sit delectus autem.-->
+<!--              Impedit doloribus nulla numquam explicabo rem aliquam, ad sed magnam molestiae veniam! Quidem, natus ad non quasi tempora, eos rem assumenda, placeat asperiores dolor soluta. Ab vitae expedita corrupti iste?-->
+<!--              Provident expedita magnam, voluptas nostrum quidem suscipit recusandae tempora beatae sunt iusto architecto autem, vitae tempore sint et corporis necessitatibus veritatis qui illum officia hic facere. Nihil similique rerum quo!</p>-->
+<!--            <div class="c-controls">-->
+<!--              <button>Reply</button>-->
+<!--              <button>Take down</button>-->
+<!--            </div>-->
+<!--            <div class="c-reply">-->
+<!--              <h4 class="c-head">You:</h4>-->
+<!--              <p class="c-msg">Lorem ipsum dolor sit amet consectetur adipisicing elit. Beatae, eaque nostrum error ea nemo cum et ipsa eligendi nam? In ullam, commodi quasi magnam aperiam minus eum rem sed aut.</p>-->
+<!--              <div class="c-controls">-->
+<!--                <button>Edit</button>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          -->
+<!--          <div class="comment">-->
+<!--            <div class="c-head">-->
+<!--              <h4 class="sender">Mr. Nobody</h4>-->
+<!--            </div>-->
+<!--            <p class="c-msg">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo labore error, temporibus molestias quod corrupti consectetur distinctio autem tempore. Ipsa ex non architecto nulla laudantium, dicta libero sit delectus autem.-->
+<!--              Impedit doloribus nulla numquam explicabo rem aliquam, ad sed magnam molestiae veniam! Quidem, natus ad non quasi tempora, eos rem assumenda, placeat asperiores dolor soluta. Ab vitae expedita corrupti iste?-->
+<!--              Provident expedita magnam, voluptas nostrum quidem suscipit recusandae tempora beatae sunt iusto architecto autem, vitae tempore sint et corporis necessitatibus veritatis qui illum officia hic facere. Nihil similique rerum quo!</p>-->
+<!--            <div class="c-controls">-->
+<!--              <button>Reply</button>-->
+<!--              <button>Take down</button>-->
+<!--            </div>-->
+<!--            <div class="c-reply">-->
+<!--              <h4 class="c-head">You:</h4>-->
+<!--              <p class="c-msg">Lorem ipsum dolor sit amet consectetur adipisicing elit. Beatae, eaque nostrum error ea nemo cum et ipsa eligendi nam? In ullam, commodi quasi magnam aperiam minus eum rem sed aut.</p>-->
+<!--              <div class="c-controls">-->
+<!--                <button>Edit</button>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          -->
+<!--          <div class="comment">-->
+<!--            <div class="c-head">-->
+<!--              <h4 class="sender">Mr. Nobody</h4>-->
+<!--            </div>-->
+<!--            <p class="c-msg">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo labore error, temporibus molestias quod corrupti consectetur distinctio autem tempore. Ipsa ex non architecto nulla laudantium, dicta libero sit delectus autem.-->
+<!--              Impedit doloribus nulla numquam explicabo rem aliquam, ad sed magnam molestiae veniam! Quidem, natus ad non quasi tempora, eos rem assumenda, placeat asperiores dolor soluta. Ab vitae expedita corrupti iste?-->
+<!--              Provident expedita magnam, voluptas nostrum quidem suscipit recusandae tempora beatae sunt iusto architecto autem, vitae tempore sint et corporis necessitatibus veritatis qui illum officia hic facere. Nihil similique rerum quo!</p>-->
+<!--            <div class="c-controls">-->
+<!--              <button>Reply</button>-->
+<!--              <button>Take down</button>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          -->
+<!--          <div class="comment">-->
+<!--            <div class="c-head">-->
+<!--              <h4 class="sender">Mr. Nobody</h4>-->
+<!--            </div>-->
+<!--            <p class="c-msg">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo labore error, temporibus molestias quod corrupti consectetur distinctio autem tempore. Ipsa ex non architecto nulla laudantium, dicta libero sit delectus autem.-->
+<!--              Impedit doloribus nulla numquam explicabo rem aliquam, ad sed magnam molestiae veniam! Quidem, natus ad non quasi tempora, eos rem assumenda, placeat asperiores dolor soluta. Ab vitae expedita corrupti iste?-->
+<!--              Provident expedita magnam, voluptas nostrum quidem suscipit recusandae tempora beatae sunt iusto architecto autem, vitae tempore sint et corporis necessitatibus veritatis qui illum officia hic facere. Nihil similique rerum quo!</p>-->
+<!--            <div class="c-controls">-->
+<!--              <button>Reply</button>-->
+<!--              <button>Take down</button>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          -->
+<!--          <div class="comment">-->
+<!--            <div class="c-head">-->
+<!--              <h4 class="sender">Mr. Nobody</h4>-->
+<!--            </div>-->
+<!--            <p class="c-msg">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quo labore error, temporibus molestias quod corrupti consectetur distinctio autem tempore. Ipsa ex non architecto nulla laudantium, dicta libero sit delectus autem.-->
+<!--              Impedit doloribus nulla numquam explicabo rem aliquam, ad sed magnam molestiae veniam! Quidem, natus ad non quasi tempora, eos rem assumenda, placeat asperiores dolor soluta. Ab vitae expedita corrupti iste?-->
+<!--              Provident expedita magnam, voluptas nostrum quidem suscipit recusandae tempora beatae sunt iusto architecto autem, vitae tempore sint et corporis necessitatibus veritatis qui illum officia hic facere. Nihil similique rerum quo!</p>-->
+<!--            <div class="c-controls">-->
+<!--              <button>Reply</button>-->
+<!--              <button>Take down</button>-->
+<!--            </div>-->
+<!--            <div class="c-reply">-->
+<!--              <h4 class="c-head">You:</h4>-->
+<!--              <p class="c-msg">Lorem ipsum dolor sit amet consectetur adipisicing elit. Beatae, eaque nostrum error ea nemo cum et ipsa eligendi nam? In ullam, commodi quasi magnam aperiam minus eum rem sed aut.</p>-->
+<!--              <div class="c-controls">-->
+<!--                <button>Edit</button>-->
+<!--              </div>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          -->
+<!--          <div class="system-msg loading">-->
+<!--            <p>Loading more comments...</p>-->
+<!--          </div>-->
+<!--          -->
+<!--          <div class="system-msg empty">-->
+<!--            <p>No comments?</p>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </section>-->
+<!--    </div>-->
     
     
-    <div columns="4" class="c-grid link-element" auto-fill="true" id="themes">
-      <section column="0-4" row="0-4">
-        <header class="no-mg">
-          <section class="controls">
-            <div class="separator right">Themes</div>
-          </section>
-          <section class="search-mount">
-            <img src="<?= $GLOBALS["__HOME__"] ?>/public/images/search-white.svg" alt="search">
-            <input type="text">
-          </section>
-        </header>
-        
-        <div class="scrollable theme-view no-mg">
-          <div class="theme selected">
-            <img src="<?= $GLOBALS["__HOME__"] ?>/public/images/theme-stock-pictures/10732789753.png" alt="">
-            <div class="gradient"></div>
-            <div class="label">
-              <span>Theme 1</span>
-            </div>
-          </div>
-          
-          <div class="theme">
-            <img src="<?= $GLOBALS["__HOME__"] ?>/public/images/theme-stock-pictures/246262618653.png" alt="">
-            <div class="gradient"></div>
-            <div class="label">
-              <span>Theme 2</span>
-            </div>
-          </div>
-          
-          <div class="theme">
-            <img src="<?= $GLOBALS["__HOME__"] ?>/public/images/theme-stock-pictures/534527345717.png" alt="">
-            <div class="gradient"></div>
-            <div class="label">
-              <span>Theme 3</span>
-            </div>
-          </div>
-          
-          <div class="theme">
-            <img src="<?= $GLOBALS["__HOME__"] ?>/public/images/theme-stock-pictures/697801256781.png" alt="">
-            <div class="gradient"></div>
-            <div class="label">
-              <span>Theme 4</span>
-            </div>
-          </div>
-          
-          <div class="theme">
-            <img src="<?= $GLOBALS["__HOME__"] ?>/public/images/theme-stock-pictures/79649236.png" alt="">
-            <div class="gradient"></div>
-            <div class="label">
-              <span>Theme 5</span>
-            </div>
-          </div>
-          
-          <div class="theme">
-            <img src="<?= $GLOBALS["__HOME__"] ?>/public/images/theme-stock-pictures/809734986523.png" alt="">
-            <div class="gradient"></div>
-            <div class="label">
-              <span>Theme 6</span>
-            </div>
-          </div>
-          
-          <div class="theme">
-            <img src="<?= $GLOBALS["__HOME__"] ?>/public/images/theme-stock-pictures/9845092879345.png" alt="">
-            <div class="gradient"></div>
-            <div class="label">
-              <span>Theme 7</span>
-            </div>
-          </div>
-          
-          <div class="theme">
-            <img src="<?= $GLOBALS["__HOME__"] ?>/public/images/theme-stock-pictures/98745154.png" alt="">
-            <div class="gradient"></div>
-            <div class="label">
-              <span>Theme 8</span>
-            </div>
-          </div>
-          
-          <div class="theme">
-            <img src="<?= $GLOBALS["__HOME__"] ?>/public/images/theme-stock-pictures/10732789753.png" alt="">
-            <div class="gradient"></div>
-            <div class="label">
-              <span>Theme 1</span>
-            </div>
-          </div>
-          
-          <div class="theme">
-            <img src="<?= $GLOBALS["__HOME__"] ?>/public/images/theme-stock-pictures/246262618653.png" alt="">
-            <div class="gradient"></div>
-            <div class="label">
-              <span>Theme 2</span>
-            </div>
-          </div>
-          
-          <div class="theme">
-            <img src="<?= $GLOBALS["__HOME__"] ?>/public/images/theme-stock-pictures/534527345717.png" alt="">
-            <div class="gradient"></div>
-            <div class="label">
-              <span>Theme 3</span>
-            </div>
-          </div>
-          
-          <div class="theme">
-            <img src="<?= $GLOBALS["__HOME__"] ?>/public/images/theme-stock-pictures/697801256781.png" alt="">
-            <div class="gradient"></div>
-            <div class="label">
-              <span>Theme 4</span>
-            </div>
-          </div>
-          
-          <div class="theme">
-            <img src="<?= $GLOBALS["__HOME__"] ?>/public/images/theme-stock-pictures/79649236.png" alt="">
-            <div class="gradient"></div>
-            <div class="label">
-              <span>Theme 5</span>
-            </div>
-          </div>
-          
-          <div class="theme">
-            <img src="<?= $GLOBALS["__HOME__"] ?>/public/images/theme-stock-pictures/809734986523.png" alt="">
-            <div class="gradient"></div>
-            <div class="label">
-              <span>Theme 6</span>
-            </div>
-          </div>
-          
-          <div class="theme">
-            <img src="<?= $GLOBALS["__HOME__"] ?>/public/images/theme-stock-pictures/9845092879345.png" alt="">
-            <div class="gradient"></div>
-            <div class="label">
-              <span>Theme 7</span>
-            </div>
-          </div>
-          
-          <div class="theme">
-            <img src="<?= $GLOBALS["__HOME__"] ?>/public/images/theme-stock-pictures/98745154.png" alt="">
-            <div class="gradient"></div>
-            <div class="label">
-              <span>Theme 8</span>
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
+<!--    <div columns="4" class="c-grid link-element" auto-fill="true" id="themes">-->
+<!--      <section column="0-4" row="0-4">-->
+<!--        <header class="no-mg">-->
+<!--          <section class="controls">-->
+<!--            <div class="separator right">Themes</div>-->
+<!--          </section>-->
+<!--          <section class="search-mount">-->
+<!--            <img src="--><?//= $GLOBALS["__HOME__"] ?><!--/public/images/search-white.svg" alt="search">-->
+<!--            <input type="text">-->
+<!--          </section>-->
+<!--        </header>-->
+<!--        -->
+<!--        <div class="scrollable theme-view no-mg">-->
+<!--          <div class="theme selected">-->
+<!--            <img src="--><?//= $GLOBALS["__HOME__"] ?><!--/public/images/theme-stock-pictures/10732789753.png" alt="">-->
+<!--            <div class="gradient"></div>-->
+<!--            <div class="label">-->
+<!--              <span>Theme 1</span>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          -->
+<!--          <div class="theme">-->
+<!--            <img src="--><?//= $GLOBALS["__HOME__"] ?><!--/public/images/theme-stock-pictures/246262618653.png" alt="">-->
+<!--            <div class="gradient"></div>-->
+<!--            <div class="label">-->
+<!--              <span>Theme 2</span>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          -->
+<!--          <div class="theme">-->
+<!--            <img src="--><?//= $GLOBALS["__HOME__"] ?><!--/public/images/theme-stock-pictures/534527345717.png" alt="">-->
+<!--            <div class="gradient"></div>-->
+<!--            <div class="label">-->
+<!--              <span>Theme 3</span>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          -->
+<!--          <div class="theme">-->
+<!--            <img src="--><?//= $GLOBALS["__HOME__"] ?><!--/public/images/theme-stock-pictures/697801256781.png" alt="">-->
+<!--            <div class="gradient"></div>-->
+<!--            <div class="label">-->
+<!--              <span>Theme 4</span>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          -->
+<!--          <div class="theme">-->
+<!--            <img src="--><?//= $GLOBALS["__HOME__"] ?><!--/public/images/theme-stock-pictures/79649236.png" alt="">-->
+<!--            <div class="gradient"></div>-->
+<!--            <div class="label">-->
+<!--              <span>Theme 5</span>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          -->
+<!--          <div class="theme">-->
+<!--            <img src="--><?//= $GLOBALS["__HOME__"] ?><!--/public/images/theme-stock-pictures/809734986523.png" alt="">-->
+<!--            <div class="gradient"></div>-->
+<!--            <div class="label">-->
+<!--              <span>Theme 6</span>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          -->
+<!--          <div class="theme">-->
+<!--            <img src="--><?//= $GLOBALS["__HOME__"] ?><!--/public/images/theme-stock-pictures/9845092879345.png" alt="">-->
+<!--            <div class="gradient"></div>-->
+<!--            <div class="label">-->
+<!--              <span>Theme 7</span>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          -->
+<!--          <div class="theme">-->
+<!--            <img src="--><?//= $GLOBALS["__HOME__"] ?><!--/public/images/theme-stock-pictures/98745154.png" alt="">-->
+<!--            <div class="gradient"></div>-->
+<!--            <div class="label">-->
+<!--              <span>Theme 8</span>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          -->
+<!--          <div class="theme">-->
+<!--            <img src="--><?//= $GLOBALS["__HOME__"] ?><!--/public/images/theme-stock-pictures/10732789753.png" alt="">-->
+<!--            <div class="gradient"></div>-->
+<!--            <div class="label">-->
+<!--              <span>Theme 1</span>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          -->
+<!--          <div class="theme">-->
+<!--            <img src="--><?//= $GLOBALS["__HOME__"] ?><!--/public/images/theme-stock-pictures/246262618653.png" alt="">-->
+<!--            <div class="gradient"></div>-->
+<!--            <div class="label">-->
+<!--              <span>Theme 2</span>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          -->
+<!--          <div class="theme">-->
+<!--            <img src="--><?//= $GLOBALS["__HOME__"] ?><!--/public/images/theme-stock-pictures/534527345717.png" alt="">-->
+<!--            <div class="gradient"></div>-->
+<!--            <div class="label">-->
+<!--              <span>Theme 3</span>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          -->
+<!--          <div class="theme">-->
+<!--            <img src="--><?//= $GLOBALS["__HOME__"] ?><!--/public/images/theme-stock-pictures/697801256781.png" alt="">-->
+<!--            <div class="gradient"></div>-->
+<!--            <div class="label">-->
+<!--              <span>Theme 4</span>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          -->
+<!--          <div class="theme">-->
+<!--            <img src="--><?//= $GLOBALS["__HOME__"] ?><!--/public/images/theme-stock-pictures/79649236.png" alt="">-->
+<!--            <div class="gradient"></div>-->
+<!--            <div class="label">-->
+<!--              <span>Theme 5</span>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          -->
+<!--          <div class="theme">-->
+<!--            <img src="--><?//= $GLOBALS["__HOME__"] ?><!--/public/images/theme-stock-pictures/809734986523.png" alt="">-->
+<!--            <div class="gradient"></div>-->
+<!--            <div class="label">-->
+<!--              <span>Theme 6</span>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          -->
+<!--          <div class="theme">-->
+<!--            <img src="--><?//= $GLOBALS["__HOME__"] ?><!--/public/images/theme-stock-pictures/9845092879345.png" alt="">-->
+<!--            <div class="gradient"></div>-->
+<!--            <div class="label">-->
+<!--              <span>Theme 7</span>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          -->
+<!--          <div class="theme">-->
+<!--            <img src="--><?//= $GLOBALS["__HOME__"] ?><!--/public/images/theme-stock-pictures/98745154.png" alt="">-->
+<!--            <div class="gradient"></div>-->
+<!--            <div class="label">-->
+<!--              <span>Theme 8</span>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--        </div>-->
+<!--      </section>-->
+<!--    </div>-->
     
     
     <div columns="4" class="c-grid link-element" auto-fill="true" id="gallery">
@@ -463,16 +463,11 @@
             <button class="change-file-order" data-order="1">Name</button>
             <button class="change-file-order" data-order="2">Size</button>
           </section>
-          <section class="search-mount">
-            <img src="<?= $GLOBALS["__HOME__"] ?>/public/images/search-white.svg" alt="search">
-            <input type="text">
-          </section>
+<!--          <section class="search-mount">-->
+<!--            <img src="--><?//= $GLOBALS["__HOME__"] ?><!--/public/images/search-white.svg" alt="search">-->
+<!--            <input type="text">-->
+<!--          </section>-->
         </header>
-        
-<!--        <div class="f-v-control no-mg">-->
-<!--          <check-box cb-border-radius="4px" cb-border="2px solid var(--container-3)" cb-background="var(--container-0)" cb-background-checked="var(--container-opposite-0)">Select all</check-box>-->
-<!--          <button class="inverse">Remove selected</button>-->
-<!--        </div>-->
         
         <div class="scrollable files-view no-mg"></div>
       </section>

@@ -5,8 +5,8 @@
   require_once __DIR__ . "/../lib/retval/retval.php";
 
   class User extends StrictModel {
-    public $ID, $themesID, $email, $password, $level, $website, $isVerified, $isDisabled, $username;
-    const ALL_COLUMNS = ["ID", "themesID", "email", "password", "level", "website", "isVerified", "isDisabled", "username"];
+    public $ID, $email, $password, $level, $website, $isVerified, $isDisabled, $username;
+    const ALL_COLUMNS = ["ID", "email", "password", "level", "website", "isVerified", "isDisabled", "username"];
     const TABLE_NAME = "users";
 
     public function comparePassword (string $password): Result {
@@ -23,7 +23,7 @@
 
 
     protected static function getNumberProps (): array {
-      return ["ID", "themesID", "level"];
+      return ["ID", "level"];
     }
 
 
@@ -174,7 +174,7 @@
 
     static function register (string $email, string $username, string $website, string $password): SideEffect {
       return Database::get()->statement(
-        "INSERT INTO `users`(`themesID`, `email`, `username`, `password`, `level`, `website`, `isVerified`)
+        "INSERT INTO `users`(`email`, `username`, `password`, `level`, `website`, `isVerified`)
         VALUES (1, :email, :username, :password, 1, :website, 0)",
         [
           new DatabaseParam("email", $email, PDO::PARAM_STR),

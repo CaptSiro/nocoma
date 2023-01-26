@@ -14,9 +14,9 @@ $$(".form").forEach(form => {
     
     evt.preventDefault();
     
-    submitter.dispatchEvent(new CustomEvent("submit"));
-    submitter.dispatchEvent(new CustomEvent("click"));
-    submitter.dispatchEvent(new CustomEvent("pointerdown"));
+    submitter.dispatchEvent(new Event("submit"));
+    submitter.dispatchEvent(new Event("click"));
+    submitter.dispatchEvent(new Event("pointerdown"));
   });
 });
 

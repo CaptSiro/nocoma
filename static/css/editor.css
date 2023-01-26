@@ -15,7 +15,7 @@ body {
 
 
 * {
-  color: var(--text-color);
+  color: var(--text-color-0);
 }
 
 
@@ -38,7 +38,7 @@ nav {
 .settings-drop,
 .inner-dropdown {
   position: relative;
-  color: var(--text-color);
+  color: var(--text-color-0);
 }
 .dropdown-item {
   padding: 5px 7px 5px 20px;
@@ -72,7 +72,7 @@ nav {
   right: 5px;
   top: 50%;
   transform: translate(0, -50%);
-  color: var(--text-color-2);
+  color: var(--text-color-1);
   font-size: 0.8em;
 }
 .dropdown {
@@ -86,7 +86,7 @@ nav {
   min-width: 150px;
   background-color: var(--container-0);
   padding: 5px;
-  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+  box-shadow: var(--container-3) 0 3px 8px;
   border-radius: 5px;
   z-index: 0;
   opacity: 0;
@@ -190,11 +190,35 @@ nav {
 .inspector > * {
   padding: 8px 16px;
 }
+.inspector > div.inner-padding > *:first-child {
+  padding-top: 0;
+}
+.inspector > div.inner-padding > * {
+  padding: 8px 0;
+}
+.inspector > div.inner-padding > *:last-child {
+  padding-bottom: 0;
+}
 .inspector > hr {
   padding: unset;
-  color: var(--container-1);
+  color: var(--container-2);
+  margin: 8px 0;
+}
+.inspector > *:last-child {
+  margin-bottom: 20vh;
 }
 
+
+.i-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.i-title {
+  font-family: var(--font-1);
+}
 
 
 .i-radio-group {
@@ -349,7 +373,7 @@ nav {
   content: "";
   width: 0.55em;
   height: 0.35em;
-  background-color: var(--text-color);
+  background-color: var(--text-color-0);
   clip-path: polygon(100% 0%, 0 0%, 50% 100%);
   justify-self: end;
 }
@@ -362,13 +386,15 @@ nav {
 
 .i-date {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  gap: 8px;
+  /*align-items: center;*/
 }
 .i-date label {
   margin-right: auto;
 }
 .i-date input {
-  width: 10em;
+  width: 100%;
   border: 1px solid var(--container-3);
   padding: 0.25em 0.5em;
   font-size: var(--input-font-size);
@@ -377,7 +403,7 @@ nav {
   transition: background-color 250ms linear, border-color 250ms linear;
 }
 .i-date input::-moz-selection {
-  color: var(--text-color-opposite);
+  color: var(--text-color-opposite-0);
   background-color: var(--container-opposite-3);
 }
 .i-date input:focus {
@@ -451,7 +477,7 @@ input[type=text] {
   border: unset;
   padding: 4px;
   background-color: var(--container-2);
-  color: var(--text-color-2);
+  color: var(--text-color-1);
   border: 2px solid var(--container-3);
 }
 
@@ -526,23 +552,27 @@ input[type=text].invalid {
   position: absolute;
   top: 4px;
   right: 4px;
-  background-color: white;
-  border: 2px solid var(--container-opposite-3);
-  color: var(--container-opposite-3);
+  background-color: var(--container-0);
+  border: 2px solid var(--container-2);
+  color: var(--text-color-2);
   padding: 8px;
   z-index: 12; /* TODO: z-index */
+
+  transition: background-color linear 100ms, color linear 100ms;
 }
 
 .table .viewport-mount .toggle-viewport:hover {
-  background-color: var(--container-opposite-3);
-  color: white;
+  background-color: var(--container-2);
+  color: var(--text-color-0);
   cursor: pointer;
+
+  transition: background-color linear 20ms, color linear 20ms;
 }
 
 .table .viewport-mount #viewport {
   background-color: var(--container-0);
   overflow: auto;
-  box-shadow: rgba(81, 63, 110, 0.2) 0 7px 29px 0;
+  box-shadow: var(--container-2) 0 7px 29px 0;
 }
 
 
@@ -560,11 +590,11 @@ input[type=text].invalid {
   overflow: auto;
   width: 250px;
   background-color: var(--container-0);
-  color: var(--text-color);
+  color: var(--text-color-0);
   display: flex;
   flex-direction: column;
   border-radius: 5px;
-  box-shadow: rgba(0, 0, 0, 0.24) 0 3px 8px;
+  box-shadow: var(--container-3) 0 3px 8px;
 }
 
 #widget-select-mount > * {
@@ -589,7 +619,7 @@ input[type=text].invalid {
   font-style: italic;
   /*top: 16px;*/
   /*left: 16px;*/
-  color: var(--text-color-2);
+  color: var(--text-color-1);
 }
 
 .widget-category .label {
@@ -625,4 +655,142 @@ input[type=text].invalid {
   height: 1.5em;
   margin-right: 0.5em;
   object-fit: cover;
+}
+
+
+
+.color-picker {
+  --red: 0;
+  --green: 0;
+  --blue: 0;
+  --alpha: 0.5;
+
+  max-width: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.color-picker .invalid {
+  background-color: crimson !important;
+  color: white;
+}
+.color-picker label {
+  min-width: 2em;
+}
+.color-picker input[type=range] {
+  appearance: none;
+  width: 100%;
+  height: 24px;
+  outline: none;
+}
+.color-picker input[type=range]::-webkit-slider-thumb,
+.color-picker input[type=range]::-moz-range-thumb {
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: transparent;
+  border: 2px solid black;
+  outline: 2px solid white;
+}
+.color-picker .color-picker-r {
+  background: linear-gradient(90deg, rgba(0, var(--green), var(--blue), 1) 0%, rgba(255, var(--green), var(--blue), 1) 100%);
+}
+.color-picker .color-picker-g {
+  background: linear-gradient(90deg, rgba(var(--red), 0, var(--blue), 1) 0%, rgba(var(--red), 255, var(--blue), 1) 100%);
+}
+.color-picker .color-picker-b {
+  background: linear-gradient(90deg, rgba(var(--red), var(--green), 0, 1) 0%, rgba(var(--red), var(--green), 255, 1) 100%);
+}
+.color-picker .color-picker-a {
+  position: relative;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0%, rgba(var(--red), var(--green), var(--blue), 1) 100%);
+}
+.color-picker .new {
+  background: rgba(var(--red), var(--green), var(--blue), var(--alpha));
+}
+.color-picker .showcase {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 1.5em;
+  background-color: white;
+}
+.color-picker .showcase > * {
+  position: absolute;
+  height: 100%;
+  top: 0;
+}
+.color-picker .showcase .transparent {
+  left: 0;
+  width: 100%;
+  background-image: linear-gradient(45deg, #808080 25%, transparent 25%), linear-gradient(-45deg, #808080 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #808080 75%), linear-gradient(-45deg, transparent 75%, #808080 75%);
+  background-size: 10px 10px;
+  background-position: 0 0, 0 10px, 10px -10px, -10px 0px;
+}
+.color-picker .showcase .old {
+  left: 0;
+  width: 50%;
+}
+.color-picker .showcase .new {
+  left: 50%;
+  width: 50%;
+}
+.color-picker .sliders {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.color-picker .row {
+  display: flex;
+  justify-content: space-between;
+}
+.color-picker .controls {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+
+
+
+#file-select .files {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  height: 300px;
+  overflow: auto;
+  width: 100%;
+}
+#file-select .files .item {
+  padding: 8px;
+  border-radius: 10px;
+  width: 120px;
+  background-color: transparent;
+
+  transition: background-color 100ms linear;
+}
+#file-select .files .item:hover {
+  background-color: var(--container-1);
+  cursor: pointer;
+
+  transition: background-color 0ms linear;
+}
+#file-select .files .item.selected {
+  background-color: var(--container-2);
+
+  transition: background-color 100ms linear;
+}
+#file-select .files .item img {
+  width: 100%;
+  height: 100px;
+  object-fit: contain;
+}
+#file-select .files .item p {
+  width: 100%;
+  text-align: center;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  font-size: 0.75em;
 }

@@ -14,7 +14,7 @@
   <script src="<?=$GLOBALS["__HOME__"]?>/public/js/main-v2.js"></script>
   <script>
     AJAX.DOMAIN_HOME = "<?=$GLOBALS["__HOME__"]?>";
-    AJAX.SERVER_HOME = "<?=$GLOBALS["SERVER_HOME"] ?? $GLOBALS["__HOME__"]?>";
+    AJAX.SERVER_HOME = "<?=$GLOBALS["__SERVER_HOME__"] ?? $GLOBALS["__HOME__"]?>";
   </script>
   <script src="<?=$GLOBALS["__HOME__"]?>/public/js/background-loader.js"></script>
   <script src="<?=$GLOBALS["__HOME__"]?>/public/js/forms.js" defer></script>

@@ -108,6 +108,10 @@
     Middleware::requireToBeLoggedIn(),
     Middleware::corsAllowAll("PATCH", false),
     function (Request $request, Response $response) use ($reactionLookUp) {
+      if ($request->param->get("commentID") == 0) {
+        $response->json(["rowCount" => 1, "lastInsertedID" => 0]);
+      }
+    
       $response->json(Comment::setReaction(
         $request->param->get("commentID"),
         $request->session->get("user")->ID,

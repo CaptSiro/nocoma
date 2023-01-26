@@ -75,10 +75,10 @@
             <button class="change-type" data-type="0">All</button>
             <button class="change-type" data-type="1">Banned</button>
           </section>
-          <section class="search-mount">
-            <img src="<?=$GLOBALS["__HOME__"]?>/public/images/search-white.svg" alt="search">
-            <input type="text">
-          </section>
+<!--          <section class="search-mount">-->
+<!--            <img src="--><?//=$GLOBALS["__HOME__"]?><!--/public/images/search-white.svg" alt="search">-->
+<!--            <input type="text">-->
+<!--          </section>-->
         </header>
         
         <div class="scrollable user-view no-mg"></div>
@@ -95,158 +95,7 @@
           </section>
         </header>
         
-        <div class="scrollable appeals-view no-mg">
-          
-          <div class="appeal not-read">
-            <div class="a-head">
-              <div class="u-head default">
-                <div class="start">
-                  <img src="<?=$GLOBALS["__HOME__"]?>/public/images/stock/pfp.png" alt="pfp">
-                  <div class="u-column">
-                    <h4>Username</h4>
-                    <span>website</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div class="a-body">
-              <div class="related-post">
-                <h3>Title of the post</h3>
-              </div>
-              
-              <div class="a-msg">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit optio laudantium, perspiciatis ducimus expedita repellat quidem nobis temporibus deserunt alias quae ipsam quia quaerat a accusantium inventore tempora atque culpa?
-              </div>
-              
-              <div class="a-controls">
-                <button>View post</button>
-                <button>Accept</button>
-                <button>Decline</button>
-              </div>
-            </div>
-          </div>
-          
-          <div class="appeal">
-            <div class="a-head">
-              <div class="u-head default">
-                <div class="start">
-                  <img src="<?=$GLOBALS["__HOME__"]?>/public/images/stock/pfp.png" alt="pfp">
-                  <div class="u-column">
-                    <h4>Username</h4>
-                    <span>website</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div class="a-body">
-              <div class="related-post">
-                <h3>Title of the post</h3>
-              </div>
-              
-              <div class="a-msg">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit optio laudantium, perspiciatis ducimus expedita repellat quidem nobis temporibus deserunt alias quae ipsam quia quaerat a accusantium inventore tempora atque culpa?
-              </div>
-              
-              <div class="a-controls">
-                <button>View post</button>
-                <button>Accept</button>
-                <button>Decline</button>
-              </div>
-            </div>
-          </div>
-          
-          <div class="appeal">
-            <div class="a-head">
-              <div class="u-head default">
-                <div class="start">
-                  <img src="<?=$GLOBALS["__HOME__"]?>/public/images/stock/pfp.png" alt="pfp">
-                  <div class="u-column">
-                    <h4>Username</h4>
-                    <span>website</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div class="a-body">
-              <div class="related-post">
-                <h3>Title of the post</h3>
-              </div>
-              
-              <div class="a-msg">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit optio laudantium, perspiciatis ducimus expedita repellat quidem nobis temporibus deserunt alias quae ipsam quia quaerat a accusantium inventore tempora atque culpa?
-              </div>
-              
-              <div class="a-controls">
-                <button>View post</button>
-                <button>Accept</button>
-                <button>Decline</button>
-              </div>
-            </div>
-          </div>
-          
-          <div class="appeal">
-            <div class="a-head">
-              <div class="u-head default">
-                <div class="start">
-                  <img src="<?=$GLOBALS["__HOME__"]?>/public/images/stock/pfp.png" alt="pfp">
-                  <div class="u-column">
-                    <h4>Username</h4>
-                    <span>website</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div class="a-body">
-              <div class="related-post">
-                <h3>Title of the post</h3>
-              </div>
-              
-              <div class="a-msg">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit optio laudantium, perspiciatis ducimus expedita repellat quidem nobis temporibus deserunt alias quae ipsam quia quaerat a accusantium inventore tempora atque culpa?
-              </div>
-              
-              <div class="a-controls">
-                <button>View post</button>
-                <button>Accept</button>
-                <button>Decline</button>
-              </div>
-            </div>
-          </div>
-          
-          <div class="appeal">
-            <div class="a-head">
-              <div class="u-head default">
-                <div class="start">
-                  <img src="<?=$GLOBALS["__HOME__"]?>/public/images/stock/pfp.png" alt="pfp">
-                  <div class="u-column">
-                    <h4>Username</h4>
-                    <span>website</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div class="a-body">
-              <div class="related-post">
-                <h3>Title of the post</h3>
-              </div>
-              
-              <div class="a-msg">
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. Suscipit optio laudantium, perspiciatis ducimus expedita repellat quidem nobis temporibus deserunt alias quae ipsam quia quaerat a accusantium inventore tempora atque culpa?
-              </div>
-              
-              <div class="a-controls">
-                <button>View post</button>
-                <button>Accept</button>
-                <button>Decline</button>
-              </div>
-            </div>
-          </div>
-        </div>
+        <div class="scrollable appeals-view no-mg"></div>
       </section>
     </div>
   

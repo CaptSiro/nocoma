@@ -24,7 +24,7 @@
       <div class="settings-drop">
         <span class="content">Edit</span>
         <div class="dropdown">
-          <div class="dropdown-item"><span class="content">Edit</span></div>
+          <div class="dropdown-item" id="edit-website-properties"><span class="content">Website properties</span></div>
         </div>
       </div>
       <div class="settings-drop">

@@ -37,9 +37,11 @@
   //TODO: move from /auth/background => /background-images
   $authRouter->get("/background", [function (Request $request, Response $response) {
     $response->setHeader("Access-Control-Allow-Origin", "*");
-    $names = array_values(array_diff(scandir(__DIR__ . "/../static/images/login-register-bgs"), ['.', '..']));
+    $names = array_values(array_diff(scandir(__DIR__ . "/../static/images/backgrounds-mono"), ['.', '..']));
     
-    $response->send($names[random_int(0, count($names) - 1)]);
+    $response->send(
+      Response::createRedirectURL("/public/images/backgrounds-mono/" . $names[random_int(0, count($names) - 1)])
+    );
   }]);
   
   

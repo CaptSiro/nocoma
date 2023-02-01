@@ -15,6 +15,7 @@
     AJAX.DOMAIN_HOME = "<?=$GLOBALS["__HOME__"]?>";
     AJAX.SERVER_HOME = "<?=$GLOBALS["__SERVER_HOME__"] ?? $GLOBALS["__HOME__"]?>";
   </script>
+  <script src="<?= $GLOBALS["__HOME__"] ?>/public/js/user-theme-setter.js"></script>
   <script src="<?=$GLOBALS["__HOME__"]?>/public/js/background-loader.js"></script>
   
   <script src="<?=$GLOBALS["__HOME__"]?>/public/js/components/Timer.js"></script>
@@ -61,6 +62,7 @@
 
     <div class="wrapper">
       <p>Don't have an account? <button class="link" link-to="register">Sign up.</button></p>
+      <p>Go back to <button class="link" onclick="window.location.replace('<?=$GLOBALS["__HOME__"]?>')">home page</button></p>
     </div>
   </div>
 

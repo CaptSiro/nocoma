@@ -50,11 +50,9 @@
       
       <div class="wrapper files"></div>
       
-      <div class="divider"></div>
-  
       <div class="wrapper sideways-end">
         <button class="cancel-modal">Cancel</button>
-        <button class="submit" type="submit">Submit</button>
+        <button class="submit" type="submit">Pick</button>
       </div>
   
       <div class="wrapper">

@@ -399,8 +399,8 @@ class Line {
  * @typedef Edges
  * @property {Vertex} top
  * @property {Vertex} bottom
- * @property {Vertex} leftTD left edge converted to top down view
- * @property {Vertex} rightTD right edge converted to top down view
+ * @property {Vertex} leftTD left edge converted to topdown view
+ * @property {Vertex} rightTD right edge converted to topdown view
  */
 /**
  * @typedef Viewport

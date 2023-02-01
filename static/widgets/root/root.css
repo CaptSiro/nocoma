@@ -45,7 +45,7 @@ body {
 }
 .gui button:hover {
   cursor: pointer;
-  background-color: var(--container-opposite-0);
+  background-color: var(--container-opposite-1);
 
   transition: background-color 0ms linear;
 }

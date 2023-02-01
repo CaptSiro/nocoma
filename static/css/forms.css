@@ -55,7 +55,7 @@
 
 .form button.link {
     all: unset;
-    color: #417;
+    color: var(--text-color-2);
     font-size: 0.9em;
     font-weight: bold;
 }

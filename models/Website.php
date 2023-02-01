@@ -4,7 +4,7 @@
   require_once __DIR__ . "/../lib/retval/retval.php";
 
   class Website extends StrictModel {
-    protected $ID, $usersID, $website, $thumbnailSRC, $thumbnail, $src, $timeCreated, $title,
+    protected $ID, $usersID, $website, $themesSRC, $thumbnailSRC, $thumbnail, $src, $timeCreated, $title,
       $isTemplate, $isPublic, $areCommentsAvailable, $isHomePage, $isTakenDown, $releaseDate;
     const ALL_COLUMNS = ["ID", "usersID", "thumbnailSRC", "src", "timeCreated", "title",
       "isTemplate", "isPublic", "isHomePage"];
@@ -23,6 +23,14 @@
   
     const WEBSITE_PROJECTION = "websiteUsers.website website";
     const WEBSITE = "JOIN users as websiteUsers ON websites.usersID = websiteUsers.ID";
+  
+    const THEME_SRC_PROJECTION =
+      "CASE WHEN themes.usersID = 0
+                THEN CONCAT('_', themes.src)
+                ELSE themes.src
+            END as themesSRC";
+    const THEME_SRC =
+      "LEFT JOIN themes ON themes.src = websites.themesSRC";
     
     protected static function getNumberProps (): array { return ["ID", "usersID"]; }
     protected static function getBooleanProps (): array { return [
@@ -155,13 +163,15 @@
             " . self::IS_TAKEN_DOWN_CONDITION_PROJECTION . ",
             " . self::JOIN_PLANNED_WEBSITES_PROJECTION . ",
             " . self::THUMBNAIL_PROJECTION . ",
-            " . self::WEBSITE_PROJECTION . "
+            " . self::WEBSITE_PROJECTION . ",
+            " . self::THEME_SRC_PROJECTION . "
         FROM
           `websites`
           " . self::IS_TAKEN_DOWN_CONDITION . "
           " . self::JOIN_PLANNED_WEBSITES . "
           " . self::THUMBNAIL . "
           " . self::WEBSITE . "
+          " . self::THEME_SRC . "
         WHERE websites.ID = :id",
         self::class,
         [new DatabaseParam("id", $id)]
@@ -185,13 +195,15 @@
           " . self::IS_TAKEN_DOWN_CONDITION_PROJECTION . ",
           " . self::JOIN_PLANNED_WEBSITES_PROJECTION . ",
           " . self::THUMBNAIL_PROJECTION . ",
-          " . self::WEBSITE_PROJECTION . "
+          " . self::WEBSITE_PROJECTION . ",
+          " . self::THEME_SRC_PROJECTION . "
         FROM
           websites
           " . self::IS_TAKEN_DOWN_CONDITION . "
           " . self::JOIN_PLANNED_WEBSITES . "
           " . self::THUMBNAIL . "
           " . self::WEBSITE . "
+          " . self::THEME_SRC . "
           JOIN users ON users.ID = websites.usersID
             AND websites.isHomePage = 1
             AND users.website = :website",
@@ -217,12 +229,14 @@
           " . self::IS_TAKEN_DOWN_CONDITION_PROJECTION . ",
           " . self::JOIN_PLANNED_WEBSITES_PROJECTION . ",
           " . self::THUMBNAIL_PROJECTION . ",
-          users.website website
+          users.website website,
+          " . self::THEME_SRC_PROJECTION . "
         FROM
           `websites`
           " . self::IS_TAKEN_DOWN_CONDITION . "
           " . self::JOIN_PLANNED_WEBSITES . "
           " . self::THUMBNAIL . "
+          " . self::THEME_SRC . "
           JOIN users ON users.ID = websites.usersID
             AND websites.isPublic = 1
             AND websites.isTakenDown = 0
@@ -276,12 +290,14 @@
           MIN(websites.timeCreated) timeCreated,
           " . self::JOIN_PLANNED_WEBSITES_PROJECTION . ",
           " . self::THUMBNAIL_PROJECTION . ",
-          users.website website
+          users.website website,
+          " . self::THEME_SRC_PROJECTION . "
         FROM
           `websites`
           " . self::IS_TAKEN_DOWN_CONDITION . "
           " . self::JOIN_PLANNED_WEBSITES . "
           " . self::THUMBNAIL . "
+          " . self::THEME_SRC . "
           JOIN users ON users.ID = websites.usersID
             AND websites.src = :source",
         self::class,
@@ -290,7 +306,7 @@
         ]
       );
     
-      if (!$post) {
+      if (!isset($post->ID)) {
         return fail(new NotFoundExc("This website does not exist."));
       }
     
@@ -311,12 +327,14 @@
           " . self::IS_TAKEN_DOWN_CONDITION_PROJECTION . ",
           `" . self::PLANNED_WEBSITES_TABLE_NAME ."`.`releaseDate` as releaseDate,
           " . self::THUMBNAIL_PROJECTION . ",
-          " . self::WEBSITE_PROJECTION . "
+          " . self::WEBSITE_PROJECTION . ",
+          " . self::THEME_SRC_PROJECTION . "
         FROM `websites`
           JOIN `" . self::PLANNED_WEBSITES_TABLE_NAME . "` ON `" . self::PLANNED_WEBSITES_TABLE_NAME . "`.websitesID = websites.ID
           " . self::IS_TAKEN_DOWN_CONDITION . ",
           " . self::THUMBNAIL . "
           " . self::WEBSITE . "
+          " . self::THEME_SRC . "
         WHERE websites.usersID = :userID
         ORDER BY timeCreated DESC
         LIMIT :offset, " . self::SET_SIZE,
@@ -337,12 +355,14 @@
           " . self::IS_TAKEN_DOWN_CONDITION_PROJECTION . ",
           " . self::JOIN_PLANNED_WEBSITES_PROJECTION . ",
           " . self::THUMBNAIL_PROJECTION . ",
-          " . self::WEBSITE_PROJECTION . "
+          " . self::WEBSITE_PROJECTION . ",
+          " . self::THEME_SRC_PROJECTION . "
         FROM `websites`
           " . self::IS_TAKEN_DOWN_CONDITION . "
           " . self::JOIN_PLANNED_WEBSITES . "
           " . self::THUMBNAIL . "
           " . self::WEBSITE . "
+          " . self::THEME_SRC . "
         WHERE websites.usersID = :userID $restrictions
         ORDER BY timeCreated DESC
         LIMIT :offset, " . self::SET_SIZE,

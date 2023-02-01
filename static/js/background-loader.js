@@ -1,5 +1,9 @@
-window.addEventListener("load", () => {
-  AJAX.get("/auth/background", TextHandlerSync((image) => {
-    document.body.style.backgroundImage = `url(${AJAX.SERVER_HOME}/public/images/login-register-bgs/${image})`;
-  }), {}, AJAX.SERVER_HOME);
+window.addEventListener("load", async () => {
+  document.body.classList.add("background-blend");
+  document.body.style.backgroundImage = `url(${await AJAX.get(
+    "/auth/background",
+    TextHandler(),
+    {},
+    AJAX.SERVER_HOME
+  )})`;
 });

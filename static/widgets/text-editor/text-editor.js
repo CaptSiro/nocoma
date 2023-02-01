@@ -2,7 +2,7 @@ class WTextEditor extends Widget {
 // use json.child for single child widget like Center
   // or json.children for array of widgets
   /**
-   * @typedef {(string | any[] | LinkJSON | WidgetJSON)[][]} TextEditorJSONContent
+   * @typedef {((string | any[] | LinkJSON | WidgetJSON)[] | string)[]} TextEditorJSONContent
    * lines []
    *
    *    -> line contents []
@@ -17,6 +17,7 @@ class WTextEditor extends Widget {
    * @property {boolean=} forceSingleLine force whole content into single line: for titles, links, and such
    * @property {undefined | "simple" | "fancy"} mode
    * @property {string=} hint
+   * @property {boolean=} disableLinks
    *
    * @typedef {TextEditorJSONType & WidgetJSON} TextEditorJSON
    */
@@ -33,7 +34,7 @@ class WTextEditor extends Widget {
         evt.preventDefault()
       }
     })
-    
+  
     if (content === "" && !empty) {
       div.innerHTML = "<br>";
     } else {
@@ -46,9 +47,10 @@ class WTextEditor extends Widget {
   /**
    * @param {TextEditorJSONContent} contentArray
    * @param {boolean} forceSingleLine
+   * @param {boolean} editable
    * @returns {HTMLElement[]}
    */
-  #parseContent (contentArray, forceSingleLine = false) {
+  #parseContent (contentArray, forceSingleLine = false, editable = false) {
     if (!contentArray || contentArray.length === 0) {
       return [WTextEditor.#newLine("", false)];
     }
@@ -58,6 +60,11 @@ class WTextEditor extends Widget {
     for (const linesContents of contentArray) {
       if (linesContents.length === 0) {
         lines.push(WTextEditor.#newLine("", false));
+        continue;
+      }
+      
+      if (typeof linesContents === "string") {
+        lines.push(WTextEditor.#newLine(linesContents, false));
         continue;
       }
       
@@ -77,23 +84,19 @@ class WTextEditor extends Widget {
         if (element.type !== undefined) {
           if (!widgets.exists(element.type)) {
             const request = widgets.request(element.type);
-            const widgetLoaded = new Promise(resolve => {
-              widgets.on(element.type, resolve);
-            });
             
             const replacement = Span("widget-loading", `[Loading ${element.type}...]`);
             line.appendChild(replacement);
             
-            Promise.all([request, widgetLoaded])
-              .then(() => {
-                line.insertBefore(widgets.get(element.type).build(element, this, this.#editable).rootElement, replacement);
-                replacement.remove();
-              });
+            request.then(() => {
+              line.insertBefore(widgets.get(element.type).build(element, this, editable).rootElement, replacement);
+              replacement.remove();
+            });
             
             continue;
           }
           
-          line.appendChild(widgets.get(element.type).build(element, this, this.#editable).rootElement);
+          line.appendChild(widgets.get(element.type).build(element, this, editable).rootElement);
         }
       }
       
@@ -158,7 +161,7 @@ class WTextEditor extends Widget {
     
     this.#article = (
       Component("article", __,
-        this.#parseContent(json.content, json.forceSingleLine),
+        this.#parseContent(json.content, json.forceSingleLine, editable),
       )
     );
     this.rootElement.appendChild(this.#article);
@@ -172,10 +175,10 @@ class WTextEditor extends Widget {
     this.#article.classList.add("edit");
     
     // append fancy text gui
-    if (json.mode === "fancy") {
-      this.rootElement.classList.add("fancy");
-      this.appendFancyGUI();
-    }
+    // if (json.mode === "fancy") {
+    //   this.rootElement.classList.add("fancy");
+    //   this.appendFancyGUI();
+    // }
   
     if (this.#article.textContent === "" || this.#article.textContent === "​") {
       this.rootElement.classList.add("show-hint");
@@ -190,6 +193,32 @@ class WTextEditor extends Widget {
       }
       
       this.rootElement.classList.add("show-hint");
+    });
+    
+    this.#article.addEventListener("paste", evt => {
+      evt.preventDefault();
+      
+      const pasteString = (evt.clipboardData || window.clipboardData).getData('text');
+      const selection = window.getSelection();
+      
+      if (!selection.rangeCount) {
+        return;
+      }
+      
+      selection.deleteFromDocument();
+      
+      if (json.disableLinks !== true && WLink.isValidLink(pasteString)) {
+        const linkWidget = WLink.build({
+          text: pasteString,
+          url: pasteString
+        }, this, editable);
+        
+        selection.getRangeAt(0).insertNode(linkWidget.rootElement);
+      } else {
+        selection.getRangeAt(0).insertNode(document.createTextNode(pasteString));
+      }
+      
+      selection.collapseToEnd();
     });
   }
   

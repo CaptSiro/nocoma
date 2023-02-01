@@ -155,3 +155,81 @@ function changeUserPreferredSetting (css, datasetPropertyName, storageKey, scrol
     button.addEventListener("submit", listener(button));
   });
 }
+
+
+
+
+
+const themeSwitcher = $("#theme-select");
+const themeLabel = $(".theme-name");
+let firstConditionMet = false;
+
+window.addEventListener("themesLoaded", makeThemeVisible);
+window.addEventListener("themeSelect", makeThemeVisible);
+function makeThemeVisible (evt) {
+  if (firstConditionMet === false) {
+    firstConditionMet = true;
+    return;
+  }
+  
+  const themeSource = sessionStorage.getItem("themesSRC");
+  
+  Array.from(themeSwitcher)
+    .forEach(option => {
+      if (!option.value.endsWith(themeSource)) return;
+      themeSwitcher.value = option.value;
+      themeLabel.innerText = option.innerHTML;
+    });
+  
+  window.removeEventListener("themesLoaded", makeThemeVisible);
+  window.removeEventListener("themeSelect", makeThemeVisible);
+}
+
+AJAX.get("/theme/user/all", JSONHandlerSync(themes => {
+  for (const theme of themes) {
+    themeSwitcher.appendChild(
+      Component("option", __, theme.name, {
+        attributes: {
+          value: AJAX.SERVER_HOME + "/theme/" + theme.src
+        }
+      })
+    );
+  }
+  
+  window.dispatchEvent(new CustomEvent("themeSelect"));
+}));
+
+themeSwitcher.addEventListener("change", async () => {
+  const themeResponse = await AJAX.patch("/profile/theme-src", JSONHandler(), {
+    body: JSON.stringify({
+      src: themeSwitcher.value.substring(themeSwitcher.value.length - 8)
+    })
+  });
+  
+  if (themeResponse.error !== undefined) {
+    console.log(themeResponse);
+    return;
+  }
+  
+  const themeLink = $(".themes-link");
+  const newThemeLink = Component("link", "theme-link", __, {
+    attributes: {
+      id: "themes-link",
+      rel: "stylesheet",
+      href: themeSwitcher.value
+    }
+  });
+  
+  for (const option of themeSwitcher.children) {
+    if (option.value === themeSwitcher.value) {
+      themeLabel.innerText = option.innerHTML;
+      break;
+    }
+  }
+  
+  document.head.appendChild(newThemeLink);
+  newThemeLink.addEventListener("load", async () => {
+    await sleep(50);
+    themeLink?.remove();
+  });
+});

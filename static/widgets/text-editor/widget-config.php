@@ -7,6 +7,7 @@
   "imports" => [
     // widget->class, widget->class, ... (in order)
     "WTextDecoration",
+    "WLink",
   ],
   "files" => [
     "source" => "text-editor.js", // file of class

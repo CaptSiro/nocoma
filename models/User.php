@@ -5,9 +5,16 @@
   require_once __DIR__ . "/../lib/retval/retval.php";
 
   class User extends StrictModel {
-    public $ID, $email, $password, $level, $website, $isVerified, $isDisabled, $username;
+    public $ID, $email, $password, $level, $website, $isVerified, $isDisabled, $username, $themesSRC;
     const ALL_COLUMNS = ["ID", "email", "password", "level", "website", "isVerified", "isDisabled", "username"];
     const TABLE_NAME = "users";
+    const THEME_SRC_PROJECTION =
+            "CASE WHEN themes.usersID = 0
+                THEN CONCAT('_', themes.src)
+                ELSE themes.src
+            END as themesSRC";
+    const THEME_SRC =
+      "LEFT JOIN themes ON themes.src = users.themesSRC";
 
     public function comparePassword (string $password): Result {
       if ($password == "") {
@@ -81,8 +88,10 @@
 
       $optUser = Database::get()->fetch(
         "SELECT
-          " . self::generateSelectColumns(self::TABLE_NAME, self::ALL_COLUMNS) . "
+          " . self::generateSelectColumns(self::TABLE_NAME, self::ALL_COLUMNS, true) . "
+          " . self::THEME_SRC_PROJECTION . "
         FROM users
+          " . self::THEME_SRC . "
         WHERE users.email = :email",
         self::class,
         [new DatabaseParam("email", $email, PDO::PARAM_STR)]
@@ -216,6 +225,19 @@
         WHERE ID = :userID",
         [
           new DatabaseParam("username", $username, PDO::PARAM_STR),
+          new DatabaseParam("userID", $userID),
+        ]
+      );
+    }
+  
+  
+    static function updateThemeSRC (string $themeSRC, int $userID): SideEffect {
+      return Database::get()->statement(
+        "UPDATE `users`
+        SET `themesSRC` = :themeSRC
+        WHERE ID = :userID",
+        [
+          new DatabaseParam("themeSRC", $themeSRC, PDO::PARAM_STR),
           new DatabaseParam("userID", $userID),
         ]
       );

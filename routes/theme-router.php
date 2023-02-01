@@ -2,11 +2,13 @@
   
   require_once __DIR__ . "/../lib/routepass/routers.php";
   require_once __DIR__ . "/../lib/newgen/newgen.php";
+  require_once __DIR__ . "/../lib/paths.php";
   
   require_once __DIR__ . "/Middleware.php";
   
   require_once __DIR__ . "/../models/Theme.php";
   require_once __DIR__ . "/../models/User.php";
+  require_once __DIR__ . "/../models/Website.php";
   
   $themeRouter = new Router();
   
@@ -15,10 +17,93 @@
   $themeRouter->options("/:src", [Middleware::corsAllowAll("GET")]);
   $themeRouter->get("/:src", [function (Request $request, Response $response) {
     $src = $request->param->get("src");
-    if ($src[0] === ".") {
-    
+    if ($src[0] === "_" && strlen($src) === 9) {
+      $path = GLOBAL_THEMES_DIR . "/" . substr($src, 1) . ".css";
+      if (!file_exists($path)) {
+        $response->error("Invalid global theme source.", Response::IM_A_TEAPOT);
+      }
+      
+      $response->setHeader("Content-Type", "text/css");
+      $response->readFile($path);
     }
+    
+    $response->error("Custom themes are not implemented.", Response::NOT_IMPLEMENTED);
   }]);
+  
+  
+  $themeRouter->get("/defaults", [
+    function (Request $request, Response $response) {
+      $response->json(Theme::getDefaults());
+    }
+  ]);
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  function serveTheme ($themeSRC, $website, $response) {
+    if ($themeSRC === null) {
+      $defaults = Theme::getDefaults();
+      if (!$defaults) {
+        $response->fail(new Exc("No default themes."));
+      }
+  
+      $defaultPath = GLOBAL_THEMES_DIR . "/" . substr($defaults[0]->src, 1) . ".css";
+      if (!file_exists($defaultPath)) {
+        $response->fail(new NotFoundExc("Could not find theme $defaultPath."));
+      }
+  
+      $response->json([
+        "src" => $defaults[0]->src,
+        "styles" => file_get_contents($defaultPath)
+      ]);
+    }
+  
+    if ($themeSRC[0] === "_" && strlen($themeSRC) === 9) {
+      $path = GLOBAL_THEMES_DIR . "/" . substr($themeSRC, 1) . ".css";
+      if (!file_exists($path)) {
+        $response->fail(new NotFoundExc("Invalid global theme source."));
+      }
+  
+      $response->json([
+        "src" => $themeSRC,
+        "styles" => file_get_contents($path)
+      ]);
+    }
+  
+    $customThemePath = HOSTS_DIR . "/$website/media/$themeSRC.css";
+    if (!file_exists($customThemePath)) {
+      $response->fail(new NotFoundExc("Invalid theme source."));
+    }
+  
+    $response->json([
+      "src" => $themeSRC,
+      "styles" => file_get_contents($customThemePath)
+    ]);
+  }
+  
+  
+  $themeRouter->options("/website/:src", [
+    Middleware::corsAllowAll("GET")
+  ], ["src" => Router::REGEX_BASE64_URL_SAFE]);
+  $themeRouter->get("/website/:src", [function (Request $request, Response $response) {
+    $response->setHeader(Response::HEADER_CORS_ORIGIN, "*");
+    
+    $website = Website::getBySourceWithUser($request->param->get("src"))
+      ->forwardFailure($response)
+      ->getSuccess();
+    
+    serveTheme($website->themesSRC ?? null, $website->website ?? "", $response);
+  }], ["src" => Router::REGEX_BASE64_URL_SAFE]);
+  
+  
+  
+  
   
   
   
@@ -28,6 +113,9 @@
       $response->json(Theme::delete($request->param->get("src")));
     }
   ]);
+  
+  
+  
   
   
   
@@ -81,14 +169,29 @@
   
   
   
-  $themeRouter->get("/user/:offset", [
+  
+  
+  
+  $themeRouter->get("/user/", [
+    function (Request $request, Response $response) {
+      /**
+       * @var User $user
+       */
+      $user = $request->session->looselyGet("user", new stdClass());
+      serveTheme($user->themesSRC ?? null, $user->website ?? "", $response);
+    }
+  ]);
+  
+  
+  
+  $themeRouter->get("/user/all", [
     Middleware::requireToBeLoggedIn(),
     function (Request $request, Response $response) {
       $response->json(
-        Theme::getSet(
-          $request->session->get("user")->ID,
-          intval($request->param->get("offset"))
-        )
-      );
+        Theme::getAllUsers($request->session->get("user")->ID));
     }
   ], ["offset" => Router::REGEX_NUMBER]);
+  
+  
+  
+  return $themeRouter;

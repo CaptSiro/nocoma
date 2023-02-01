@@ -75,6 +75,11 @@
         return fail(new NotFoundExc("File does not exist."));
       }
       
+      Database::get()->statement(
+        "UPDATE websites SET thumbnailSRC = NULL WHERE thumbnailSRC = :src",
+        [new DatabaseParam("src", $source, PDO::PARAM_STR)]
+      );
+      
       unlink($path);
       return success(Database::get()->statement(
         "DELETE FROM media WHERE src = :src AND usersID = :userID LIMIT 1",

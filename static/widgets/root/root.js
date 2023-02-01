@@ -50,6 +50,7 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
     );
     this.removeMargin();
     
+    this.editable = editable;
     this.#json = json;
     this.#json.webpage = Object.assign({}, webpage);
     // this.#json.webpage.thumbnailSRC = AJAX.SERVER_HOME + "/public/images/theme-stock-pictures/laptop.png";
@@ -186,13 +187,13 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
     })
     
     const headerSettings = [
-      HR(this.#json.isHeaderIncluded ? "" : "display-none"),
+      HRInspector(this.#json.isHeaderIncluded ? "" : "display-none"),
       TitleInspector("Header", this.#json.isHeaderIncluded ? "" : "display-none"),
       Div("i-header-settings inner-padding" + (this.#json.isHeaderIncluded ? "" : " display-none"), [
         Div("i-row", [
           Span(__, "Image:"),
           Div("i-row", [
-            Button("button-like-main", "Remove", async () => {
+            Button("button-like-main", "Remove", async (evt) => {
               if (this.#json.webpage.thumbnail === undefined) return;
               
               const response = await AJAX.patch("/page/", JSONHandler(), {
@@ -204,14 +205,16 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
               });
   
               if (response.error !== undefined) {
+                rejected(evt.target.parentElement.parentElement);
                 alert(response.error);
                 return;
               }
               
+              validated(evt.target.parentElement.parentElement);
               this.#json.webpage.thumbnail = undefined;
               this.dispatchJSONEvent();
             }),
-            Button("button-like-main", "Select", () => {
+            Button("button-like-main", "Select", (evt) => {
               const win = showWindow("file-select");
               win.dataset.multiple = "false";
               win.dataset.fileType = "image";
@@ -227,9 +230,11 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
                 
                 if (response.error !== undefined) {
                   alert(response.error);
+                  rejected(evt.target.parentElement.parentElement);
                   return;
                 }
                 
+                validated(evt.target.parentElement.parentElement);
                 this.#json.webpage.thumbnail = submitEvent.detail[0].serverName;
                 this.dispatchJSONEvent();
               }
@@ -286,7 +291,7 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
     return [
       TitleInspector("Website"),
   
-      HR(),
+      HRInspector(),
       
       TitleInspector("Visibility"),
       RadioGroupInspector(async (value, parentElement) => {
@@ -342,7 +347,7 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
           : "private")),
       releaseDate,
       
-      HR(),
+      HRInspector(),
       
       TitleInspector("Properties"),
       TextFieldInspector(webpage.title, async (value, parent) => {
@@ -387,9 +392,12 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
       
       ...headerSettings,
       
-      HR(),
+      HRInspector(),
       
       TitleInspector("Theme"),
+      SelectInspector((value, parentElement) => {
+        return true;
+      }, [], __, "full-span"),
       Div("i-row", [
         Span(__, "Default"),
         Button("button-like-main", "Select", () => {

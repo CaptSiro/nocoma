@@ -180,7 +180,7 @@ class WCommand extends Widget { // var is used because it creates reference on g
           type: "WText",
           textEditor: {
             content: lines,
-            // mode: "fancy"
+            mode: "simple"
           }
         }, command.parentWidget, true);
         

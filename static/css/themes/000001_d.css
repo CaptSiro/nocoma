@@ -1,0 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Crete+Round:ital@0;1&display=swap');
+
+:root {
+    --text-color-0: #d9dee4;
+    --text-color-1: #c3c8cd;
+    --text-color-2: #aeb2b6;
+    --text-color-opposite-0: #10120f;
+    --text-color-opposite-1: #191e19;
+    --container-0: #24272b;
+    --container-1: #2a2e32;
+    --container-2: #303439;
+    --container-3: #363b40;
+    --container-4: #3c4147;
+    --container-opposite-0: #afccab;
+    --container-opposite-1: #7dc285;
+    --container-opposite-2: #62ab70;
+    --container-opposite-3: #4d9365;
+
+    --font-0: 'Inter', sans-serif;
+    --font-1: 'Crete Round', serif;
+    --font-2: 'Inter', sans-serif;
+}

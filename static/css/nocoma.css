@@ -1,6 +1,8 @@
 body {
   overflow-x: hidden;
   color: var(--text-color-0);
+
+  transition: color 250ms;
 }
 
 
@@ -11,32 +13,33 @@ body {
 
 
 
-img.icon {
+*.icon {
   width: 1.75em;
   height: 1.75em;
   padding: 0.25em;
   object-fit: contain;
   z-index: 2;
   border-radius: 5px;
+  color: var(--text-color-opposite-0);
   
   transition: background-color 250ms linear;
 }
 button {
   padding: 4px;
-  color: white;
+  color: var(--text-color-opposite-0);
   border-radius: 5px;
 }
 button,
-img.icon.button-like {
+*.icon.button-like {
   background-color: var(--container-opposite-2);
   border: 2px solid var(--container-opposite-3);
   
   transition: background-color 250ms linear;
 }
 button:hover,
-img.icon.button-like:hover {
+*.icon.button-like:hover {
   cursor: pointer;
-  background-color: var(--container-opposite-0);
+  background-color: var(--container-opposite-1);
 
   transition: background-color 0ms linear;
 }
@@ -55,18 +58,20 @@ img.icon.button-like:hover {
 
 body > header {
   position: fixed;
-  top: 0px;
-  left: 0px;
+  top: 0;
+  left: 0;
   width: 100vw;
   height: var(--header-size);
   z-index: 100;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0px 32px;
+  padding: 0 32px;
   color: var(--text-color-opposite-0);
   background-color: var(--container-opposite-3);
   user-select: none;
+
+  transition: color 250ms, background-color 250ms;
 }
 body > header > div {
   display: flex;
@@ -95,10 +100,12 @@ body > section {
   position: relative;
   height: 100vh;
   padding-top: var(--header-size);
-  background-color: var(--container-0);
+  background-color: var(--container-0) !important;
   display: flex;
   flex-direction: column;
   gap: 0.5em;
+
+  transition: background-color 250ms;
 }
 
 .showcase .animator-3d-container {
@@ -156,17 +163,30 @@ body > section {
 
 
 
-body > section:nth-child(5n - 3) {
+body > section:nth-child(7n - 6) {
   background-color: var(--container-0);
 }
-body > section:nth-child(5n - 2) {
+body > section:nth-child(7n - 5) {
   background-color: var(--container-1);
 }
-body > section:nth-child(5n - 1) {
+body > section:nth-child(7n - 4) {
   background-color: var(--container-2);
 }
-body > section:nth-child(5n) {
+body > section:nth-child(7n - 3) {
   background-color: var(--container-3);
+}
+body > section:nth-child(7n - 2) {
+  background-color: var(--container-2);
+}
+body > section:nth-child(7n - 1) {
+  background-color: var(--container-1);
+}
+body > section:nth-child(7n) {
+  background-color: var(--container-0);
+}
+
+body > section {
+  transition: background-color 250ms;
 }
 
 
@@ -208,7 +228,7 @@ body > .bullet-points > div.text.flipped div.container {
   direction: rtl;
 }
 body > .bullet-points > div.text div.container * {
-  margin: 16px 0px;
+  margin: 16px 0;
   text-align: justify;
   text-indent: 16px;
 }
@@ -221,6 +241,59 @@ body > .bullet-points img {
   object-fit: contain;
 }
 
+
+
+#themes {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+#themes svg {
+  width: 1.5em;
+  height: 1.5em;
+  padding: 0.75em;
+  /*font-size: 12px;*/
+  border-radius: 50%;
+  position: relative;
+  pointer-events: all;
+  opacity: 1;
+  transform: translate(-2px, 0px);
+
+  transition: background-color 250ms linear, border-color 250ms linear, opacity 250ms linear;
+}
+
+#themes svg.hide {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#themes svg:first-child {
+  transform: rotate(180deg);
+}
+#themes svg:hover {
+  cursor: pointer;
+
+  transition: background-color 0ms linear, border-color 0ms linear;
+}
+
+#themes > #themes-showcase {
+  width: 200px;
+  height: 200px;
+  overflow: hidden;
+  display: flex;
+  scroll-behavior: smooth;
+}
+
+#themes-showcase > div {
+  display: grid;
+  place-items: center;
+  min-width: 200px;
+  min-height: 200px;
+}
+#themes-showcase > div > * {
+  text-align: center;
+}
 
 
 
@@ -236,6 +309,8 @@ section.start-now {
   font-size: x-large;
   justify-content: center;
   align-items: center;
+
+  transition: color 250ms, background-color 250ms;
 }
 section.start-now button {
   width: fit-content;
@@ -252,6 +327,8 @@ footer {
   width: 100%;
   background-color: black;
   color: var(--text-color-opposite-0);
+
+  transition: color 250ms;
 }
 footer .branding {
   display: flex;
@@ -270,10 +347,14 @@ footer .branding > div .padding {
 }
 footer .branding > div i {
   color: var(--text-color-opposite-0);
+
+  transition: color 250ms;
 }
 footer .branding > div .padding:hover i {
   color: var(--container-opposite-0);
   cursor: pointer;
+
+  transition: color 250ms;
 }
 footer .columns {
   padding: 32px 0 128px 0;
@@ -290,6 +371,7 @@ footer .column > *:first-child {
 }
 footer .column a {
   color: var(--container-opposite-1);
+  transition: color 250ms;
 }
 footer .column a:hover {
   color: var(--container-opposite-0);
@@ -353,7 +435,7 @@ footer .column a:hover {
   .showcase .animator-3d-container {
     position: absolute;
     top: 30vh;
-    left: 0px;
+    left: 0;
     width: 100%;
     height: 70vh;
     margin: unset;

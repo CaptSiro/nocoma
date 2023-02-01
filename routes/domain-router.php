@@ -60,7 +60,7 @@
     })->getSuccess();
   
     $response->render("shell/shell-1", ["SERVER_HOME" => $request->protocol . "://$hostName$_SERVER[HOME_DIR]", "webpage" => $webpage], "php", false);
-    $response->readFile(HOSTS_DIR . "/$website/$webpage->src.json", false);
+    $response->readFileSafe(HOSTS_DIR . "/$website/$webpage->src.json", false);
     $response->render("shell/shell-2");
   }]);
   
@@ -80,7 +80,7 @@
       "webpage" => $webpage,
       "user" => $request->session->looselyGet("user")
     ], "php", false);
-    $response->readFile(HOSTS_DIR . "/$website/$webpage->src.json", false);
+    $response->readFileSafe(HOSTS_DIR . "/$website/$webpage->src.json", false);
     $response->render("shell/shell-2");
   }], ["source" => "([0-9a-zA-Z_-]+)"]);
   

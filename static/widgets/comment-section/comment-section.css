@@ -106,7 +106,7 @@
     text-overflow: unset;
 }
 
-.comment .published article { /* TODO: article */
+.comment .published article {
     display: -webkit-box;
     text-overflow: fade;
     overflow: hidden;
@@ -118,7 +118,7 @@
 .comment .published .expand-able button.see-more {
     display: block;
     background-color: transparent;
-    color: #441177; /*TODO make var*/
+    color: var(--text-color-2);
     border: unset;
     padding: 4px 0;
 }
@@ -153,12 +153,28 @@
     color: var(--text-color-0);
 }
 
+.comment .comment-controls button.action {
+    background-color: var(--container-opposite-2);
+    border: 1px solid var(--container-opposite-3);
+    color: var(--text-color-opposite-0);
+
+    transition: color 150ms linear, background-color 150ms linear, border-color 150ms linear;
+}
+
+.comment .comment-controls button.action:hover {
+    background-color: var(--container-opposite-1);
+    border-color: var(--container-opposite-2);
+    color: var(--text-color-opposite-0);
+
+    transition: color 0ms linear, background-color 0ms linear, border-color 0ms linear;
+}
+
 
 .comment .comment-controls *[data-reaction="1"] button.up,
 .comment .comment-controls *[data-reaction="-1"] button.down,
 .comment .comment-controls button:hover {
     cursor: pointer;
-    color: var(--container-opposite-1);
+    color: var(--container-opposite-3);
     background-color: var(--container-1);
 }
 
@@ -179,10 +195,15 @@
     cursor: unset;
 }
 .comment .comment-controls button.star-container:not(.locked):hover {
-    background-color: #e3b82b;
+    background-color: #e3b82b !important;
 }
 .comment.pinned .comment-controls button.star-container {
     background-color: #cca00a !important;
+}
+
+.comment .comment-controls button.star-container:not(.locked):hover .star,
+.comment.pinned .comment-controls button.star-container .star {
+    background-color: white !important;
 }
 
 .comment .comment-controls button .star {

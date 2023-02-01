@@ -36,7 +36,7 @@
         "webpage" => $webpage,
         "user" => $request->session->looselyGet("user")
       ], "php", false);
-      $response->readFile($filePath, false);
+      $response->readFileSafe($filePath, false);
       $response->render("editor/editor-2", [
         "postLink" => "$request->protocol://$user->website."
           . $env->get("HOST_NAME")

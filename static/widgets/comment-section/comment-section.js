@@ -63,7 +63,7 @@ class WCommentSection extends Widget {
           content: `[[["THIS COMMENT SECTION IS JUST FOR PREVIEW.", 0]]]`,
           dateAdded: Date.now(),
           isTopLevel: true,
-          reactionCount: 177013,
+          reactionCount: 17,
           ID: 0,
           username: "Username",
           usersID: 0,
@@ -77,7 +77,7 @@ class WCommentSection extends Widget {
           content: `[["Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Duis sapien nunc, commodo et, interdum suscipit, sollicitudin et, dolor. Fusce suscipit libero eget elit. Nunc auctor. Pellentesque ipsum. Integer vulputate sem a nibh rutrum consequat. In dapibus augue non sapien. Nullam at arcu a est sollicitudin euismod. Aliquam erat volutpat. Fusce wisi. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos. Vestibulum fermentum tortor id mi. Aenean fermentum risus id tortor."]]`,
           dateAdded: Date.now(),
           isTopLevel: true,
-          reactionCount: 50,
+          reactionCount: 7013,
           ID: 0,
           username: "User_1",
           usersID: 0,
@@ -335,7 +335,7 @@ function Comment (comment, context, isJustForShow = false) {
       ...OptionalComponents(comment.isTopLevel, [
         Div("separator"),
         OptionalComponent(user !== null,
-          Button("reply", "Reply", evt => {
+          Button("reply action", "Reply", evt => {
             if (user === null || isJustForShow !== false) return;
             
             evt.target.closest(".comment").classList.add("replying");
@@ -345,7 +345,7 @@ function Comment (comment, context, isJustForShow = false) {
             }
           })
         ),
-        Button("see-replies" + ((comment.childrenCount ?? 0) < 1 ? " display-none" : ""), `See replies (${comment.childrenCount ?? 0})`, evt => {
+        Button("see-replies action"  + ((comment.childrenCount ?? 0) < 1 ? " display-none" : ""), `See replies (${comment.childrenCount ?? 0})`, evt => {
           if (isJustForShow !== false) return;
           
           if (repliesScroller === undefined) {
@@ -413,7 +413,7 @@ function Comment (comment, context, isJustForShow = false) {
         start,
         Div("end", [
           OptionalComponent(user !== null && (user.level === 0 || comment.creatorID === user.ID || user.ID === comment.usersID),
-            Button("delete", "Remove", async (evt) => {
+            Button("delete action", "Remove", async (evt) => {
               if (isJustForShow !== false) return;
               if (!(user.level === 0 || comment.creatorID === user.ID || user.ID === comment.usersID)) return;
               if (!confirm("Are you sure you want to remove comment from: " + comment.username)) return;
@@ -538,8 +538,8 @@ function CommentForm (context, parentCommentID = undefined, isJustForShow = fals
       Div("comment-controls", [
         Div(),
         Div("end", [
-          Button(__, "Cancel", cancelForm),
-          Button("submit", "Submit", async (evt) => {
+          Button("action", "Cancel", cancelForm),
+          Button("submit action", "Submit", async (evt) => {
             if (isJustForShow === true) return;
             
             const payload = JSON.stringify(textEditor.save().content);

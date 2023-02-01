@@ -19,8 +19,6 @@ class WText extends Widget {
   constructor (json, parent, editable = false) {
     super(Paragraph("w-text"), parent);
     this.#textEditor = WTextEditor.build(json.textEditor, this, editable);
-    this.#textEditor.setMode("fancy");
-    this.#textEditor.setForceSingleLine(false);
     
     this.appendWidget(this.#textEditor);
     this.childSupport = 1;
@@ -40,7 +38,12 @@ class WText extends Widget {
    * @returns {WText}
    */
   static default (parent, editable) {
-    return WText.build({ textEditor: { content: [], /* mode: "fancy" */ } }, parent, editable);
+    return WText.build({
+      textEditor: {
+        content: [],
+        // mode: "fancy"
+      }
+    }, parent, editable);
   }
 
   /**
@@ -60,7 +63,7 @@ class WText extends Widget {
    */
   get inspectorHTML () {
     return (
-      TitleInspector("Text")
+      NotInspectorAble()
     )
   }
 

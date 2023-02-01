@@ -8,32 +8,33 @@ body {
 
 
 
-img.icon {
+*.icon {
   width: 1.75em;
   height: 1.75em;
   padding: 0.25em;
   object-fit: contain;
   z-index: 2;
   border-radius: 5px;
+  color: var(--text-color-opposite-0);
 
-  transition: background-color 250ms linear;
+  transition: background-color 250ms linear, color 250ms;
 }
 button {
   padding: 4px;
-  color: white;
+  color: var(--text-color-opposite-0);
   border-radius: 5px;
 }
 button,
-img.icon.button-like {
+*.icon.button-like {
   background-color: var(--container-opposite-2);
   border: 2px solid var(--container-opposite-3);
 
   transition: background-color 250ms linear;
 }
 button:hover,
-img.icon.button-like:hover {
+*.icon.button-like:hover {
   cursor: pointer;
-  background-color: var(--container-opposite-0);
+  background-color: var(--container-opposite-1);
 
   transition: background-color 0ms linear;
 }
@@ -68,6 +69,8 @@ input[type=text] {
   background-color: var(--container-2);
   color: var(--text-color-0);
   border: 2px solid var(--container-3);
+
+  transition: background-color 250ms, color 250ms, border-color 250ms;
 }
 
 input[type=text]:focus {
@@ -89,9 +92,12 @@ nav {
   flex-direction: column;
   height: 100%;
   background-color: var(--container-opposite-3);
-  color: white;
+  color: var(--text-color-opposite-0);
   justify-content: space-between;
   min-width: 64px;
+
+
+  transition: background-color 250ms, color 250ms;
 }
 
 nav button {
@@ -105,9 +111,9 @@ nav button {
   border-radius: 10px;
   display: grid;
   place-content: center;
-  color: white;
+  color: var(--text-color-opposite-0);
 
-  transition: background-color 250ms linear, background-size 250ms linear;
+  transition: background-color 250ms linear, background-size 250ms linear, color 250ms;
 }
 
 nav button:last-child {
@@ -151,6 +157,8 @@ main > div.c-grid {
   grid-auto-rows: 1fr;
   gap: 25px;
   padding: 25px;
+
+  transition: background-color 250ms;
 }
 
 main > div.c-grid::-webkit-scrollbar {
@@ -163,6 +171,8 @@ main > div.c-grid::-webkit-scrollbar-thumb {
   background: var(--container-opposite-3);
   border-radius: 999px;
   border: 2px solid var(--container-2);
+
+  transition: background-color 250ms, color 250ms;
 }
 main > div.c-grid::-webkit-scrollbar-thumb:hover {
   background: var(--container-opposite-1);
@@ -177,6 +187,8 @@ main > div > section {
   display: flex;
   flex-direction: column;
   overflow-x: hidden;
+
+  transition: background-color 250ms, color 250ms;
 }
 
 
@@ -196,6 +208,8 @@ main > div > section header {
   justify-content: space-between;
   align-items: center;
   background-color: var(--container-opposite-3);
+
+  transition: background-color 250ms, color 250ms;
 }
 main > div > section header .controls {
   display: flex;
@@ -207,21 +221,25 @@ main > div > section header .separator {
   display: flex;
   align-items: center;
   color: var(--text-color-opposite-0);
+
+  transition: border-color 250ms, color 250ms;
 }
 main > div > section header .separator.right {
   border-left: unset;
   padding-left: unset;
   padding-right: 8px;
   border-right: 2px solid var(--text-color-opposite-0);
+
+  transition: border-color 250ms, color 250ms;
 }
 main > div > section header button {
   all: unset;
   background-color: var(--container-opposite-2);
-  color: white;
+  color: var(--text-color-opposite-0);
   padding: 8px;
   border-radius: 5px;
 
-  transition: background-color 250ms linear;
+  transition: background-color 250ms linear, color 250ms;
 }
 main > div > section header button:hover {
   background-color: var(--container-opposite-1);
@@ -235,7 +253,7 @@ main section.search-mount {
   gap: 0.5em;
 }
 main section.search-mount input {
-  width: 0px;
+  width: 0;
   opacity: 0;
 
   transition: width 500ms ease-in-out, opacity 400ms linear;
@@ -249,6 +267,8 @@ main section.search-mount:hover input {
 main > div > section .scrollable {
   overflow: auto;
   color: var(--text-color-0);
+
+  transition: color 250ms;
 }
 main > div > section .scrollable.full-span {
   flex: 1;
@@ -269,20 +289,25 @@ main > div > section .scrollable.full-span {
 .menu-body {
   overflow: hidden;
   position: absolute;
-  z-index: 4;
+  z-index: 5;
   width: 200px;
-  top: 0px;
+  top: 0;
   right: 50%;
   display: flex;
   flex-direction: column;
   background-color: var(--container-0);
-  box-shadow: var(--container-3) 0px 3px 8px;
+  box-shadow: var(--container-3) 0 3px 8px;
   border-radius: 10px;
 
   visibility: hidden;
   opacity: 0;
 
-  transition: visibility 400ms 0ms, opacity 200ms linear, right 250ms ease-in-out;
+  transition:
+          visibility 400ms 0ms,
+          opacity 200ms linear,
+          right 250ms ease-in-out,
+          background-color 250ms,
+          box-shadow 250ms;
 }
 .option-mount:hover .menu-body,
 .option-mount.show-menu .menu-body {
@@ -303,13 +328,13 @@ main > div > section .scrollable.full-span {
   background-color: var(--container-1);
   border-bottom: 1px solid var(--container-3);
 
-  transition: background-color 250ms linear;
+  transition: background-color 250ms linear, border-color 250ms;
 }
 .menu-body > div:hover {
   background-color: var(--container-0);
   border-bottom: 1px solid var(--container-2);
 
-  transition: background-color 0ms linear;
+  transition: background-color 0ms linear, border-color 250ms;
 }
 .menu-body > div:first-child {
   padding-top: 16px;
@@ -322,10 +347,14 @@ main > div > section .scrollable.full-span {
 }
 .menu-body > div > .label {
   color: var(--text-color-0);
+
+  transition: color 250ms;
 }
 .menu-body > div > .hint {
   color: var(--text-color-2);
   font-size: small;
+
+  transition: color 250ms;
 }
 
 
@@ -339,6 +368,8 @@ main > div > section .scrollable.full-span {
   padding: 32px;
   overflow: hidden;
   color: var(--text-color-0);
+
+  transition: color 250ms;
 }
 .pfp {
   position: relative;
@@ -379,6 +410,8 @@ main > div > section .scrollable.full-span {
   background-color: var(--container-1);
   border-radius: 10px;
   overflow: auto;
+
+  transition: background-color 250ms;
 }
 .info .i-column > *:first-child {
   padding-top: 16px;
@@ -406,6 +439,8 @@ main > div > section .scrollable.full-span {
 .info .website {
   font-size: small;
   color: var(--text-color-1);
+
+  transition: color 250ms;
 }
 .info .website::after {
   content: "/";
@@ -414,4 +449,90 @@ main > div > section .scrollable.full-span {
 
 #profile-picture-small {
   background-color: white;
+}
+
+
+
+
+.s-column {
+  margin: 32px;
+  padding: 32px;
+  border-radius: inherit;
+  color: var(--text-color-0);
+  background-color: var(--container-1);
+
+  transition: background-color 250ms, color 250ms;
+}
+
+
+
+.select {
+  display: flex;
+  align-items: center;
+}
+.select label {
+  margin-right: auto;
+}
+.select select {
+  appearance: none;
+  background-color: var(--container-2);
+  border: none;
+  padding: 0 1em 0 0;
+  margin: 0;
+  width: 100%;
+  font-family: inherit;
+  font-size: inherit;
+  cursor: inherit;
+  line-height: inherit;
+  outline: none;
+  color: var(--text-color-0);
+
+  transition: background-color 250ms linear, border-color 250ms linear, color 250ms;
+}
+.select .select-container {
+  width: 5em;
+  border: 1px solid var(--container-3);
+  padding: 0.25em 0.5em;
+  font-size: var(--input-font-size);
+  cursor: pointer;
+  background-color: var(--container-2);
+  display: grid;
+  grid-template-areas: "select";
+  align-items: center;
+
+  transition: background-color 250ms linear, border-color 250ms linear;
+}
+.select.xx-large .select-container {
+  width: 20em;
+}
+.select.x-large .select-container {
+  width: 10em;
+}
+.select.large .select-container {
+  width: 7.1em;
+}
+.select.small .select-container {
+  width: 3em;
+}
+.select .select-container:focus-within,
+.select select:focus-within {
+  background-color: var(--container-1);
+  border-color: var(--container-3);
+  outline: unset;
+
+  transition: background-color 250ms, border-color 250ms;
+}
+.select .select-container::after {
+  content: "";
+  width: 0.55em;
+  height: 0.35em;
+  background-color: var(--text-color-0);
+  clip-path: polygon(100% 0%, 0 0%, 50% 100%);
+  justify-self: end;
+
+  transition: background-color 250ms;
+}
+.select select,
+.select .select-container:after {
+  grid-area: select;
 }

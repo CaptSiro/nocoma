@@ -6,6 +6,6 @@ body {
   background-attachment: fixed;
   background-size: cover;
 
-  background-color: var(--container-opposite-3);
+  background-color: var(--container-opposite-0);
   transition: background 500ms linear;
 }

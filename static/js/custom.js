@@ -1,7 +1,7 @@
 function OptionVisible () {
   return (
     Div("visible", [
-      Img(AJAX.SERVER_HOME + "/public/images/options-white.svg", "opt", "icon button-like")
+      SVG("icon-option", "icon button-like")
     ])
   );
 }
@@ -43,47 +43,48 @@ function OptionBodyItem (label, options = undefined) {
  * @returns {HTMLElement}
  */
 function PostComponent (idGroup, post, optionBodyItems, postOptions = undefined) {
-  if (!postOptions) postOptions = {};
-  if (!postOptions.attributes) postOptions.attributes = {};
+  postOptions ||= {};
+  postOptions.attributes ||= {};
   
   postOptions.attributes.id = idGroup + "_" + post.src;
   
-  return (
-    Div("post" + (post.isTakenDown ? " taken-down" : ""), [
-      Div("absolute", [
-        Img(
-          post.thumbnail !== undefined
-            ? `${AJAX.SERVER_HOME}/file/${post.src}/${post.thumbnail}`
-            : AJAX.SERVER_HOME + "/public/images/login-register-bgs/9040950952.png",
-          "post-image"
-        ),
-        Div("darken")
-      ]),
-      Div("content", [
-        Div("post-info", [
-          Div("date", "Created " + formatDate(new Date(post.timeCreated))),
-          Heading(3, __, post.title, {
-            listeners: {
-              click: () => {
-                if (post.isFromAdminView) {
-                  window.open(post.redirectURL, "_blank");
-                  return;
+  return Async(async () => {
+    postOptions.attributes.style = post.thumbnail !== undefined
+      ? `background-image: url(${AJAX.SERVER_HOME}/file/${post.src}/${post.thumbnail})`
+      : `background-image: url(${await AJAX.get(
+        "/auth/background",
+        TextHandler(),
+        {},
+        AJAX.SERVER_HOME
+      )})`;
+    
+    return (
+      Div("post" + (post.isTakenDown ? " taken-down" : ""), [
+        Div("content", [
+          Div("post-info", [
+            Div("date", "Created " + formatDate(new Date(post.timeCreated))),
+            Heading(3, __, post.title, {
+              listeners: {
+                click: () => {
+                  if (post.isFromAdminView) {
+                    window.open(post.redirectURL, "_blank");
+                    return;
+                  }
+                  
+                  redirect(AJAX.SERVER_HOME + "/editor/" + post.src);
                 }
-                
-                redirect(AJAX.SERVER_HOME + "/editor/" + post.src);
               }
-            }
-          })
+            })
+          ]),
+          Div("option-mount", [
+            OptionVisible(),
+            Div("menu-body", optionBodyItems)
+          ])
         ]),
-        Div("option-mount", [
-          OptionVisible(),
-          Div("menu-body", optionBodyItems)
-        ])
-      ]),
-    ], postOptions)
-  );
+      ], postOptions)
+    )
+  }, Div("post"));
 }
-
 
 
 

@@ -221,7 +221,7 @@
       $this->statusCode = $code;
     }
     
-    private $alreadyGeneratedHeaders = false;
+    private bool $alreadyGeneratedHeaders = false;
     public function generateHeaders () {
       if ($this->alreadyGeneratedHeaders) {
         return;
@@ -294,6 +294,18 @@
       $this->generateHeaders();
       readfile($file);
       
+      if ($doFlushResponse) {
+        exit();
+      }
+    }
+    public function readFileSafe (string $file, bool $doFlushResponse = true) {
+      if (!file_exists($file)) {
+        $this->error("RequestFile not found: $file", self::NOT_FOUND);
+      }
+  
+      $this->generateHeaders();
+      echo htmlspecialchars(file_get_contents($file));
+  
       if ($doFlushResponse) {
         exit();
       }

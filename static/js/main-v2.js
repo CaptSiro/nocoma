@@ -442,6 +442,36 @@ function Link (href, className = undefined, content = undefined, options = {}) {
   return Component("a", className, content, options);
 }
 
+const GLOBAL_VIEW_BOX = "0 0 500 500";
+
+/**
+ * @param {string} definitionID do not include '#'
+ * @param {string} className
+ * @param {string} viewBox if undefined GLOBAL_VIEW_BOX is used
+ * @param {ComponentOptions} options
+ * @see GLOBAL_VIEW_BOX
+ * @return {SVGElement}
+ */
+function SVG (definitionID, className = undefined, viewBox = undefined, options = {}) {
+  const svgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  svgElement.setAttribute("viewBox", viewBox ?? GLOBAL_VIEW_BOX);
+  svgElement.classList.add(
+    ...className
+      .split(" ")
+      .filter(string => string !== "")
+  );
+  
+  spreadObject(options.attributes, svgElement.setAttribute.bind(svgElement));
+  spreadObject(options.listeners, svgElement.addEventListener.bind(svgElement));
+  
+  const useElement = document.createElementNS("http://www.w3.org/2000/svg", "use");
+  useElement.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", "#" + definitionID);
+  
+  svgElement.appendChild(useElement);
+  
+  return svgElement;
+}
+
 /**
  * @param {string} src
  * @param {string} alt

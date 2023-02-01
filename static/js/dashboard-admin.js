@@ -160,14 +160,14 @@ function loadUsers (index) {
           Div("u-head", [
             Div(__, [
               Div("start", [
-                Img(AJAX.SERVER_HOME + "/public/images/expand.svg", "expand", "expand", {
+                SVG("icon-arrow", "expand", __, {
                   listeners: {
                     click: () => userElement.classList.toggle("expanded")
                   }
                 }),
                 Img(AJAX.SERVER_HOME + "/profile/picture/" + user.ID, "pfp"),
                 Div("u-column", [
-                  Heading(4, user.username),
+                  Heading(4, __, user.username),
                   Span(__, user.website)
                 ]),
               ]),

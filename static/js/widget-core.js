@@ -41,7 +41,11 @@ class Widget {
    * @param {Event} evt
    */
   inspectHandler (evt) {
-    if (currentlyInspecting === this) return;
+    if (currentlyInspecting === this) {
+      evt.stopInspector = true;
+      return;
+    }
+    
     const inspectorHTML = this.inspectorHTML;
     if (inspectorHTML === NotInspectorAble() || evt.stopInspector === true || currentlyInspecting === this) return;
     
@@ -191,7 +195,9 @@ class Widget {
     
     this.rootElement.appendChild(
       Div("gui edit-controls", [
-        Button(__, "+", () => this.parentWidget.placeCommandBlock(this), {
+        Button(__, "+", () => {
+          this.parentWidget.placeCommandBlock(this);
+        }, {
           attributes: {
             contenteditable: false
           }
@@ -201,11 +207,11 @@ class Widget {
             contenteditable: false
           }
         }),
-        Button(__, "edit", evt => {}, {
-          attributes: {
-            contenteditable: false
-          }
-        }),
+        // Button(__, "edit", evt => {}, {
+        //   attributes: {
+        //     contenteditable: false
+        //   }
+        // }),
         Button(__, "x", () => this.remove(), {
           attributes: {
             contenteditable: false
@@ -227,7 +233,7 @@ class Widget {
     
     const cmd = WCommand.default(this);
     this.children.splice(indexOfAfter + 1, 0, cmd);
-
+    
     if (indexOfAfter + 2 === this.children.length) {
       this.rootElement.appendChild(cmd.rootElement);
     } else {

@@ -41,6 +41,16 @@
   }]);
   
   
+  $router->get("/hash", [function () {
+    foreach (
+      array_map(function ($path) { return [sha1_file(__DIR__ . "/static/css/themes/" . $path), $path]; }, array_diff(scandir(__DIR__ . "/static/css/themes"), [".", ".."]))
+      as $hash
+    ) {
+      echo "$hash[0]: $hash[1]<br>";
+    }
+  }]);
+  
+  
   
   $router->get("/error", [function (Request $request, Response $response) {
     $response->render("error", ["message" => $request->query->get("message")]);
@@ -63,6 +73,7 @@
   $router->use("/profile", new RouterPromise(__DIR__ . "/routes/profile-router.php"));
   $router->use("/users", new RouterPromise(__DIR__ . "/routes/users-router.php"));
   $router->use("/comments", new RouterPromise(__DIR__ . "/routes/comments-router.php"));
+  $router->use("/theme", new RouterPromise(__DIR__ . "/routes/theme-router.php"));
   
   
   

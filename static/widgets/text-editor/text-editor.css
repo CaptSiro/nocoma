@@ -5,12 +5,14 @@
     background-color: transparent;
     outline: 4px solid transparent;
     font: inherit;
+    color: inherit;
 
     transition: background-color 250ms linear, outline-width 250ms ease-in-out, outline-color 250ms linear;
 }
 
 .w-text-editor * {
     font: inherit;
+    color: inherit;
 }
 
 .w-text-editor article:focus {

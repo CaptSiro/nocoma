@@ -7,6 +7,7 @@
   require_once __DIR__ . "/Middleware.php";
   
   require_once __DIR__ . "/../models/User.php";
+  require_once __DIR__ . "/../models/Theme.php";
   require_once __DIR__ . "/../models/ProfilePicture.php";
   
   $profileRouter = new Router();
@@ -29,6 +30,33 @@
         });
       }
       
+      $response->json($sideEffect);
+    }
+  ]);
+  
+  
+  
+  
+  $profileRouter->patch("/theme-src", [
+    Middleware::requireToBeLoggedIn(),
+    function (Request $request, Response $response) {
+      $theme = Theme::getBySRC($request->body->get("src"));
+      if (!$theme) {
+        $response->fail(new NotFoundExc("This theme does not exist."));
+      }
+      
+      if ($theme->usersID !== $request->session->get("user")->ID && $theme->usersID !== 0) {
+        $response->fail(new IllegalArgumentExc("You dont have this theme."));
+      }
+    
+      $sideEffect = User::updateThemeSRC($request->body->get("src"), $request->session->get("user")->ID);
+      if ($sideEffect->rowCount === 1) {
+        $request->session->modify("user", function (User $user) use ($request, $theme) {
+          $user->themesSRC = ($theme->usersID === 0 ? "_" : "") . $request->body->get("src");
+          return $user;
+        });
+      }
+    
       $response->json($sideEffect);
     }
   ]);

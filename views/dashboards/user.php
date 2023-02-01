@@ -20,6 +20,7 @@
     AJAX.DOMAIN_HOME = "<?=$GLOBALS["__HOME__"]?>";
     AJAX.SERVER_HOME = "<?=$GLOBALS["__SERVER_HOME__"] ?? $GLOBALS["__HOME__"]?>";
   </script>
+  <script src="<?= $GLOBALS["__HOME__"] ?>/public/js/user-theme-setter.js"></script>
   
   <script src="<?=$GLOBALS["__HOME__"]?>/public/js/grid.js" defer></script>
   <script src="<?=$GLOBALS["__HOME__"]?>/public/js/dashboard.js" defer></script>
@@ -28,6 +29,30 @@
   <script src="<?=$GLOBALS["__HOME__"]?>/public/js/dashboard-user.js" defer></script>
 </head>
 <body class="no-user-select">
+  <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="display: none;">
+    <defs>
+      <g id="icon-arrow">
+        <g>
+          <polygon fill="currentColor" points="411.8,250.1 87.7,450.4 87.7,391.8 364.3,220.7 	"/>
+        </g>
+        <g>
+          <polygon fill="currentColor" points="87.7,49.7 411.8,250 364.3,279.3 87.7,108.2 	"/>
+        </g>
+        <polygon fill="currentColor" points="411.8,250 87.7,450.4 87.7,406.5 346.6,250 "/>
+        <polygon fill="currentColor" points="87.7,49.7 411.7,250 340.3,249.8 87.7,91.7 "/>
+      </g>
+      <g id="icon-option">
+        <circle fill="currentColor" cx="250" cy="85.9" r="55.1"/>
+        <circle fill="currentColor" cx="250" cy="245.6" r="55.1"/>
+        <circle fill="currentColor" cx="250" cy="405.2" r="55.1"/>
+      </g>
+      <g id="icon-upload">
+        <path d="M11 14.9861C11 15.5384 11.4477 15.9861 12 15.9861C12.5523 15.9861 13 15.5384 13 14.9861V7.82831L16.2428 11.0711L17.657 9.65685L12.0001 4L6.34326 9.65685L7.75748 11.0711L11 7.82854V14.9861Z" fill="currentColor" />
+        <path d="M4 14H6V18H18V14H20V18C20 19.1046 19.1046 20 18 20H6C4.89543 20 4 19.1046 4 18V14Z" fill="currentColor" />
+      </g>
+    </defs>
+  </svg>
+  
   <div class="modals">
     <div class="window form" id="create-post">
       <div class="wrapper">
@@ -480,7 +505,10 @@
           <img src="<?= $GLOBALS["__HOME__"] ?>/profile/picture/" alt="profile picture" id="profile-picture">
           <div class="edit">
             <label for="profile-picture-upload">
-              <img src="<?= $GLOBALS["__HOME__"] ?>/public/images/upload.svg" alt="upload" class="icon button-like">
+              <svg class="icon button-like" viewBox="0 0 24 24" style="width: 100%;height: 100%;">
+                <use xlink:href="#icon-upload"></use>
+              </svg>
+<!--              <img src="--><?//= $GLOBALS["__HOME__"] ?><!--/public/images/upload.svg" alt="upload" class="icon button-like">-->
             </label>
             <input type="file" name="profile-picture" id="profile-picture-upload" class="display-none" accept="image/png, image/gif, image/jpeg">
           </div>
@@ -502,9 +530,17 @@
         </div>
       </section>
       
-      <!-- <section column="0-7" row="3-4">
-        <div>settings</div>
-      </section> -->
+      <section column="0-7" row="3-4" class="settings">
+        <div class="s-column">
+          <h3>Select theme:</h3>
+          <div class="select xx-large">
+            <label class="theme-name" for="theme-select"></label>
+            <div class="select-container">
+              <select id="theme-select"></select>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   </main>
 </body>

@@ -21,7 +21,13 @@
     private const SET_SIZE = 20;
     public static function getSet (int $userID, int $offset) {
       return self::parseProps(Database::get()->fetchAll(
-        "SELECT " . self::generateSelectColumns(self::TABLE_NAME, self::ALL_COLUMNS) . "
+        "SELECT
+            CASE WHEN themes.usersID = 0
+                THEN CONCAT('_', themes.src)
+                ELSE themes.src
+            END as src,
+            `name`,
+            usersID
         FROM themes
         WHERE usersID IS NULL OR usersID = :userID
         LIMIT :offset, " . self::SET_SIZE,
@@ -33,10 +39,48 @@
       ));
     }
     
+    public static function getAllUsers (int $userID) {
+      return self::parseProps(Database::get()->fetchAll(
+        "SELECT
+            CASE WHEN themes.usersID = 0
+                THEN CONCAT('_', themes.src)
+                ELSE themes.src
+            END as src,
+            `name`,
+            usersID
+        FROM themes
+        WHERE usersID IS NULL OR usersID = 0 OR usersID = :userID",
+        self::class,
+        [new DatabaseParam("userID", $userID)]
+      ));
+    }
+    
+    
+    public static function getDefaults () {
+      return Database::get()->fetchAll(
+        "SELECT
+            CASE WHEN themes.usersID = 0
+                THEN CONCAT('_', themes.src)
+                ELSE themes.src
+            END as src,
+            `name`,
+            usersID
+        FROM themes
+        WHERE usersID = 0",
+        self::class
+      );
+    }
+    
     
     public static function getBySRC (string $src) {
       return self::parseProps(Database::get()->fetch(
-        "SELECT " . self::generateSelectColumns(self::TABLE_NAME, self::ALL_COLUMNS) . "
+        "SELECT
+            CASE WHEN themes.usersID = 0
+                THEN CONCAT('_', themes.src)
+                ELSE themes.src
+            END as src,
+            `name`,
+            usersID
         FROM themes
         WHERE src = :src",
         self::class,

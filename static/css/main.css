@@ -18,10 +18,10 @@
   --container-2: #242034;
   --container-3: #343044;
   --container-4: #444054;
-  --container-opposite-0: #CA2FFF;
-  --container-opposite-1: #A226CC;
-  --container-opposite-2: #661880;
-  --container-opposite-3: #48115A;
+  --container-opposite-0: #9326b6;
+  --container-opposite-1: #781d9a;
+  --container-opposite-2: #55146b;
+  --container-opposite-3: #420e52;
 
   --font-0: 'Inter', sans-serif;
   --font-1: 'Crete Round', serif;
@@ -34,8 +34,8 @@ html {
 }
 
 ::selection {
-  color: var(--text-color-opposite-0);
-  background-color: var(--container-opposite-0);
+  color: var(--container-0);
+  background-color: var(--container-opposite-3);
 }
 .no-user-select {
   user-select: none;
@@ -67,6 +67,11 @@ html {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.background-blend {
+  background-color: var(--container-opposite-0) !important;
+  background-blend-mode: multiply !important;
 }
 
 .display-none {
@@ -141,7 +146,7 @@ p.error {
 button.link,
 a {
   all: unset;
-  color: #417;
+  color: var(--text-color-2);
   font-size: 0.9em;
   font-weight: bold;
 }
@@ -191,7 +196,7 @@ input[type="radio"] {
 
 input[type="radio"]:checked,
 input[type="checkbox"]:checked {
-  background-color: dodgerblue;
+  background-color: var(--container-opposite-0);
   transition: background-color 150ms linear;
 }
 
@@ -235,7 +240,7 @@ input[type="radio"]:after {
 .button-like-main {
   all: unset;
   padding: 4px;
-  color: white;
+  color: var(--text-color-opposite-0);
   border-radius: 5px;
   background-color: var(--container-opposite-2);
   border: 2px solid var(--container-opposite-3);
@@ -244,7 +249,7 @@ input[type="radio"]:after {
 }
 .button-like-main:hover {
   cursor: pointer;
-  background-color: var(--container-opposite-0);
+  background-color: var(--container-opposite-1);
 
   transition: background-color 0ms linear;
 }

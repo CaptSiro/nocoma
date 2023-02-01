@@ -9,8 +9,12 @@ INSERT INTO `users` (`ID`, `email`, `password`, `level`, `website`, `isVerified`
 
 
 
-INSERT INTO `websites` (`ID`, `usersID`, `thumbnailSRC`, `src`, `timeCreated`, `title`, `isTemplate`, `isPublic`, `isHomepage`, `isTakenDown`) VALUES
-(1, 9, '', 'sdps8Hq3_o', '2023-01-12 19:24:11', 'Hello world!', 0, 1, 1, 0);
+INSERT INTO `websites` (`ID`, `themesSRC`, `thumbnailSRC`, `usersID`, `src`, `timeCreated`, `title`, `isTemplate`, `isPublic`, `isHomepage`, `isTakenDown`) VALUES
+(1, NULL, 'N1oPpZttIv', 9, 'sdps8Hq3_o', '2023-01-12 19:24:11', 'Hello world!', 0, 0, 1, 0),
+(4, NULL, 'ok_fxbB2oe', 9, 'OZ32ziRpiW', '2023-01-25 20:08:54', 'The post I promised about ASYNC and AWAIT', 0, 0, 0, 0),
+(5, NULL, 'DF4rPgYg-Z', 9, '9KbB7i-fCN', '2023-01-25 20:28:33', 'Best operators in Javascript', 0, 1, 0, 0),
+(6, NULL, 'Jxvhlm_p-N', 9, 'hjP7JvX90I', '2023-01-26 09:45:21', 'How to use SVG currentColor', 0, 1, 0, 0),
+(7, NULL, '99sGLq1Gfv', 9, 'Sp9OP_ybn3', '2023-01-28 11:54:24', 'New', 0, 1, 0, 0);
 
 
 
@@ -32,3 +36,21 @@ INSERT INTO `media` (`src`, `usersID`, `basename`, `extension`, `mimeContentType
 INSERT INTO `profilepictures` (`src`, `usersID`, `hash`, `extension`) VALUES
 ('jdxFXNSMQI', 1, '6d02d033793a276359596bf81f277981b53036d7', '.png'),
 ('mEazL2UHiT', 9, '28ede335f124a5b68737d71954684bc2dcef2c49', '.png');
+
+
+
+INSERT INTO `themes` (`src`, `usersID`, `name`, `hash`) VALUES
+('000000_d', 0, 'Nocoma (Dark)', 'd7210444a19e7455f62acf7a5f10445b072f78b6'),
+('000000_l', 0, 'Nocoma (Light)', 'e633ecbd8b1817fb7ec7ad3295e7c2f4a61c213c'),
+('000001_d', 0, 'Leafy (Dark)', '7692ea40457abe48ff3838f71f391bd1d74cd1b9'),
+('000001_l', 0, 'Leafy (Light)', 'be4d3a79fb0f847ec2214b29e4bed3ad8577761a'),
+('000002_d', 0, 'Orange (Dark)', '81c1e78b576b2170a8a655d4858e7267e57ffab2'),
+('000002_l', 0, 'Orange (Light)', 'c56d87a9c89f101da89e18ff307386bec73ad460'),
+('000003_l', 0, 'Weathered Copper (Light)', '14a219ca3605ce11e33a99ec5097a57e42fae142'),
+('000004_l', 0, 'Ruby (Light)', 'ca1d037bfccfdbb19194887e15a9f98e832397df'),
+('000005_b', 0, 'Idea (Dark Blue)', 'e43231edd743c13f28e5ab4918a326d1347a8b28'),
+('000005_w', 0, 'Idea (Light)', 'a1448b76a8e4d9a20ac643e84d2e940e52e42a32'),
+('000006_d', 0, 'Glacier Ice (Dark)', '382e8fafc740175f6c61c8665242fced1ec5d966'),
+('000006_l', 0, 'Glacier Ice (Light)', '8aede0b85e227329ccd848a87f40dbd52d821be8'),
+('000007_d', 0, 'Red Wine (Dark)', 'f316afa992dd6f25ee129a5e926a8f0cd78333e0'),
+('000008_d', 0, 'Cherry Blossom (Dark)', '7054b7d770eb571076a7b9d60076d7f50ca01f88');

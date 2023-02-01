@@ -441,7 +441,7 @@ inspectorRoot.append(
     text: "Other",
     value: "other",
   }], "Gender"),
-  HR(),
+  HRInspector(),
   TextFieldInspector(__, methods, "Label:", "MY next project..."),
   TextAreaInspector(__, methods),
   TextAreaInspector("Hello there!", methods, "My area"),
@@ -614,6 +614,12 @@ function TitleInspector (title, className = undefined) {
   );
 }
 
+function HRInspector (className = undefined) {
+  return (
+    Div("i-hr" + (className !== undefined ? " " + className : ""))
+  )
+}
+
 /**
  * @typedef KeyValuePair
  * @property {string} text
@@ -760,6 +766,10 @@ function TextAreaInspector (state, setter, label = undefined, placeholder = unde
     
     evt.target.value = state ?? "";
   };
+  options.listeners.keydown ||= evt => {
+    if (!(evt.key === "Enter" && evt.ctrlKey)) return;
+    evt.target.dispatchEvent(new Event("blur"));
+  }
   
   options.attributes ||= {};
   if (state) {
@@ -800,6 +810,10 @@ function TextFieldInspector (state, setter, label = undefined, placeholder = und
         }
         
         evt.target.value = state ?? "";
+      },
+      keydown: evt => {
+        if (evt.key !== "Enter") return;
+        evt.target.dispatchEvent(new Event("blur"));
       }
     },
     attributes: {}

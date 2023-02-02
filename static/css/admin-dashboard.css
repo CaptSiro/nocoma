@@ -31,6 +31,8 @@
   padding: 16px;
   background-color: var(--container-1);
   border-bottom: 1px solid var(--container-3);
+
+  transition: background-color 250ms, border-bottom-color 250ms;
 }
 .u-head > div:not(.start) {
   display: flex;
@@ -41,8 +43,13 @@
   margin-left: auto;
   margin-right: auto;
 }
+.user.banned {
+  color: white !important;
+}
 .user.banned .u-head {
-  background-color: #FFCCCC !important;
+  background-color: #a90b3a !important;
+  border-bottom-color: #720536 !important;
+  color: inherit;
 }
 .u-head.default,
 .user.expanded .u-head {
@@ -60,9 +67,12 @@
   object-fit: cover;
   border-radius: 10px;
 }
+.user.banned .u-head .expand {
+  color: white;
+}
 .u-head .expand {
-  width: 1.5em;
-  height: 1.5em;
+  width: 1em;
+  height: 1em;
   color: var(--text-color-0);
   transition: transform ease 250ms;
 }
@@ -75,6 +85,9 @@
 .u-column {
   display: flex;
   flex-direction: column;
+}
+.user.banned .u-column span {
+  color: #ddd;
 }
 .u-column span {
   font-size: smaller;

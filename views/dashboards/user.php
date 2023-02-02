@@ -533,11 +533,15 @@
       <section column="0-7" row="3-4" class="settings">
         <div class="s-column">
           <h3>Select theme:</h3>
-          <div class="select xx-large">
-            <label class="theme-name" for="theme-select"></label>
-            <div class="select-container">
-              <select id="theme-select"></select>
+          <div class="select-dropdown" id="theme-select">
+            <div class="label">
+              <span id="theme-name">Theme...</span>
+              <svg class="icon" viewBox="0 0 500 500">
+                <use xlink:href="#icon-arrow"></use>
+              </svg>
             </div>
+            
+            <div class="content"></div>
           </div>
         </div>
       </section>

@@ -161,12 +161,20 @@ function changeUserPreferredSetting (css, datasetPropertyName, storageKey, scrol
 
 
 const themeSwitcher = $("#theme-select");
-const themeLabel = $(".theme-name");
+window.addEventListener("click", () => themeSwitcher.classList.remove("expand"))
+themeSwitcher.addEventListener("click", evt => {
+  themeSwitcher.classList.add("expand");
+  evt.stopImmediatePropagation();
+});
+themeSwitcher.style.setProperty("--height", ((window.innerHeight - 40) - themeSwitcher.getBoundingClientRect().bottom) + "px");
+const themeLabel = themeSwitcher.querySelector("#theme-name");
+const themeContent = themeSwitcher.querySelector(".content");
+
 let firstConditionMet = false;
 
 window.addEventListener("themesLoaded", makeThemeVisible);
 window.addEventListener("themeSelect", makeThemeVisible);
-function makeThemeVisible (evt) {
+function makeThemeVisible () {
   if (firstConditionMet === false) {
     firstConditionMet = true;
     return;
@@ -174,27 +182,39 @@ function makeThemeVisible (evt) {
   
   const themeSource = sessionStorage.getItem("themesSRC");
   
-  Array.from(themeSwitcher)
+  Array.from(themeContent.children)
     .forEach(option => {
-      if (!option.value.endsWith(themeSource)) return;
-      themeSwitcher.value = option.value;
-      themeLabel.innerText = option.innerHTML;
+      if (!option.dataset.value.endsWith(themeSource)) return;
+      themeSwitcher.value = option.dataset.value;
+      themeLabel.innerText = option.innerText;
     });
   
   window.removeEventListener("themesLoaded", makeThemeVisible);
   window.removeEventListener("themeSelect", makeThemeVisible);
 }
 
-AJAX.get("/theme/user/all", JSONHandlerSync(themes => {
-  for (const theme of themes) {
-    themeSwitcher.appendChild(
-      Component("option", __, theme.name, {
-        attributes: {
-          value: AJAX.SERVER_HOME + "/theme/" + theme.src
-        }
-      })
-    );
+
+function parseTheme (base) {
+  const variablesMap = new Map();
+  for (const line of base.styles.split(/\r\n|\n/)) {
+    const matches = /^\s*--([0-9a-zA-Z-_]+):\s*(.+);/.exec(line);
+    if (matches === null) continue;
+    variablesMap.set(matches[1], matches[2]);
   }
+
+  base.styles = variablesMap;
+  return base;
+}
+AJAX.get("/theme/user/all-v2", JSONHandlerSync(themes => {
+  if (themes.error) {
+    console.log(themes);
+    return;
+  }
+  
+  themeContent.append(
+    ...themes
+      .map(raw => ThemeColor(parseTheme(raw), themeSwitcher))
+  );
   
   window.dispatchEvent(new CustomEvent("themeSelect"));
 }));
@@ -220,9 +240,9 @@ themeSwitcher.addEventListener("change", async () => {
     }
   });
   
-  for (const option of themeSwitcher.children) {
-    if (option.value === themeSwitcher.value) {
-      themeLabel.innerText = option.innerHTML;
+  for (const option of themeContent.children) {
+    if (option.dataset.value === themeSwitcher.value) {
+      themeLabel.innerText = option.innerText;
       break;
     }
   }

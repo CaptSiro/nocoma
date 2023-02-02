@@ -116,3 +116,46 @@ function FileIcon (mimeType, typeOverride = {}) {
     Img(iconURL, "file icon", "file-icon")
   );
 }
+
+
+/**
+ * @typedef Theme
+ * @property {string} name
+ * @property {string} src
+ * @property {Map<string, string>} styles
+ * @property {number} usersID
+ */
+/**
+ * @param {Theme} theme
+ * @param {HTMLElement} themeSelect
+ */
+function ThemeColor (theme, themeSelect) {
+  const value = AJAX.SERVER_HOME + "/theme/" + theme.src;
+  
+  return (
+    Div("theme-colors", [
+      Paragraph(__, theme.name)
+    ], {
+      attributes: {
+        style: `
+            --bg-0: ${theme.styles.get("container-0") ?? "#000"};
+            --bg-1: ${theme.styles.get("container-opposite-3") ?? "#000"};
+            --color-0: ${theme.styles.get("text-color-0") ?? "#000"};
+            --color-1: ${theme.styles.get("text-color-opposite-3") ?? "#000"}
+          `,
+        "data-value": value
+      },
+      listeners: {
+        click: evt => {
+          evt.stopImmediatePropagation();
+          themeSelect.classList.remove("expand");
+        
+          if (themeSelect.value === value) return;
+  
+          themeSelect.value = value;
+          themeSelect.dispatchEvent(new Event("change"));
+        }
+      }
+    })
+  );
+}

@@ -86,6 +86,46 @@
       "styles" => file_get_contents($customThemePath)
     ]);
   }
+  function getThemeContents ($themeSRC, $website): Result {
+    if ($themeSRC === null) {
+      $defaults = Theme::getDefaults();
+      if (!$defaults) {
+        return fail(new Exc("No default themes."));
+      }
+    
+      $defaultPath = GLOBAL_THEMES_DIR . "/" . substr($defaults[0]->src, 1) . ".css";
+      if (!file_exists($defaultPath)) {
+        return fail(new NotFoundExc("Could not find theme $defaultPath."));
+      }
+    
+      return success([
+        "src" => $defaults[0]->src,
+        "styles" => file_get_contents($defaultPath)
+      ]);
+    }
+  
+    if ($themeSRC[0] === "_" && strlen($themeSRC) === 9) {
+      $path = GLOBAL_THEMES_DIR . "/" . substr($themeSRC, 1) . ".css";
+      if (!file_exists($path)) {
+        return fail(new NotFoundExc("Invalid global theme source."));
+      }
+    
+      return success([
+        "src" => $themeSRC,
+        "styles" => file_get_contents($path)
+      ]);
+    }
+  
+    $customThemePath = HOSTS_DIR . "/$website/media/$themeSRC.css";
+    if (!file_exists($customThemePath)) {
+      return fail(new NotFoundExc("Invalid theme source."));
+    }
+  
+    return success([
+      "src" => $themeSRC,
+      "styles" => file_get_contents($customThemePath)
+    ]);
+  }
   
   
   $themeRouter->options("/website/:src", [
@@ -190,7 +230,32 @@
       $response->json(
         Theme::getAllUsers($request->session->get("user")->ID));
     }
-  ], ["offset" => Router::REGEX_NUMBER]);
+  ]);
+  
+  
+  $themeRouter->get("/user/all-v2", [
+    Middleware::requireToBeLoggedIn(),
+    function (Request $request, Response $response) {
+      $themes = Theme::getAllUsers($request->session->get("user")->ID);
+      if (!$themes) {
+        $response->fail(new Exc("Could not find any themes."));
+      }
+    
+      $website = $request->session->get("user")->ID;
+      $response->json(array_map(function ($theme) use ($website, $response) {
+        $contents = getThemeContents($theme->src, $website);
+        if ($contents->isFailure()) return null;
+        
+        $success = $contents->getSuccess();
+        return [
+          "src" => $success["src"],
+          "usersID" => $theme->usersID,
+          "name" => $theme->name,
+          "styles" => $success["styles"]
+        ];
+      }, $themes));
+    }
+  ]);
   
   
   

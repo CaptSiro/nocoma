@@ -288,6 +288,59 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
       releaseDate.classList.add("display-none");
     }
     
+    const themeContent = Div("content");
+    const themeLabel = Span(__, "Theme...");
+    
+    const themeSelect = Div("select-dropdown", [
+      Div("label", [
+        themeLabel,
+        SVG("icon-arrow", "icon")
+      ]),
+      themeContent
+    ]);
+    
+    if (this.#hasAddedThemeSelectShrinkListener === false) {
+      window.addEventListener("click", () => themeSelect.classList.remove("expand"))
+      themeSelect.addEventListener("click", evt => {
+        themeSelect.classList.add("expand");
+        evt.stopImmediatePropagation();
+      });
+      themeSelect.style.setProperty("--height", "200px");
+  
+      const themeLoaderCallback = makeThemeVisibleFactory(themeSelect, themeContent, themeLabel);
+      window.addEventListener("themesLoaded", themeLoaderCallback);
+      window.addEventListener("themeSelect", themeLoaderCallback);
+      
+      AJAX.get("/theme/user/all-v2", JSONHandlerSync(themes => {
+        if (themes.error) {
+          console.log(themes);
+          return;
+        }
+  
+        themeContent.append(
+          ...themes
+            .map(raw => ThemeColor(parseTheme(raw), themeSelect))
+        );
+  
+        window.dispatchEvent(new CustomEvent("themeSelect"));
+      }));
+  
+      themeSelect.addEventListener("change", themeChangeListenerFactory(
+        () => AJAX.patch("/page/", JSONHandler(), {
+          body: JSON.stringify({
+            id: webpage.ID,
+            property: "themesSRC",
+            value: themeSelect.dataset.value.substring(themeSelect.dataset.value.length - 8)
+          })
+        }),
+        themeSelect,
+        themeContent,
+        themeLabel
+      ));
+      
+      this.#hasAddedThemeSelectShrinkListener = true;
+    }
+    
     return [
       TitleInspector("Website"),
   
@@ -395,20 +448,15 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
       HRInspector(),
       
       TitleInspector("Theme"),
-      SelectInspector((value, parentElement) => {
-        return true;
-      }, [], __, "full-span"),
-      Div("i-row", [
-        Span(__, "Default"),
-        Button("button-like-main", "Select", () => {
-          const window = showWindow("file-select");
-          window.dataset.multiple = "false";
-          window.dataset.fileType = "theme";
-          window.dispatchEvent(new Event("fetch"));
-        }),
-      ]),
+      themeSelect,
+      // Div("i-controls-row", [
+      //   Button("button-like-main", "Change"),
+      //   Button("button-like-main", "Delete"),
+      // ]),
     ];
   }
+  
+  #hasAddedThemeSelectShrinkListener = false;
 
   /**
    * @override

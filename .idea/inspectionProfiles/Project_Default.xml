@@ -4,7 +4,7 @@
     <inspection_tool class="HtmlUnknownAttribute" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="myValues">
         <value>
-          <list size="7">
+          <list size="8">
             <item index="0" class="java.lang.String" itemvalue="link-to" />
             <item index="1" class="java.lang.String" itemvalue="regex" />
             <item index="2" class="java.lang.String" itemvalue="reference-to" />
@@ -12,6 +12,7 @@
             <item index="4" class="java.lang.String" itemvalue="auto-fill" />
             <item index="5" class="java.lang.String" itemvalue="column" />
             <item index="6" class="java.lang.String" itemvalue="row" />
+            <item index="7" class="java.lang.String" itemvalue="url" />
           </list>
         </value>
       </option>

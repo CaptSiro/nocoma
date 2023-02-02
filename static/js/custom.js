@@ -126,6 +126,88 @@ function FileIcon (mimeType, typeOverride = {}) {
  * @property {number} usersID
  */
 /**
+ * @param {*} base
+ * @return {Theme}
+ */
+function parseTheme (base) {
+  const variablesMap = new Map();
+  for (const line of base.styles.split(/\r\n|\n/)) {
+    const matches = /^\s*--([0-9a-zA-Z-_]+):\s*(.+);/.exec(line);
+    if (matches === null) continue;
+    variablesMap.set(matches[1], matches[2]);
+  }
+  
+  base.styles = variablesMap;
+  return base;
+}
+/**
+ * @param {HTMLElement} themeSelect
+ * @param {HTMLElement} themeContent
+ * @param {HTMLElement} themeLabel
+ * @return {()=>void}
+ */
+function makeThemeVisibleFactory (themeSelect, themeContent, themeLabel) {
+  let isSecondInAsyncCallStack = false;
+  return function themeVisibleMaker () {
+    if (isSecondInAsyncCallStack === false) {
+      isSecondInAsyncCallStack = true;
+      return;
+    }
+    
+    const themeSource = sessionStorage.getItem("themesSRC");
+    
+    Array.from(themeContent.children)
+      .forEach(option => {
+        if (!option.dataset.value.endsWith(themeSource)) return;
+        themeSelect.value = option.dataset.value;
+        themeLabel.innerText = option.innerText;
+      });
+    
+    window.removeEventListener("themesLoaded", themeVisibleMaker);
+    window.removeEventListener("themeSelect", themeVisibleMaker);
+  }
+}
+
+/**
+ * @param {()=>Promise<{error: string} | *>} ajaxRequester
+ * @param {HTMLElement} themeSelect
+ * @param {HTMLElement} themeContent
+ * @param {HTMLElement} themeLabel
+ * @return {(function(): Promise<void>)|*}
+ */
+function themeChangeListenerFactory(ajaxRequester, themeSelect, themeContent, themeLabel) {
+  return async () => {
+    const themeResponse = await ajaxRequester();
+    
+    if (themeResponse.error !== undefined) {
+      console.log(themeResponse);
+      return;
+    }
+    
+    const themeLink = $(".themes-link");
+    const newThemeLink = Component("link", "theme-link", __, {
+      attributes: {
+        id: "themes-link",
+        rel: "stylesheet",
+        href: themeSelect.dataset.value
+      }
+    });
+    
+    for (const option of themeContent.children) {
+      if (option.dataset.value === themeSelect.dataset.value) {
+        themeLabel.innerText = option.innerText;
+        break;
+      }
+    }
+    
+    document.head.appendChild(newThemeLink);
+    newThemeLink.addEventListener("load", async () => {
+      await sleep(50);
+      themeLink?.remove();
+    });
+  }
+}
+/**
  * @param {Theme} theme
  * @param {HTMLElement} themeSelect
  */
@@ -150,9 +232,9 @@ function ThemeColor (theme, themeSelect) {
           evt.stopImmediatePropagation();
           themeSelect.classList.remove("expand");
         
-          if (themeSelect.value === value) return;
+          if (themeSelect.dataset.value === value) return;
   
-          themeSelect.value = value;
+          themeSelect.dataset.value = value;
           themeSelect.dispatchEvent(new Event("change"));
         }
       }

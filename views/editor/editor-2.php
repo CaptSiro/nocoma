@@ -4,21 +4,31 @@
       <div class="settings-drop">
         <span class="content">File</span>
         <div class="dropdown">
-          <div class="dropdown-item"><span class="content">Undo</span><span class="hint">ctrl + z</span></div>
-          <div class="dropdown-item"><span class="content">Redo</span><span class="hint">ctrl + shift + z</span></div>
-          <div class="dropdown-item next-section" onclick="save()"><span class="content">Save</span><span class="hint">ctrl + s</span></div>
-          <div class="dropdown-item inner-dropdown drop">
-            <span class="content">Save as</span><span class="hint">ctrl + shift + s</span>
-            <div class="dropdown">
-              <div class="dropdown-item"><span class="content">.docx</span></div>
-              <div class="dropdown-item"><span class="content">.odt</span></div>
-              <div class="dropdown-item"><span class="content">.pdf</span></div>
-            </div>
+<!--          <div class="dropdown-item"><span class="content">Undo</span><span class="hint">ctrl + z</span></div>-->
+<!--          <div class="dropdown-item"><span class="content">Redo</span><span class="hint">ctrl + shift + z</span></div>-->
+          <div class="dropdown-item" onclick="save()">
+            <span class="content">Save</span>
+            <span class="hint">ctrl + s</span>
           </div>
-          <div class="dropdown-item next-section"><span class="content">New</span></div>
-          <div class="dropdown-item"><span class="content">Delete</span></div>
-          <div class="dropdown-item" onclick="redirect(`<?= $GLOBALS["postLink"] ?>`)"><span class="content">Open</span></div>
-          <div class="dropdown-item" onclick="redirect(AJAX.SERVER_HOME + '/dashboard')"><span class="content">Exit</span></div>
+<!--          <div class="dropdown-item inner-dropdown drop">-->
+<!--            <span class="content">Save as</span><span class="hint">ctrl + shift + s</span>-->
+<!--            <div class="dropdown">-->
+<!--              <div class="dropdown-item"><span class="content">.docx</span></div>-->
+<!--              <div class="dropdown-item"><span class="content">.odt</span></div>-->
+<!--              <div class="dropdown-item"><span class="content">.pdf</span></div>-->
+<!--            </div>-->
+<!--          </div>-->
+          <div class="dropdown-item">
+            <span class="content">Delete</span>
+          </div>
+          <div class="dropdown-item next-section" onclick="redirect(`<?= $GLOBALS["postLink"] ?>`)">
+            <span class="content">Open</span>
+            <span class="hint">ctrl + o</span>
+          </div>
+          <div class="dropdown-item" onclick="redirect(AJAX.SERVER_HOME + '/dashboard')">
+            <span class="content">Exit</span>
+            <span class="hint">ctrl + e</span>
+          </div>
         </div>
       </div>
       <div class="settings-drop">
@@ -27,61 +37,49 @@
           <div class="dropdown-item" id="edit-website-properties"><span class="content">Website properties</span></div>
         </div>
       </div>
-      <div class="settings-drop">
-        <span class="content">Paste</span>
-        <div class="dropdown">
-          <div class="dropdown-item"><span class="content">Paste</span></div>
-        </div>
-      </div>
-      <div class="settings-drop">
-        <span class="content">Format</span>
-        <div class="dropdown">
-          <div class="dropdown-item"><span class="content">Format</span></div>
-        </div>
-      </div>
-      <div class="settings-drop">
-        <span class="content">Tools</span>
-        <div class="dropdown">
-          <div class="dropdown-item"><span class="content">Undo</span><span class="hint">ctrl + z</span></div>
-          <div class="dropdown-item"><span class="content">Redo</span><span class="hint">ctrl + shift + z</span></div>
-          <div class="dropdown-item next-section"><span class="content">Save</span><span class="hint">ctrl + s</span></div>
-          <div class="dropdown-item inner-dropdown drop">
-            <span class="content">Save as</span><span class="hint">ctrl + shift + s</span>
-            <div class="dropdown">
-              <div class="dropdown-item"><span class="content">.docx</span></div>
-              <div class="dropdown-item"><span class="content">.odt</span></div>
-              <div class="dropdown-item"><span class="content">.pdf</span></div>
-            </div>
-          </div>
-          <div class="dropdown-item inner-dropdown drop">
-            <span class="content">Save as</span><span class="hint">ctrl + shift + s</span>
-            <div class="dropdown">
-              <div class="dropdown-item"><span class="content">.docx</span></div>
-              <div class="dropdown-item"><span class="content">.odt</span></div>
-              <div class="dropdown-item"><span class="content">.pdf</span></div>
-            </div>
-          </div>
-          <div class="dropdown-item inner-dropdown drop">
-            <span class="content">Save as</span><span class="hint">ctrl + shift + s</span>
-            <div class="dropdown">
-              <div class="dropdown-item"><span class="content">.docx</span></div>
-              <div class="dropdown-item"><span class="content">.odt</span></div>
-              <div class="dropdown-item"><span class="content">.pdf</span></div>
-            </div>
-          </div>
-          <div class="dropdown-item inner-dropdown drop">
-            <span class="content">Save as</span><span class="hint">ctrl + shift + s</span>
-            <div class="dropdown">
-              <div class="dropdown-item"><span class="content">.docx</span></div>
-              <div class="dropdown-item"><span class="content">.odt</span></div>
-              <div class="dropdown-item"><span class="content">.pdf</span></div>
-            </div>
-          </div>
-          <div class="dropdown-item next-section"><span class="content">New</span></div>
-          <div class="dropdown-item"><span class="content">Delete</span></div>
-          <div class="dropdown-item"><span class="content">Open</span></div>
-        </div>
-      </div>
+<!--      <div class="settings-drop">-->
+<!--        <span class="content">Tools</span>-->
+<!--        <div class="dropdown">-->
+<!--          <div class="dropdown-item"><span class="content">Undo</span><span class="hint">ctrl + z</span></div>-->
+<!--          <div class="dropdown-item"><span class="content">Redo</span><span class="hint">ctrl + shift + z</span></div>-->
+<!--          <div class="dropdown-item next-section"><span class="content">Save</span><span class="hint">ctrl + s</span></div>-->
+<!--          <div class="dropdown-item inner-dropdown drop">-->
+<!--            <span class="content">Save as</span><span class="hint">ctrl + shift + s</span>-->
+<!--            <div class="dropdown">-->
+<!--              <div class="dropdown-item"><span class="content">.docx</span></div>-->
+<!--              <div class="dropdown-item"><span class="content">.odt</span></div>-->
+<!--              <div class="dropdown-item"><span class="content">.pdf</span></div>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          <div class="dropdown-item inner-dropdown drop">-->
+<!--            <span class="content">Save as</span><span class="hint">ctrl + shift + s</span>-->
+<!--            <div class="dropdown">-->
+<!--              <div class="dropdown-item"><span class="content">.docx</span></div>-->
+<!--              <div class="dropdown-item"><span class="content">.odt</span></div>-->
+<!--              <div class="dropdown-item"><span class="content">.pdf</span></div>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          <div class="dropdown-item inner-dropdown drop">-->
+<!--            <span class="content">Save as</span><span class="hint">ctrl + shift + s</span>-->
+<!--            <div class="dropdown">-->
+<!--              <div class="dropdown-item"><span class="content">.docx</span></div>-->
+<!--              <div class="dropdown-item"><span class="content">.odt</span></div>-->
+<!--              <div class="dropdown-item"><span class="content">.pdf</span></div>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          <div class="dropdown-item inner-dropdown drop">-->
+<!--            <span class="content">Save as</span><span class="hint">ctrl + shift + s</span>-->
+<!--            <div class="dropdown">-->
+<!--              <div class="dropdown-item"><span class="content">.docx</span></div>-->
+<!--              <div class="dropdown-item"><span class="content">.odt</span></div>-->
+<!--              <div class="dropdown-item"><span class="content">.pdf</span></div>-->
+<!--            </div>-->
+<!--          </div>-->
+<!--          <div class="dropdown-item next-section"><span class="content">New</span></div>-->
+<!--          <div class="dropdown-item"><span class="content">Delete</span></div>-->
+<!--          <div class="dropdown-item"><span class="content">Open</span></div>-->
+<!--        </div>-->
+<!--      </div>-->
       <div class="settings-drop">
         <span class="content">Help</span>
         <div class="dropdown">

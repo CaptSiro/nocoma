@@ -172,9 +172,17 @@
       $id = $request->body->get("id");
       $property = $request->body->get("property");
       $value = $request->body->looselyGet("value");
-    
+      
       if (!is_int($id)) {
         $response->fail(new TypeExc("ID must be integer"));
+      }
+      
+      $websiteObject = Website::getByID(intval($id))
+        ->forwardFailure($response)
+        ->getSuccess();
+      
+      if ($websiteObject->usersID !== $request->session->get("user")->ID) {
+        $response->fail(new IllegalArgumentExc("You are not authorised to perform this action."));
       }
       
       if (!in_array($property, array_keys($editableProperties))) {

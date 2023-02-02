@@ -1,5 +1,7 @@
+const url = document.currentScript.getAttribute("url");
 window.addEventListener("load", async () => {
-  const theme = await AJAX.get("/theme/user", JSONHandler());
+  const theme = await AJAX.get(url ?? "/theme/user", JSONHandler(), __, AJAX.SERVER_HOME);
+  
   if (theme.error !== undefined) {
     console.log(theme);
     return;

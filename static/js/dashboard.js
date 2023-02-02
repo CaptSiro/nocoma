@@ -166,45 +166,14 @@ themeSwitcher.addEventListener("click", evt => {
   themeSwitcher.classList.add("expand");
   evt.stopImmediatePropagation();
 });
-themeSwitcher.style.setProperty("--height", ((window.innerHeight - 40) - themeSwitcher.getBoundingClientRect().bottom) + "px");
+themeSwitcher.style.setProperty("--height", ((window.innerHeight - 40) - (themeSwitcher.getBoundingClientRect().bottom % window.innerHeight)) + "px");
 const themeLabel = themeSwitcher.querySelector("#theme-name");
 const themeContent = themeSwitcher.querySelector(".content");
 
-let firstConditionMet = false;
+const themeLoaderCallback = makeThemeVisibleFactory(themeSwitcher, themeContent, themeLabel);
+window.addEventListener("themesLoaded", themeLoaderCallback);
+window.addEventListener("themeSelect", themeLoaderCallback);
 
-window.addEventListener("themesLoaded", makeThemeVisible);
-window.addEventListener("themeSelect", makeThemeVisible);
-function makeThemeVisible () {
-  if (firstConditionMet === false) {
-    firstConditionMet = true;
-    return;
-  }
-  
-  const themeSource = sessionStorage.getItem("themesSRC");
-  
-  Array.from(themeContent.children)
-    .forEach(option => {
-      if (!option.dataset.value.endsWith(themeSource)) return;
-      themeSwitcher.value = option.dataset.value;
-      themeLabel.innerText = option.innerText;
-    });
-  
-  window.removeEventListener("themesLoaded", makeThemeVisible);
-  window.removeEventListener("themeSelect", makeThemeVisible);
-}
-
-
-function parseTheme (base) {
-  const variablesMap = new Map();
-  for (const line of base.styles.split(/\r\n|\n/)) {
-    const matches = /^\s*--([0-9a-zA-Z-_]+):\s*(.+);/.exec(line);
-    if (matches === null) continue;
-    variablesMap.set(matches[1], matches[2]);
-  }
-
-  base.styles = variablesMap;
-  return base;
-}
 AJAX.get("/theme/user/all-v2", JSONHandlerSync(themes => {
   if (themes.error) {
     console.log(themes);
@@ -219,37 +188,13 @@ AJAX.get("/theme/user/all-v2", JSONHandlerSync(themes => {
   window.dispatchEvent(new CustomEvent("themeSelect"));
 }));
 
-themeSwitcher.addEventListener("change", async () => {
-  const themeResponse = await AJAX.patch("/profile/theme-src", JSONHandler(), {
+themeSwitcher.addEventListener("change", themeChangeListenerFactory(
+  () => AJAX.patch("/profile/theme-src", JSONHandler(), {
     body: JSON.stringify({
-      src: themeSwitcher.value.substring(themeSwitcher.value.length - 8)
+      src: themeSwitcher.dataset.value.substring(themeSwitcher.dataset.value.length - 8)
     })
-  });
-  
-  if (themeResponse.error !== undefined) {
-    console.log(themeResponse);
-    return;
-  }
-  
-  const themeLink = $(".themes-link");
-  const newThemeLink = Component("link", "theme-link", __, {
-    attributes: {
-      id: "themes-link",
-      rel: "stylesheet",
-      href: themeSwitcher.value
-    }
-  });
-  
-  for (const option of themeContent.children) {
-    if (option.dataset.value === themeSwitcher.value) {
-      themeLabel.innerText = option.innerText;
-      break;
-    }
-  }
-  
-  document.head.appendChild(newThemeLink);
-  newThemeLink.addEventListener("load", async () => {
-    await sleep(50);
-    themeLink?.remove();
-  });
-});
+  }),
+  themeSwitcher,
+  themeContent,
+  themeLabel
+));

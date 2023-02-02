@@ -74,6 +74,7 @@ nav {
   transform: translate(0, -50%);
   color: var(--text-color-1);
   font-size: 0.8em;
+  text-transform: uppercase;
 }
 .dropdown {
   display: block;
@@ -206,7 +207,7 @@ nav {
   margin: 8px 0;
 }
 .inspector > *:last-child {
-  margin-bottom: 20vh;
+  margin-bottom: 40vh;
 }
 
 
@@ -217,8 +218,20 @@ nav {
   gap: 8px;
 }
 
+.i-controls-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+}
+
 .i-title {
   font-family: var(--font-1);
+}
+
+.inspector > .select-dropdown .content {
+  padding: 0 16px;
+  margin-top: -8px;
 }
 
 

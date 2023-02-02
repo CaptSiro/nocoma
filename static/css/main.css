@@ -267,6 +267,21 @@ input[type="radio"]:after {
 
 
 
+*.icon {
+  width: 1.75em;
+  height: 1.75em;
+  padding: 0.25em;
+  object-fit: contain;
+  z-index: 2;
+  border-radius: 5px;
+  color: var(--text-color-opposite-0);
+
+  transition: background-color 250ms linear, color 250ms;
+}
+
+
+
+
 
 .theme-colors {
   --bg-0: #000;

@@ -40,7 +40,8 @@
         "user" => $request->session->get("user"),
         "env_home" => $env->get("HOST_NAME")
           ->forwardFailure($response)
-          ->getSuccess()
+          ->getSuccess(),
+        "protocol" => $request->protocol
       ]);
     }
   ]);

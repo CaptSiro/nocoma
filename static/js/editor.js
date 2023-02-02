@@ -492,22 +492,22 @@ function inspect (inspectorHTML, widget) {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-document.body.addEventListener("keydown", async evt => {
-  if (evt.key === "s" && evt.ctrlKey) {
+/**
+ * @type {Object.<string, ()=>(void | Promise<void>)>}
+ */
+const shortCuts = {
+  "s": save,
+  "o": open,
+  "e": exit
+};
+window.addEventListener("keydown", async evt => {
+  for (const shortCutKey in shortCuts) {
+    if (!(evt.key.toLowerCase() === shortCutKey && evt.ctrlKey)) continue;
+    
     evt.preventDefault();
     evt.stopImmediatePropagation();
-    await save();
+    await shortCuts[shortCutKey]();
+    break;
   }
 });
 async function save () {
@@ -528,9 +528,12 @@ async function save () {
   
   alert(response.message);
 }
-
-
-
+function open () {
+  redirect(postLink);
+}
+function exit () {
+  redirect(AJAX.SERVER_HOME + '/dashboard');
+}
 
 
 /**

@@ -19,6 +19,8 @@
   <script>
     AJAX.DOMAIN_HOME = "<?=$GLOBALS["__HOME__"]?>";
     AJAX.SERVER_HOME = "<?=$GLOBALS["__SERVER_HOME__"] ?? $GLOBALS["__HOME__"]?>";
+    AJAX.HOST_NAME = "<?=$GLOBALS["env_home"]?>";
+    AJAX.PROTOCOL = "<?=$GLOBALS["protocol"]?>";
   </script>
   <script src="<?= $GLOBALS["__HOME__"] ?>/public/js/user-theme-setter.js"></script>
   

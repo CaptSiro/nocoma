@@ -16,6 +16,7 @@ body {
 
 * {
   color: var(--text-color-0);
+  transition: background-color 250ms, color 250ms, border-color 250ms;
 }
 
 

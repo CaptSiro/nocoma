@@ -255,6 +255,9 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
       ])
     ];
     
+    
+    
+    
     const releaseDate = DateInspector(
       webpage.releaseDate !== undefined
         ? new Date(webpage.releaseDate)
@@ -287,6 +290,9 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
     if (this.#json.webpage.releaseDate === undefined) {
       releaseDate.classList.add("display-none");
     }
+    
+    
+    
     
     const themeContent = Div("content");
     const themeLabel = Span(__, "Theme...");
@@ -335,11 +341,15 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
         }),
         themeSelect,
         themeContent,
-        themeLabel
+        themeLabel,
+        true
       ));
       
       this.#hasAddedThemeSelectShrinkListener = true;
     }
+    
+    
+    
     
     return [
       TitleInspector("Website"),
@@ -403,7 +413,7 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
       HRInspector(),
       
       TitleInspector("Properties"),
-      TextFieldInspector(webpage.title, async (value, parent) => {
+      TextFieldInspector(this.#json.webpage.title, async (value, parent) => {
         if (value.length < 1 || value.length > 64) {
           rejected(parent);
           return false;
@@ -429,7 +439,19 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
 
         return true;
       }, "Title:"),
-      CheckboxInspector(webpage.isHomePage, () => true, "Set as homepage"),
+      CheckboxInspector(this.#json.webpage.isHomePage, async (value, parentElement) => {
+        const setHomePageResponse = await AJAX.patch(`/page/home-page/${webpage.ID}/${Number(value)}`, JSONHandler());
+        if (setHomePageResponse.error !== undefined) {
+          console.log(setHomePageResponse);
+          rejected(parentElement);
+          return false;
+        }
+        
+        this.#json.webpage.isHomePage = value;
+        validated(parentElement);
+        
+        return true;
+      }, "Set as home"),
       CheckboxInspector(this.#json.areCommentsAvailable, (value) => {
         this.#json.areCommentsAvailable = value;
         this.dispatchJSONEvent();

@@ -100,9 +100,6 @@ function takeDownElement (post) {
 
 
 
-function createPostLink (userWebsite, postSRC) {
-  return AJAX.PROTOCOL + "://" + userWebsite + "." + AJAX.HOST_NAME + AJAX.DOMAIN_HOME + "/" + postSRC;
-}
 
 
 /**

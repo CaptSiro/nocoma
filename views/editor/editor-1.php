@@ -15,6 +15,7 @@
 
     const webpage = Object.freeze(JSON.parse(`<?= json_encode($GLOBALS["webpage"]) ?>`));
     const user = Object.freeze(JSON.parse(`<?= json_encode($GLOBALS["user"]) ?>`));
+    const postLink = `<?= $GLOBALS["postLink"] ?>`;
   </script>
   <script src="<?= $GLOBALS["__HOME__"] ?>/public/js/user-theme-setter.js" url="/theme/website/<?= $GLOBALS["webpage"]->src ?>"></script>
   <script src="<?= $GLOBALS["__HOME__"] ?>/public/js/editor.js" defer></script>

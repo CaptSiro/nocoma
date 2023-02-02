@@ -55,17 +55,8 @@
     
     
     
-    private static function updateIsHomePage (int $websiteID, int $value) {
-      Database::get()->statement(
-        "UPDATE websites SET isHomePage = :value WHERE ID = :websiteID",
-        [
-          new DatabaseParam("websiteID", $websiteID),
-          new DatabaseParam("value", $value)
-        ]
-      );
-    }
-    public static function setIsHomePage (int $websiteID, bool $value = true): int {
-      if ($value) {
+    public static function setIsHomePage (int $websiteID, bool $value = true): SideEffect {
+      if ($value === true) {
         // reset all pages to not be home page
         $userID = Database::get()->fetch(
           "SELECT websites.usersID usersID FROM websites WHERE websites.ID = :websiteID;",
@@ -79,9 +70,11 @@
         );
       }
       
-      self::updateIsHomePage($websiteID, (int)$value);
-      
-      return 1;
+      return self::set($websiteID, "isHomePage", new DatabaseParam(
+        "isHomePage",
+        intval($value),
+        PDO::PARAM_INT)
+      );
     }
     public static function setAsPlanned (int $websiteID, $releaseDate = null): SideEffect {
       $releaseDate = $releaseDate ?: (new DateTime())->format(DateTimeInterface::ATOM);

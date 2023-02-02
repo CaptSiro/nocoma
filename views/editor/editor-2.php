@@ -21,11 +21,11 @@
           <div class="dropdown-item">
             <span class="content">Delete</span>
           </div>
-          <div class="dropdown-item next-section" onclick="redirect(`<?= $GLOBALS["postLink"] ?>`)">
+          <div class="dropdown-item next-section" onclick="open()">
             <span class="content">Open</span>
             <span class="hint">ctrl + o</span>
           </div>
-          <div class="dropdown-item" onclick="redirect(AJAX.SERVER_HOME + '/dashboard')">
+          <div class="dropdown-item" onclick="exit()">
             <span class="content">Exit</span>
             <span class="hint">ctrl + e</span>
           </div>

@@ -244,15 +244,19 @@
       ));
     }
   ]);
-  //TODO: set to PATCH
-  //TODO: refactor to -> /set/:class/:function/:argument
-//  $pageRouter->get("/set-as-home-page/:websiteID", [
-//    Middleware::requireToBeLoggedIn(Middleware::RESPONSE_JSON),
-//    function (Request $request, Response $response) {
-//      var_dump(Website::setAsHomePage($request->param->get("websiteID")));
-//      $response->end();
-//    }
-//  ], ["websiteID" => Router::REGEX_NUMBER]);
+  
+  $pageRouter->patch("/home-page/:id/:boolean", [
+    Middleware::requireToBeLoggedIn(),
+    function (Request $request, Response $response) {
+      $response->json(Website::setIsHomePage(
+        intval($request->param->get("id")),
+        boolval($request->param->get("boolean"))
+      ));
+    }
+  ], [
+    "id" => Router::REGEX_NUMBER,
+    "boolean" => Router::REGEX_ENUM(["0", "1", "true", "false"])
+  ]);
   
   
   

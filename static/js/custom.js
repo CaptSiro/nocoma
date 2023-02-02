@@ -19,6 +19,14 @@ function OptionBodyItem (label, options = undefined) {
 }
 
 /**
+ * @param {string} userWebsite
+ * @param {string} postSRC
+ * @return {string}
+ */
+function createPostLink (userWebsite, postSRC) {
+  return AJAX.PROTOCOL + "://" + userWebsite + "." + AJAX.HOST_NAME + AJAX.DOMAIN_HOME + "/" + postSRC;
+}
+/**
  * @typedef PostObject
  * @property {number} ID
  * @property {boolean} isHomePage
@@ -173,15 +181,20 @@ function makeThemeVisibleFactory (themeSelect, themeContent, themeLabel) {
  * @param {HTMLElement} themeSelect
  * @param {HTMLElement} themeContent
  * @param {HTMLElement} themeLabel
+ * @param {boolean} doValidation
  * @return {(function(): Promise<void>)|*}
  */
-function themeChangeListenerFactory(ajaxRequester, themeSelect, themeContent, themeLabel) {
+function themeChangeListenerFactory(ajaxRequester, themeSelect, themeContent, themeLabel, doValidation = false) {
   return async () => {
     const themeResponse = await ajaxRequester();
     
     if (themeResponse.error !== undefined) {
       console.log(themeResponse);
       return;
+    }
+    
+    if (doValidation === true) {
+      validated(themeSelect);
     }
     
     const themeLink = $(".themes-link");

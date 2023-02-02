@@ -98,41 +98,45 @@ function loadPosts (index) {
       for (const post of posts) {
         element = (
           PostComponent("page", post, [
-              OptionBodyItem("Edit", {
-                listeners: {
-                  click: () => redirect(AJAX.SERVER_HOME + "/editor/" + post.src)
-                },
-              }),
-              OptionBodyItem("Delete", {
-                listeners: {
-                  click: evt => {
-                    AJAX.delete("/page/delete/" + post.src, JSONHandlerSync(response => {
-                      if (response.error !== undefined) {
-                        //TODO: create my own alert
-                        alert(response.error);
-                        return;
-                      }
-            
-                      evt.target.closest(".post").remove();
-                    }));
-                  }
-                },
-              }),
-              OptionalComponent(post.isTakenDown,
-                Div(__, [
-                  Span("label", "appeal to take down")
-                ], {
-                  listeners: {
-                    click: () => {
-                      postToAppealFor = post;
-                      $("#post-title").textContent = post.title;
-                      showWindow("appeal");
+            OptionBodyItem("View", {
+              listeners: {
+                click: () => redirect(createPostLink(post.website, post.src))
+              }
+            }),
+            OptionBodyItem("Edit", {
+              listeners: {
+                click: () => redirect(AJAX.SERVER_HOME + "/editor/" + post.src)
+              },
+            }),
+            OptionBodyItem("Delete", {
+              listeners: {
+                click: evt => {
+                  AJAX.delete("/page/delete/" + post.src, JSONHandlerSync(response => {
+                    if (response.error !== undefined) {
+                      //TODO: create my own alert
+                      alert(response.error);
+                      return;
                     }
+          
+                    evt.target.closest(".post").remove();
+                  }));
+                }
+              },
+            }),
+            OptionalComponent(post.isTakenDown,
+              Div(__, [
+                Span("label", "appeal to take down")
+              ], {
+                listeners: {
+                  click: () => {
+                    postToAppealFor = post;
+                    $("#post-title").textContent = post.title;
+                    showWindow("appeal");
                   }
-                })
-              )
-            ]
-          )
+                }
+              })
+            )
+          ])
         );
         
         postView.appendChild(element);

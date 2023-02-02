@@ -34,16 +34,15 @@
       $response->generateHeaders();
       $response->render("editor/editor-1", [
         "webpage" => $webpage,
-        "user" => $request->session->looselyGet("user")
-      ], "php", false);
-      $response->readFileSafe($filePath, false);
-      $response->render("editor/editor-2", [
+        "user" => $request->session->looselyGet("user"),
         "postLink" => "$request->protocol://$user->website."
           . $env->get("HOST_NAME")
-              ->forwardFailure($response)
-              ->getSuccess()
+            ->forwardFailure($response)
+            ->getSuccess()
           . Response::createRedirectURLDirPrefix("/" . $request->param->get("source"))
-      ]);
+      ], "php", false);
+      $response->readFileSafe($filePath, false);
+      $response->render("editor/editor-2");
     }
   ], ["source" => Router::REGEX_BASE64_URL_SAFE]);
   

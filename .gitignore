@@ -1,17 +1,12 @@
-*/access.php
-
 /static/test/*
-
-/media/*
 
 /hosts/*
 
 /todos.txt
 /note.txt
 
-/ajax/get/hash.php
-
 .env
+./when-you-are-extremely-bored-make-some-themes-with-this.jpg
 
 /.vscode
 /.VSCodeCounter
@@ -24,4 +19,3 @@
 /lib/rekves.zip
 
 /static/test/test-page.json
-/templates/test*.*

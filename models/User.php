@@ -116,11 +116,13 @@
   
       $optionalUser = Database::get()->fetch(
         "SELECT
-          " . self::generateSelectColumns("users", self::ALL_COLUMNS) . "
+          " . self::generateSelectColumns("users", self::ALL_COLUMNS, true) . "
+          " . self::THEME_SRC_PROJECTION . "
         FROM users
+          " . self::THEME_SRC . "
         WHERE users.website = :website",
         self::class,
-        [new DatabaseParam(self::TABLE_NAME, $website, PDO::PARAM_STR)]
+        [new DatabaseParam("website", $website, PDO::PARAM_STR)]
       );
   
       if ($optionalUser === false) {

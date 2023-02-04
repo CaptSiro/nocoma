@@ -82,19 +82,6 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
       listener(this.#json);
     }
   }
-  
-  static #requestSet = new Set();
-  
-  static #called = false;
-  static addToRequestSet (...classes) {
-    if (WRoot.#called) return;
-    
-    WRoot.#called = true;
-  
-    for (const c of classes) {
-      WRoot.#requestSet.add(c);
-    }
-  }
 
   /**
    * @param {RootJSON} json
@@ -500,5 +487,4 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
     console.error("WRoot cannot be removed.");
   }
 }
-WRoot.addToRequestSet("WRoot", "WPage", "WCommentSection", "WTextEditor", "WTextDecoration", "WComment")
 widgets.define("WRoot", WRoot);

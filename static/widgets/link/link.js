@@ -64,13 +64,18 @@ class WLink extends Widget {
    * @override
    * @param {Widget} parent
    * @param {boolean} editable
-   * @returns {WLink}
+   * @returns {WText}
    */
   static default (parent, editable = false) {
-    return this.build({
-      url: "",
-      text: "link",
-      title: "link",
+    return WText.build({
+      textEditor: {
+        content: [[{
+          type: "WLink",
+          url: "",
+          text: "link",
+          title: "link",
+        }]]
+      }
     }, parent, editable);
   }
 

@@ -48,6 +48,12 @@
   
   function serveTheme ($themeSRC, $website, $response) {
     if ($themeSRC === null) {
+      $themeSRC = User::getByWebsite($website)
+        ->forwardFailure($response)
+        ->getSuccess()->themesSRC;
+    }
+    
+    if ($themeSRC === null) {
       $defaults = Theme::getDefaults();
       if (!$defaults) {
         $response->fail(new Exc("No default themes."));
@@ -86,6 +92,9 @@
       "styles" => file_get_contents($customThemePath)
     ]);
   }
+  
+  
+  
   function getThemeContents ($themeSRC, $website): Result {
     if ($themeSRC === null) {
       $defaults = Theme::getDefaults();

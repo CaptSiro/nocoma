@@ -672,7 +672,7 @@ input[type=text].invalid {
   transition: background-color 0ms linear;
 }
 
-.widget-category .content .widget-option img {
+.widget-category .content .widget-option svg {
   width: 1.5em;
   height: 1.5em;
   margin-right: 0.5em;

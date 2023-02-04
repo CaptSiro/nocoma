@@ -122,6 +122,12 @@ function freeID (id) {
   guids.delete(id);
 }
 
+function logID () {
+  const id = guid(true);
+  console.log(id);
+  freeID(id);
+}
+
 
 /**
  * @template S, F
@@ -455,11 +461,14 @@ const GLOBAL_VIEW_BOX = "0 0 500 500";
 function SVG (definitionID, className = undefined, viewBox = undefined, options = {}) {
   const svgElement = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   svgElement.setAttribute("viewBox", viewBox ?? GLOBAL_VIEW_BOX);
-  svgElement.classList.add(
-    ...className
-      .split(" ")
-      .filter(string => string !== "")
-  );
+  
+  if (className !== undefined) {
+    svgElement.classList.add(
+      ...className
+        .split(" ")
+        .filter(string => string !== "")
+    );
+  }
   
   spreadObject(options.attributes, svgElement.setAttribute.bind(svgElement));
   spreadObject(options.listeners, svgElement.addEventListener.bind(svgElement));
@@ -951,7 +960,8 @@ class AJAX {
         
         value
           .then(resolve)
-          .catch(() => {
+          .catch((reason) => {
+            console.log(reason)
             responseText.text().then(this.#logResponseError(response));
             reject(responseText);
           })

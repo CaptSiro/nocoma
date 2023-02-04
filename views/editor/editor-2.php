@@ -21,7 +21,7 @@
           <div class="dropdown-item">
             <span class="content">Delete</span>
           </div>
-          <div class="dropdown-item next-section" onclick="open()">
+          <div class="dropdown-item next-section" onclick="openPost()">
             <span class="content">Open</span>
             <span class="hint">ctrl + o</span>
           </div>

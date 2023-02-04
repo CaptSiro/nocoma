@@ -1,8 +1,8 @@
 <?php return [
   "properties" => [
-    "label" => "Text", // label for editor
+    "label" => "Paragraph", // label for editor
     "class" => "WText", // name of exported class
-    "category" => "Base", // editor category
+    "category" => "Text", // editor category
   ],
   "imports" => [
     // widget->class, widget->class, ... (in order)

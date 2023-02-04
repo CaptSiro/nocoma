@@ -58,6 +58,14 @@
 
       $f = [];
       foreach ($r->files as $key => $file) {
+        if ($key === "iconColorable") {
+          if (file_exists($file->filePath) && !is_dir($file->filePath)) {
+            $f[$key] = file_get_contents($file->filePath);
+          }
+          
+          continue;
+        }
+        
         $f[$key] = $doStripFilePaths ? (str_replace($_SERVER["DOCUMENT_ROOT"], "", $file->filePath)) : $file->filePath;
       }
 

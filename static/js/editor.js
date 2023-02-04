@@ -245,9 +245,9 @@ function moveSelection (direction) {
 }
 
 
-AJAX.get("/bundler/resource/*", JSONHandlerSync(json => {
+AJAX.get("/bundler/resource/*", JSONHandlerSync(resources => {
   /** @type {Map<string, { properties: { category: string, label: string, class: string, searchIndex: string }, files: { icon: string } }[]>} */
-  const grouped = Array.from(json)
+  const grouped = Array.from(resources)
     .filter(resource => resource.properties.category !== "Hidden")
     .reduce((map, resource) => {
       resource.properties.searchIndex = resource.properties.category + "_" + resource.properties.label;
@@ -264,33 +264,36 @@ AJAX.get("/bundler/resource/*", JSONHandlerSync(json => {
   widgetSelect.textContent = "";
   const filenameRegex = /^.*[\\\/]/;
   for (const key of Array.from(grouped.keys()).sort()) {
-    
     widgetSelect.appendChild(
       Div("widget-category", [
         Div("label",
           Heading(3, __, key)
         ),
-        Div("content", grouped.get(key).map(resource =>
-          Div("widget-option", [
-            Img(resource.files.icon, resource.files.icon.replace(filenameRegex, "")),
-            Span(__, resource.properties.label)
-          ], {
-            listeners: {
-              click: function () {
-                console.log(widgets.get(resource.properties.class).default(null));
-              },
-              mouseover: function () {
-                widgetSelect.querySelectorAll(".widget-option").forEach(w => w.classList.remove("selected"));
-                selectedWidget = this;
-                this.classList.add("selected");
-              }
-            },
-            modify: widgetElement => {
-              widgetElement.dataset.search = resource.properties.searchIndex;
-              widgetElement.dataset.class = resource.properties.class;
-            },
+        Div("content",
+          grouped.get(key).map(resource => {
+            return (
+              Div("widget-option", [
+                SVG(resource.properties.class),
+                Span(__, resource.properties.label)
+              ], {
+                listeners: {
+                  click: function () {
+                    console.log(widgets.get(resource.properties.class).default(null));
+                  },
+                  mouseover: function () {
+                    widgetSelect.querySelectorAll(".widget-option").forEach(w => w.classList.remove("selected"));
+                    selectedWidget = this;
+                    this.classList.add("selected");
+                  }
+                },
+                modify: widgetElement => {
+                  widgetElement.dataset.search = resource.properties.searchIndex;
+                  widgetElement.dataset.class = resource.properties.class;
+                },
+              })
+            )
           })
-        ))
+        )
       ])
     );
   }
@@ -497,7 +500,7 @@ function inspect (inspectorHTML, widget) {
  */
 const shortCuts = {
   "s": save,
-  "o": open,
+  "o": openPost,
   "e": exit
 };
 window.addEventListener("keydown", async evt => {
@@ -528,7 +531,7 @@ async function save () {
   
   alert(response.message);
 }
-function open () {
+function openPost () {
   redirect(postLink);
 }
 function exit () {

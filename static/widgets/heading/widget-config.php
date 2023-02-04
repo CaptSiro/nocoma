@@ -2,7 +2,7 @@
   "properties" => [
     "label" => "Heading", // label for editor
     "class" => "WHeading", // name of exported class
-    "category" => "Base", // editor category
+    "category" => "Text", // editor category
   ],
   "imports" => [
     // widget->class, widget->class, ... (in order)

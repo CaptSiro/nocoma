@@ -1,32 +1,32 @@
-class WText extends Widget {
+class WCode extends Widget {
+
   // use json.child for single child widget like Center
   // or json.children for array of widgets
   /**
-   * @typedef TextJSONType
+   * @typedef CodeJSONType
    * @property {TextEditorJSON} textEditor
-   *
-   * @typedef {TextJSONType & WidgetJSON} TextJSON
+   * 
+   * @typedef {CodeJSONType & WidgetJSON} CodeJSON
    */
   
-  
   #textEditor;
-  
+
   /**
-   * @param {TextJSON} json
+   * @param {CodeJSON} json
    * @param {Widget} parent
    * @param {boolean} editable
    */
   constructor (json, parent, editable = false) {
-    super(Paragraph("w-text"), parent);
-    this.#textEditor = WTextEditor.build(json.textEditor, this, editable);
-    
+    super(Component("code", "w-code"), parent);
     this.childSupport = 1;
+    
+    this.#textEditor = WTextEditor.build(json.textEditor, this, editable);
     this.appendWidget(this.#textEditor);
-  
+    
     if (editable !== true) {
       return;
     }
-  
+    
     this.appendEditGui();
     this.rootElement.classList.add("edit");
   }
@@ -35,26 +35,26 @@ class WText extends Widget {
    * @override
    * @param {Widget} parent
    * @param {boolean} editable
-   * @returns {WText}
+   * @returns {WCode}
    */
-  static default (parent, editable) {
-    return WText.build({
+  static default (parent, editable = false) {
+    return new WCode({
       textEditor: {
         content: [],
-        // mode: "fancy"
+        mode: "simple"
       }
     }, parent, editable);
   }
 
   /**
    * @override
-   * @param {TextJSON} json
+   * @param {CodeJSON} json
    * @param {Widget} parent
    * @param {boolean} editable
-   * @returns {WText}
+   * @returns {WCode}
    */
   static build (json, parent, editable = false) {
-    return new WText(json, parent, editable);
+    return new WCode(json, parent, editable);
   }
 
   /**
@@ -64,23 +64,18 @@ class WText extends Widget {
   get inspectorHTML () {
     return (
       NotInspectorAble()
-    )
+    );
   }
 
   /**
    * @override
-   * @returns {TextJSON}
+   * @returns {WidgetJSON}
    */
   save () {
     return {
-      type: "WText",
+      type: "WCode",
       textEditor: this.#textEditor.save()
     };
   }
-  
-  
-  focus() {
-    this.#textEditor.focus();
-  }
 }
-widgets.define("WText", WText);
+widgets.define("WCode", WCode);

@@ -1,15 +1,16 @@
 <?php return [
   "properties" => [
-    "label" => "", // label for editor
+    "label" => "Link", // label for editor
     "class" => "WLink", // name of exported class
-    "category" => "Hidden", // editor category
+    "category" => "Text", // editor category
   ],
   "imports" => [
     // widget->class, widget->class, ... (in order)
+//    "WText"
   ],
   "files" => [
     "source" => "link.js", // file of class
-    "icon" => "", // file of icon for editor
+    "icon" => "link.svg", // file of icon for editor
     "styles" => "link.css" // styles scoped to element
   ]
 

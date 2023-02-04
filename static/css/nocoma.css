@@ -326,7 +326,7 @@ footer {
   height: fit-content; /*! header height / 4 */
   width: 100%;
   background-color: black;
-  color: var(--text-color-opposite-0);
+  color: white;
 
   transition: color 250ms;
 }
@@ -346,7 +346,7 @@ footer .branding > div .padding {
   padding: 16px;
 }
 footer .branding > div i {
-  color: var(--text-color-opposite-0);
+  color: white;
 
   transition: color 250ms;
 }

@@ -52,6 +52,15 @@
   
   
   
+  $router->get("/server", [function () {
+    foreach ($_SERVER as $key => $value) {
+      echo "'$key' => $value<br>";
+    }
+    exit;
+  }]);
+  
+  
+  
   $router->get("/error", [function (Request $request, Response $response) {
     $response->render("error", ["message" => $request->query->get("message")]);
   }]);

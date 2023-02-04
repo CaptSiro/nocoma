@@ -809,15 +809,17 @@ function redirect (destination, savePositionToHistory = true) {
 
 /**
  * @param {number} maxSize
+ * @param {RegExp} regex
  * @returns {(function(evt: Event): void)}
  */
-function contentEditableLimiter (maxSize = 16) {
+function contentEditableLimiter (maxSize = 16, regex = /.*/) {
   return function (evt) {
     const isRemovalKey = evt.key === "Backspace" || evt.key === "Delete";
     const isNavigationKey = evt.key === "ArrowLeft" || evt.key === "ArrowUp" || evt.key === "ArrowDown" || evt.key === "ArrowRight";
     const exceededLength = this.textContent.length > maxSize;
+    const doesNotMatchRegex = !regex.test(evt.target.innerText);
     
-    if (exceededLength && !isRemovalKey && !isNavigationKey) {
+    if ((exceededLength || doesNotMatchRegex) && !isRemovalKey && !isNavigationKey) {
       evt.preventDefault();
     }
     

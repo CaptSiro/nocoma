@@ -225,8 +225,17 @@
   
   
   $themeRouter->get("/user/all", [
-    Middleware::requireToBeLoggedIn(),
     function (Request $request, Response $response) {
+      if (!$request->session->isset("user")) {
+        $defaults = Theme::getDefaults();
+        
+        if (!$defaults) {
+          $response->fail(new Exc("No default themes."));
+        }
+        
+        $response->json($defaults);
+      }
+    
       $response->json(
         Theme::getAllUsers($request->session->get("user")->ID));
     }

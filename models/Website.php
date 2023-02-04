@@ -10,13 +10,13 @@
       "isTemplate", "isPublic", "isHomePage"];
     
     const TABLE_NAME = "websites";
-    const PLANNED_WEBSITES_TABLE_NAME = "plannedwebsites";
+    const PLANNED_WEBSITES_TABLE_NAME = "plannedWebsites";
     
     const IS_TAKEN_DOWN_CONDITION_PROJECTION = "(takedowns.websitesID IS NOT NULL) as isTakenDown";
     const IS_TAKEN_DOWN_CONDITION = "LEFT JOIN takedowns ON websites.ID = takedowns.websitesID";
     
-    const JOIN_PLANNED_WEBSITES_PROJECTION = "plannedwebsites.releaseDate releaseDate";
-    const JOIN_PLANNED_WEBSITES = "LEFT JOIN plannedwebsites ON plannedwebsites.websitesID = websites.ID";
+    const JOIN_PLANNED_WEBSITES_PROJECTION = "plannedWebsites.releaseDate releaseDate";
+    const JOIN_PLANNED_WEBSITES = "LEFT JOIN plannedWebsites ON plannedWebsites.websitesID = websites.ID";
     
     const THUMBNAIL_PROJECTION = "CONCAT(thumbnailMedia.src, thumbnailMedia.extension) as thumbnail";
     const THUMBNAIL = "LEFT JOIN media as thumbnailMedia ON websites.thumbnailSRC = thumbnailMedia.src";
@@ -80,7 +80,7 @@
       $releaseDate = $releaseDate ?: (new DateTime())->format(DateTimeInterface::ATOM);
       
       $isAlreadyPlanned = Count::parseProps(Database::get()->fetch(
-        "SELECT COUNT(*) amount FROM plannedwebsites WHERE websitesID = :websiteID",
+        "SELECT COUNT(*) amount FROM plannedWebsites WHERE websitesID = :websiteID",
         Count::class,
         [new DatabaseParam("websiteID", $websiteID)]
       ))->amount != 0;
@@ -97,7 +97,7 @@
       );
       
       return Database::get()->statement(
-        "INSERT INTO plannedwebsites (websitesID, releaseDate) VALUE (:websiteID, :releaseDate)",
+        "INSERT INTO plannedWebsites (websitesID, releaseDate) VALUE (:websiteID, :releaseDate)",
         [
           new DatabaseParam("websiteID", $websiteID),
           new DatabaseParam("releaseDate", $releaseDate, PDO::PARAM_STR)
@@ -108,7 +108,7 @@
       $releaseDate = $releaseDate ?: (new DateTime())->format("c");
       
       return Database::get()->statement(
-        "UPDATE plannedwebsites SET releaseDate = :releaseDate WHERE websitesID = :websiteID",
+        "UPDATE plannedWebsites SET releaseDate = :releaseDate WHERE websitesID = :websiteID",
         [
           new DatabaseParam("releaseDate", $releaseDate, PDO::PARAM_STR),
           new DatabaseParam("websiteID", $websiteID),
@@ -137,7 +137,7 @@
     }
     public static function removePlannedStatus (int $websiteID): SideEffect {
       return Database::get()->statement(
-        "DELETE FROM plannedwebsites WHERE websitesID = :websiteID LIMIT 1",
+        "DELETE FROM plannedWebsites WHERE websitesID = :websiteID LIMIT 1",
         [new DatabaseParam("websiteID", $websiteID)]
       );
     }

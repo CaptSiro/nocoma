@@ -66,10 +66,10 @@
       $picturePathData = Database::get()->fetch(
         "SELECT
                 users.website website,
-                profilepictures.src src,
-                profilepictures.extension ext
-            FROM `profilepictures`
-            	JOIN users ON users.ID = profilepictures.usersID
+                profilePictures.src src,
+                profilePictures.extension ext
+            FROM `profilePictures`
+            	JOIN users ON users.ID = profilePictures.usersID
                 	AND users.ID = :userID",
         stdClass::class,
         [new DatabaseParam("userID", $userID)]

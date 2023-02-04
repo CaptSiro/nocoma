@@ -72,7 +72,7 @@
               GROUP BY 2
             ) reactionSum ON reactionSum.ID = comments.ID
             JOIN websites ON websites.ID = :websiteID
-            LEFT JOIN pinnedcomments ON pinnedcomments.commentsID = comments.ID
+            LEFT JOIN pinnedComments ON pinnedComments.commentsID = comments.ID
             LEFT JOIN reactions ON comments.ID = reactions.commentsID
               AND reactions.usersID = :requestUserID
             LEFT JOIN (
@@ -82,7 +82,7 @@
             ) as children ON children.parentsID = comments.ID
           WHERE comments.websitesID = :websiteID
             AND parentCommentID IS NULL
-          ORDER BY case when pinnedcomments.commentsID is null then 1 else 0 end, reactionSum.sum DESC
+          ORDER BY case when pinnedComments.commentsID is null then 1 else 0 end, reactionSum.sum DESC
           LIMIT :offset, " . self::SET_SIZE,
         self::class,
         [
@@ -160,13 +160,13 @@
       
       if ($isPinned === false) {
         return Database::get()->statement(
-          "DELETE FROM pinnedcomments WHERE commentsID = :commentID LIMIT 1",
+          "DELETE FROM pinnedComments WHERE commentsID = :commentID LIMIT 1",
           $params
         );
       }
       
       return Database::get()->statement(
-        "INSERT INTO pinnedcomments (commentsID) VALUE (:commentID)",
+        "INSERT INTO pinnedComments (commentsID) VALUE (:commentID)",
         $params
       );
     }
@@ -180,7 +180,7 @@
       );
       
       Database::get()->statement(
-        "DELETE FROM pinnedcomments WHERE commentsID = :commentID LIMIT 1",
+        "DELETE FROM pinnedComments WHERE commentsID = :commentID LIMIT 1",
         $param
       );
   

@@ -67,7 +67,7 @@ function editUserName () {
   userName.focus();
 }
 userName.addEventListener("dblclick", editUserName);
-userName.addEventListener("keydown", contentEditableLimiter(32));
+userName.addEventListener("keydown", contentEditableLimiter(32, /^[a-zA-Z0-9][a-zA-Z0-9 #$%&'()*+,-.:;^_~]+$/));
 userName.addEventListener("blur", () => {
   userName.setAttribute("contenteditable", "false");
   if (userName.textContent === userName.dataset.temporary) return;

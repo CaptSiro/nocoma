@@ -31,10 +31,16 @@
         ->forwardFailure($response)
         ->getSuccess();
       
+      $user = null;
+      if ($request->session->isset("user")) {
+        $user = clone $request->session->get("user");
+        $user->stripPrivate();
+      }
+      
       $response->generateHeaders();
       $response->render("editor/editor-1", [
         "webpage" => $webpage,
-        "user" => $request->session->looselyGet("user"),
+        "user" => $user,
         "postLink" => "$request->protocol://$user->website."
           . $env->get("HOST_NAME")
             ->forwardFailure($response)

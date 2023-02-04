@@ -5,7 +5,7 @@
   require_once __DIR__ . "/../lib/retval/retval.php";
 
   class User extends StrictModel {
-    public $ID, $email, $password, $level, $website, $isVerified, $isDisabled, $username, $themesSRC;
+    public $ID, $email, $password, $level, $website, $isVerified, $isDisabled, $username, $themesSRC, $expires;
     const ALL_COLUMNS = ["ID", "email", "password", "level", "website", "isVerified", "isDisabled", "username"];
     const TABLE_NAME = "users";
     const THEME_SRC_PROJECTION =
@@ -22,6 +22,11 @@
       }
 
       return success(password_verify($password, $this->password));
+    }
+    
+    public function stripPrivate () {
+      unset($this->password);
+      unset($this->themesSRC);
     }
 
 
@@ -184,7 +189,7 @@
     static function register (string $email, string $username, string $website, string $password): SideEffect {
       return Database::get()->statement(
         "INSERT INTO `users`(`email`, `username`, `password`, `level`, `website`, `isVerified`)
-        VALUES (1, :email, :username, :password, 1, :website, 0)",
+        VALUES (:email, :username, :password, 1, :website, 0)",
         [
           new DatabaseParam("email", $email, PDO::PARAM_STR),
           new DatabaseParam("username", $username, PDO::PARAM_STR),

@@ -114,7 +114,15 @@
       return $this->headers[strtolower($header)] ?? "";
     }
     
-    
+    public static function getProtocol () {
+      if (isset($_SERVER["HTTP_X_FORWARDED_PROTO"])) {
+        return $_SERVER["HTTP_X_FORWARDED_PROTO"];
+      }
+      
+      return (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')
+        ? "https"
+        : "http";
+    }
     
     
     public function loadSession ($sessionID = null, array $cookieParams = []): bool {
@@ -149,9 +157,7 @@
       $this->response = $response;
       $this->homeRouter = $homeRouter;
       $this->httpMethod = $_SERVER["REQUEST_METHOD"];
-      $this->protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on')
-        ? "https"
-        : "http";
+      $this->protocol = self::getProtocol();
       $this->host = $_SERVER["HTTP_HOST"];
       $this->uri = substr($_SERVER["REQUEST_URI"], strlen($_SERVER["HOME_DIR"]));
       $this->fullURI = "$this->protocol://$this->host$this->uri";

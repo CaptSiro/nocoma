@@ -171,8 +171,8 @@ DROP TRIGGER IF EXISTS `nocoma`.`timeoutMails_BEFORE_DELETE` $$
 USE `nocoma`$$
 CREATE DEFINER = CURRENT_USER TRIGGER `nocoma`.`timeoutMails_BEFORE_DELETE` BEFORE DELETE ON `timeoutMails` FOR EACH ROW
 BEGIN
-	DELETE FROM `passwordrecoveries` WHERE `passwordrecoveries`.passwordRecoveriesID = OLD.ID;
-    DELETE FROM `verificationcodes` WHERE `verificationcodes`.verificationCodesID = OLD.ID;
+	DELETE FROM `passwordRecoveries` WHERE `passwordRecoveries`.passwordRecoveriesID = OLD.ID;
+    DELETE FROM `verificationCodes` WHERE `verificationCodes`.verificationCodesID = OLD.ID;
 END$$
 
 

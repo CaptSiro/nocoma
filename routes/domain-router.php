@@ -43,6 +43,20 @@
     }
   }
   
+  function renderShell (Request $request, Response $response, Website $webpage, string $website) {
+    $user = null;
+    if ($request->session->isset("user")) {
+      $user = clone $request->session->get("user");
+      $user->stripPrivate();
+    }
+  
+    $response->render("shell/shell-1", [
+      "webpage" => $webpage,
+      "user" => $user
+    ], "php", false);
+    $response->readFileSafe(HOSTS_DIR . "/$website/$webpage->src.json", false);
+    $response->render("shell/shell-2");
+  }
   $domainRouter->get("/", [function (Request $request, Response $response) use ($env) {
     $website = $request->domain->get("website");
   
@@ -55,13 +69,7 @@
   
     canUserAccess($request, $webpage, $response);
   
-    $hostName = $env->get("HOST_NAME")->failed(function () use ($response) {
-      $response->render("error", ["message" => "505: Internal server error.<br><br>Error code: 0x000003"]);
-    })->getSuccess();
-  
-    $response->render("shell/shell-1", ["SERVER_HOME" => $request->protocol . "://$hostName$_SERVER[HOME_DIR]", "webpage" => $webpage], "php", false);
-    $response->readFileSafe(HOSTS_DIR . "/$website/$webpage->src.json", false);
-    $response->render("shell/shell-2");
+    renderShell($request, $response, $webpage, $website);
   }]);
   
   
@@ -76,12 +84,7 @@
   
     canUserAccess($request, $webpage, $response);
   
-    $response->render("shell/shell-1", [
-      "webpage" => $webpage,
-      "user" => $request->session->looselyGet("user")
-    ], "php", false);
-    $response->readFileSafe(HOSTS_DIR . "/$website/$webpage->src.json", false);
-    $response->render("shell/shell-2");
+    renderShell($request, $response, $webpage, $website);
   }], ["source" => "([0-9a-zA-Z_-]+)"]);
   
   

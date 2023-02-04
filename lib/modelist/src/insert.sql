@@ -33,7 +33,7 @@ INSERT INTO `media` (`src`, `usersID`, `basename`, `extension`, `mimeContentType
 
 
 
-INSERT INTO `profilepictures` (`src`, `usersID`, `hash`, `extension`) VALUES
+INSERT INTO `profilePictures` (`src`, `usersID`, `hash`, `extension`) VALUES
 ('jdxFXNSMQI', 1, '6d02d033793a276359596bf81f277981b53036d7', '.png'),
 ('mEazL2UHiT', 9, '28ede335f124a5b68737d71954684bc2dcef2c49', '.png');
 

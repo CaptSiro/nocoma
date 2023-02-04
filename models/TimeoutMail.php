@@ -38,7 +38,7 @@
     public static $timeout = 60 * 5; // 5 minutes
     private static function insert ($userID): SideEffect {
       return Database::get()->statement(
-        "INSERT INTO `timeoutmails`(`usersID`, `expires`)
+        "INSERT INTO `timeoutMails`(`usersID`, `expires`)
         VALUES (:usersID, :expires)",
         [
           new DatabaseParam("usersID", $userID),
@@ -49,7 +49,7 @@
 
     private static function delete (int $timeoutMailID): SideEffect {
       return Database::get()->statement(
-        "DELETE FROM `timeoutmails`
+        "DELETE FROM `timeoutMails`
         WHERE ID = :tmID
         LIMIT 1",
         [new DatabaseParam("tmID", $timeoutMailID)]
@@ -72,10 +72,10 @@
           vc.verificationCodesID verificationCodesID,
           vc.code \"code\"
         FROM
-          `timeoutmails`
+          `timeoutMails`
           JOIN users ON users.ID = :userID
-          LEFT JOIN passwordrecoveries AS pr ON pr.passwordRecoveriesID = timeoutmails.ID
-          LEFT JOIN verificationcodes AS vc ON vc.verificationCodesID = timeoutmails.ID",
+          LEFT JOIN passwordRecoveries AS pr ON pr.passwordRecoveriesID = timeoutMails.ID
+          LEFT JOIN verificationCodes AS vc ON vc.verificationCodesID = timeoutMails.ID",
         self::class,
         [new DatabaseParam("userID", $usersID)]
       ));
@@ -89,7 +89,7 @@
 
 
     public static function purgeOld (): void {
-      Database::get()->statement("DELETE FROM `timeoutmails` WHERE `expires` - UNIX_TIMESTAMP() < 0");
+      Database::get()->statement("DELETE FROM `timeoutMails` WHERE `expires` - UNIX_TIMESTAMP() < 0");
     }
 
 
@@ -106,7 +106,7 @@
           Count::parseProps(
             Database::get()->fetch(
               "SELECT COUNT(*) amount
-                FROM `verificationcodes`
+                FROM `verificationCodes`
                 WHERE code = :code",
               Count::class,
               [new DatabaseParam("code", $code, PDO::PARAM_STR)]
@@ -126,7 +126,7 @@
       $timeoutMailID = $sideEffect->lastInsertedID;
 
       Database::get()->statement(
-        "INSERT INTO `verificationcodes`(`verificationCodesID`, `code`)
+        "INSERT INTO `verificationCodes`(`verificationCodesID`, `code`)
         VALUES (:tmID, :code)",
         [
           new DatabaseParam("tmID", $timeoutMailID),
@@ -146,13 +146,13 @@
       $optionalUser = Database::get()->fetch(
         "SELECT
           " . User::generateSelectColumns(User::TABLE_NAME, User::ALL_COLUMNS, true) . "
-          timeoutmails.expires as expires
+          timeoutMails.expires as expires
         FROM
-          `timeoutmails`
-          JOIN verificationcodes as vc ON vc.verificationCodesID = timeoutmails.ID
+          `timeoutMails`
+          JOIN verificationCodes as vc ON vc.verificationCodesID = timeoutMails.ID
             AND vc.code = :code
-          JOIN users ON users.ID = timeoutmails.usersID",
-        stdClass::class,
+          JOIN users ON users.ID = timeoutMails.usersID",
+        User::class,
         [new DatabaseParam("code", $code, PDO::PARAM_STR)]
       );
 
@@ -175,14 +175,14 @@
 
       $mail = self::parseProps(Database::get()->fetch(
         "SELECT verificationCodesID
-        FROM `verificationcodes`
+        FROM `verificationCodes`
         WHERE code = :code",
         self::class,
         [new DatabaseParam("code", $code, PDO::PARAM_STR)]
       ));
 
       $sideEffect = Database::get()->statement(
-        "DELETE FROM timeoutmails
+        "DELETE FROM timeoutMails
         WHERE ID = :tmID
         LIMIT 1",
         [new DatabaseParam("tmID", $mail->verificationCodesID)]
@@ -192,7 +192,7 @@
         return fail(new NotFoundExc("Could not found timeout mail with code: '$code'"));
       }
       
-      return success("Successfull.");
+      return success("Successful.");
     }
 
 
@@ -203,10 +203,10 @@
 
       $mails = self::parseProps(Database::get()->fetchAll(
         "SELECT
-          `timeoutmails`.`ID` ID
+          `timeoutMails`.`ID` ID
         FROM
-          `timeoutmails`
-          JOIN verificationcodes AS vc ON (timeoutmails.ID, timeoutmails.usersID) = (vc.verificationCodesID, :userID)",
+          `timeoutMails`
+          JOIN verificationCodes AS vc ON (timeoutMails.ID, timeoutMails.usersID) = (vc.verificationCodesID, :userID)",
         self::class,
         [new DatabaseParam("userID", $userID)]
       ));
@@ -244,7 +244,7 @@
   
         return success(Count::parseProps(Database::get()->fetch(
             "SELECT COUNT(*) amount
-            FROM `passwordrecoveries`
+            FROM `passwordRecoveries`
             WHERE urlArg = :urlArg",
             Count::class,
             [new DatabaseParam("urlArg", $urlArgument, PDO::PARAM_STR)]
@@ -262,7 +262,7 @@
       $timeoutMailID = $sideEffect->lastInsertedID;
       
       Database::get()->statement(
-        "INSERT INTO `passwordrecoveries`(`passwordRecoveriesID`, `urlArg`)
+        "INSERT INTO `passwordRecoveries`(`passwordRecoveriesID`, `urlArg`)
         VALUES (:tmID, :urlArg)",
         [
           new DatabaseParam("tmID", $timeoutMailID),
@@ -287,13 +287,13 @@
           users.password \"password\",
           users.level \"level\",
           users.website website,
-          timeoutmails.expires as expires
+          timeoutMails.expires as expires
         FROM
-          `timeoutmails`
-          JOIN passwordrecoveries as pr ON pr.passwordRecoveriesID = timeoutmails.ID
+          `timeoutMails`
+          JOIN passwordRecoveries as pr ON pr.passwordRecoveriesID = timeoutMails.ID
             AND pr.urlArg = :urlArg
-            -- AND timeoutmails.expires - UNIX_TIMESTAMP() >= 0
-          JOIN users ON users.ID = timeoutmails.usersID",
+            -- AND timeoutMails.expires - UNIX_TIMESTAMP() >= 0
+          JOIN users ON users.ID = timeoutMails.usersID",
         stdClass::class,
         [new DatabaseParam("urlArg", $urlArg, PDO::PARAM_STR)]
       );
@@ -318,14 +318,14 @@
 
       $mail = self::parseProps(Database::get()->fetch(
         "SELECT passwordRecoveriesID
-        FROM `passwordrecoveries`
+        FROM `passwordRecoveries`
         WHERE urlArg = :ua",
         self::class,
         [new DatabaseParam("ua", $ua, PDO::PARAM_STR)]
       ));
 
       $sideEffect = Database::get()->statement(
-        "DELETE FROM timeoutmails
+        "DELETE FROM timeoutMails
         WHERE ID = :tmID
         LIMIT 1",
         [new DatabaseParam("tmID", $mail->passwordRecoveriesID)]
@@ -346,10 +346,10 @@
 
       $mails = self::parseProps(Database::get()->fetchAll(
         "SELECT
-          `timeoutmails`.`ID` ID
+          `timeoutMails`.`ID` ID
         FROM
-          `timeoutmails`
-          JOIN passwordrecoveries AS pr ON (timeoutmails.ID, timeoutmails.usersID) = (pr.passwordRecoveriesID, :userID)",
+          `timeoutMails`
+          JOIN passwordRecoveries AS pr ON (timeoutMails.ID, timeoutMails.usersID) = (pr.passwordRecoveriesID, :userID)",
         self::class,
         [new DatabaseParam("userID", $userID)]
       ));

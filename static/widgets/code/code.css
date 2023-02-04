@@ -1,0 +1,12 @@
+.w-code {
+    display: block;
+    padding: 16px;
+    position: relative;
+    font-family: var(--font-2);
+    border-radius: 8px;
+    background-color: #0b0b0b;
+    color: #0DA017;
+}
+.w-code .show-hint::before {
+    color: #5B5B5B !important;
+}

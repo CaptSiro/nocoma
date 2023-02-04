@@ -74,6 +74,10 @@ html {
   background-blend-mode: multiply !important;
 }
 
+.dragging {
+  caret-color: transparent !important;
+}
+
 .display-none {
   display: none !important;
 }

@@ -34,7 +34,8 @@ class WImage extends Widget {
           }
         }
       ),
-      parent
+      parent,
+      editable
     );
     this.childSupport = "none";
     

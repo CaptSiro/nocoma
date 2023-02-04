@@ -82,6 +82,11 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
       listener(this.#json);
     }
   }
+  
+  /**
+   * @type {HTMLElement}
+   */
+  draggingWidget;
 
   /**
    * @param {RootJSON} json
@@ -481,7 +486,15 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
       children: this.page.saveChildren()
     };
   }
-
+  
+  allowsDragAndDrop() {
+    return false;
+  }
+  
+  isSelectAble() {
+    return false;
+  }
+  
   /** @override */
   remove () {
     console.error("WRoot cannot be removed.");

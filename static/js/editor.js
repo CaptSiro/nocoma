@@ -423,65 +423,113 @@ fileSelectModal.querySelector("#file-upload-input").addEventListener("change", a
 
 
 
+let beingDragged;
+
+//* drag-and-drop
+document.body.addEventListener("drop", evt => {
+  evt.preventDefault();
+  const dragHint = $(".drag-hint");
+  const parentWidget = dragHint?.closest(".widget")?.widget;
+  
+  if (dragHint !== null || !(parentWidget === null || parentWidget === undefined)) {
+    const toBeMoved = $$("." + WIDGET_SELECTION_CLASS);
+    for (const toBeMovedElement of toBeMoved) {
+      if (!toBeMovedElement.classList.contains("widget")) continue;
+
+      toBeMovedElement.widget.remove(false);
+      parentWidget.insertBeforeWidget(toBeMovedElement.widget, dragHint.nextElementSibling?.widget, false);
+      dragHint.parentElement.insertBefore(toBeMovedElement, dragHint);
+    }
+  }
+  
+  cleanUpAfterDrag(evt);
+});
+document.body.addEventListener("dragend", evt => {
+  cleanUpAfterDrag(evt);
+});
+document.body.addEventListener("dragover", evt => {
+  evt.dataTransfer.dropEffect = beingDragged.closest(".confined-container") === evt.target.closest(".confined-container")
+    ? "all"
+    : "none";
+});
+function cleanUpAfterDrag (evt) {
+  document.body.classList.remove("dragging");
+  for (const widgetElement of $$("." + WIDGET_SELECTION_CLASS)) {
+    widgetElement.classList.remove(WIDGET_SELECTION_CLASS);
+  }
+  $(".drag-hint")?.remove();
+}
+window.addEventListener("keydown", evt => {
+  if (evt.key === "Escape") {
+    for (const widgetElement of $$("." + WIDGET_SELECTION_CLASS)) {
+      widgetElement.classList.remove(WIDGET_SELECTION_CLASS);
+    }
+  }
+});
+
+
+
+
+
 
 
 //* inspector
 inspectorRoot.textContent = "";
 
-const methods = () => false
+// const methods = () => false
 
-inspectorRoot.append(
-  CheckboxInspector(false, methods),
-  CheckboxInspector(true, methods, "Hello"),
-  TitleInspector("Hey i m a title"),
-  RadioGroupInspector(methods, [{
-    text: "Male",
-    value: "male"
-  }, {
-    text: "Female",
-    value: "female"
-  }, {
-    text: "Other",
-    value: "other",
-  }], "Gender"),
-  HRInspector(),
-  TextFieldInspector(__, methods, "Label:", "MY next project..."),
-  TextAreaInspector(__, methods),
-  TextAreaInspector("Hello there!", methods, "My area"),
-  TextAreaInspector("Obi van Keno bi", methods, "My area", "Message"),
-  NumberInspector(50, methods, "Age", "18", "lmaosobad"),
-  NumberInspector(__, methods, "Width:", "20",
-    SelectInspector(methods, [{
-      text: "px",
-      value: "px"
-    }, {
-      text: "in",
-      value: "in"
-    }, {
-      text: "%",
-      value: "%",
-      selected: true
-    }], __, "small")
-  ),
-  DateInspector(new Date("2020-01-01"), methods, "Date of upload"),
-  SelectInspector(methods, [{
-    text: "Male",
-    value: "male"
-  }, {
-    text: "Female",
-    value: "female",
-    selected: true
-  }, {
-    text: "Other",
-    value: "other"
-  }], "My select", "x-large"),
-  NotInspectorAble(),
-  TextAreaInspector(__, methods),
-  TextAreaInspector(__, methods),
-  TextAreaInspector(__, methods),
-  TextAreaInspector(__, methods),
-  TextAreaInspector(__, methods),
-);
+// inspectorRoot.append(
+  // CheckboxInspector(false, methods),
+  // CheckboxInspector(true, methods, "Hello"),
+  // TitleInspector("Hey i m a title"),
+  // RadioGroupInspector(methods, [{
+  //   text: "Male",
+  //   value: "male"
+  // }, {
+  //   text: "Female",
+  //   value: "female"
+  // }, {
+  //   text: "Other",
+  //   value: "other",
+  // }], "Gender"),
+  // HRInspector(),
+  // TextFieldInspector(__, methods, "Label:", "MY next project..."),
+  // TextAreaInspector(__, methods),
+  // TextAreaInspector("Hello there!", methods, "My area"),
+  // TextAreaInspector("Obi van Keno bi", methods, "My area", "Message"),
+  // NumberInspector(50, methods, "Age", "18", "lmaosobad"),
+  // NumberInspector(__, methods, "Width:", "20",
+  //   SelectInspector(methods, [{
+  //     text: "px",
+  //     value: "px"
+  //   }, {
+  //     text: "in",
+  //     value: "in"
+  //   }, {
+  //     text: "%",
+  //     value: "%",
+  //     selected: true
+  //   }], __, "small")
+  // ),
+  // DateInspector(new Date("2020-01-01"), methods, "Date of upload"),
+  // SelectInspector(methods, [{
+  //   text: "Male",
+  //   value: "male"
+  // }, {
+  //   text: "Female",
+  //   value: "female",
+  //   selected: true
+  // }, {
+  //   text: "Other",
+  //   value: "other"
+  // }], "My select", "x-large"),
+  // NotInspectorAble(),
+  // TextAreaInspector(__, methods),
+  // TextAreaInspector(__, methods),
+  // TextAreaInspector(__, methods),
+  // TextAreaInspector(__, methods),
+  // TextAreaInspector(__, methods),
+// );
 
 let currentlyInspecting;
 /**

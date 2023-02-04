@@ -24,6 +24,7 @@ class WPage extends ContainerWidget {
       editable
     );
     this.removeMargin();
+    this.makeOutsideChildrenDragNotAllowed();
     this.childSupport = this.childSupport;
     
     if (json.forceFullscreen !== true) {

@@ -37,7 +37,8 @@ class WLink extends Widget {
           contenteditable: "false"
         }
       }),
-      parent
+      parent,
+      editable
     );
     this.removeMargin();
     this.childSupport = "none";
@@ -137,6 +138,10 @@ class WLink extends Widget {
       title: this.#json.title,
       url: this.#json.url
     };
+  }
+  
+  isSelectAble() {
+    return false;
   }
 }
 window.addEventListener("keydown", evt => {

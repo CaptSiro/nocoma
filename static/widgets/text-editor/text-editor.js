@@ -147,7 +147,7 @@ class WTextEditor extends Widget {
    * @param {boolean} editable
    */
   constructor (json, parent, editable = false) {
-    super(Div(WTextEditor.#class), parent);
+    super(Div(WTextEditor.#class), parent, editable);
     
     this.rootElement.setAttribute("hint", json.hint ?? "Lorem ipsum...")
     
@@ -313,6 +313,10 @@ class WTextEditor extends Widget {
       forceSingleLine: this.#json.forceSingleLine,
       mode: this.#json.mode
     };
+  }
+  
+  isSelectAble() {
+    return false;
   }
   
   

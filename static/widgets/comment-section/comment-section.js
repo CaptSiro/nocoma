@@ -22,7 +22,7 @@ class WCommentSection extends Widget {
    */
   constructor (json, parent, editable = false) {
     const commentRoot = Div("comment-root");
-    super(Section("w-comment-section", commentRoot), parent);
+    super(Section("w-comment-section", commentRoot), parent, editable);
     
     this.removeMargin();
     this.childSupport = this.childSupport;

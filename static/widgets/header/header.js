@@ -17,7 +17,7 @@ class WHeader extends Widget {
    * @param {boolean} editable
    */
   constructor (json, parent, editable = false) {
-    super(Div("w-header center"), parent);
+    super(Div("w-header center"), parent, editable);
     this.removeMargin();
     this.childSupport = this.childSupport;
   
@@ -100,6 +100,10 @@ class WHeader extends Widget {
     return {
       type: "WHeader"
     };
+  }
+  
+  isSelectAble() {
+    return false;
   }
 }
 widgets.define("WHeader", WHeader);

@@ -14,7 +14,7 @@ class WCommand extends Widget { // var is used because it creates reference on g
    * @param {boolean} editable
    */
   constructor (json, parent, editable = false) {
-    super(Span("w-command show-hint"), parent);
+    super(Span("w-command show-hint"), parent, editable);
     this.childSupport = "none";
   }
 
@@ -161,7 +161,9 @@ class WCommand extends Widget { // var is used because it creates reference on g
           }
           
           const defaultWidget = widgets.get(selectedWidget.dataset.class).default(command.parentWidget, true);
-          command.replaceSelf(defaultWidget);
+          command.parentWidget.insertBeforeWidget(defaultWidget, command);
+          command.remove();
+
           setSearchMode(false);
           widgetSelect.style.visibility = "hidden";
           defaultWidget.focus();
@@ -184,7 +186,8 @@ class WCommand extends Widget { // var is used because it creates reference on g
           }
         }, command.parentWidget, true);
         
-        command.replaceSelf(textWidget);
+        command.parentWidget.insertBeforeWidget(textWidget, command);
+        command.remove();
         
         textWidget.focus();
       }
@@ -230,6 +233,10 @@ class WCommand extends Widget { // var is used because it creates reference on g
    */
   appendEditGui () {
     console.error("Can not add edit GUI to WCommand, because this object will not be saved.");
+  }
+  
+  isSelectAble() {
+    return false;
   }
   
   focus() {}

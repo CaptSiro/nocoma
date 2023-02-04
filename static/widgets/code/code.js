@@ -17,7 +17,7 @@ class WCode extends Widget {
    * @param {boolean} editable
    */
   constructor (json, parent, editable = false) {
-    super(Component("code", "w-code"), parent);
+    super(Component("code", "w-code"), parent, editable);
     this.childSupport = 1;
     
     this.#textEditor = WTextEditor.build(json.textEditor, this, editable);

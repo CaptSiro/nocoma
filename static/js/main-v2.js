@@ -1,4 +1,5 @@
 const __ = undefined;
+const WIDGET_SELECTION_CLASS = "selected-widget-for-operation";
 /**
  * @type {"chrome" | "opera" | "firefox" | "safari" | "internet-explorer" | "edge" | "edge-chromium"}
  */

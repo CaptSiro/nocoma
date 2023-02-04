@@ -16,7 +16,7 @@ class WTextDecoration extends Widget {
    * @param {boolean} editable
    */
   constructor (json, parent, editable = false) {
-    super(Span("w-text-decoration", String(json.text)), parent);
+    super(Span("w-text-decoration", String(json.text)), parent, editable);
     this.removeMargin();
     
     if (json.class) {
@@ -65,6 +65,10 @@ class WTextDecoration extends Widget {
     return (
       NotInspectorAble()
     );
+  }
+  
+  isSelectAble() {
+    return false;
   }
   
   /**

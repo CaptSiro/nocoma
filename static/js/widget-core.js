@@ -30,6 +30,14 @@ class Widget {
     if (window.inspect !== undefined) {
       this.rootElement.addEventListener("click", this.inspectHandler.bind(this));
     }
+    
+    this.rootElement.addEventListener("click", evt => {
+      if (!(evt.ctrlKey && editable === true)) {
+        return;
+      }
+      
+      this.toggleSelect();
+    });
 
     this.parentWidget = parent;
 
@@ -125,8 +133,8 @@ class Widget {
     this.rootElement.classList.remove("margin");
   }
 
-  remove () {
-    this.parentWidget.removeWidget(this);
+  remove (doRemoveFromRootElement = true) {
+    this.parentWidget.removeWidget(this, doRemoveFromRootElement);
   }
   
   /**
@@ -137,10 +145,14 @@ class Widget {
   }
 
   /**
-   * @param {Widget} widget 
+   * @param {Widget} widget
+   * @param {boolean} doRemoveFromRootElement
    */
-  removeWidget (widget) {
-    widget.rootElement.remove();
+  removeWidget (widget, doRemoveFromRootElement = true) {
+    if (doRemoveFromRootElement === true) {
+      widget.rootElement.remove();
+    }
+    
     this.children.splice(this.children.indexOf(widget), 1);
   }
   
@@ -179,19 +191,56 @@ class Widget {
     if (widget instanceof Promise) {
       return new Promise(resolve => {
         widget.then(w => {
-          this.#append(w);
+          this.#append(w, doAppendToRootElement);
           resolve();
         });
       });
     }
     
-    this.#append(widget);
+    this.#append(widget, doAppendToRootElement);
+  }
+  
+  /**
+   * @param {Widget} widget
+   * @param {Widget=} child
+   * @param {boolean=} doInsertToRootElement
+   */
+  insertBeforeWidget (widget, child = null, doInsertToRootElement = true) {
+    if (widget instanceof Promise) {
+      return new Promise(resolve => {
+        widget.then(w => {
+          this.#insertBefore(w, child, doInsertToRootElement);
+          resolve();
+        });
+      });
+    }
+  
+    this.#insertBefore(widget, child, doInsertToRootElement);
+  }
+  
+  /**
+   * @param {Widget} widget
+   * @param {Widget} child
+   * @param {boolean} doInsertToRootElement
+   */
+  #insertBefore (widget, child = null, doInsertToRootElement = true) {
+    const index = this.children.indexOf(child);
+    
+    if (index === -1) {
+      this.#append(widget, doInsertToRootElement);
+      return;
+    }
+    
+    if (doInsertToRootElement === true) {
+      this.rootElement.insertBefore(widget.rootElement, child.rootElement);
+    }
+    
+    this.children.splice(index, 0, widget);
   }
 
   appendEditGui () {
     this.rootElement.style.position = "relative";
     this.rootElement.classList.add("edit");
-    
     
     this.rootElement.appendChild(
       Div("gui edit-controls", [
@@ -204,15 +253,28 @@ class Widget {
         }),
         Button(__, "::", evt => {}, {
           attributes: {
-            contenteditable: false
+            contenteditable: false,
+            draggable: true
+          },
+          listeners: {
+            dragstart: evt => {
+              this.select();
+              
+              beingDragged = this.rootElement;
+              
+              evt.dataTransfer.setData("text/html", "widget");
+              evt.dataTransfer.setDragImage(this.rootElement, 32, 32);
+              evt.dataTransfer.effectAllowed = "all";
+              
+              document.body.classList.add("dragging");
+            }
           }
         }),
-        // Button(__, "edit", evt => {}, {
-        //   attributes: {
-        //     contenteditable: false
-        //   }
-        // }),
-        Button(__, "x", () => this.remove(), {
+        Button(__, "✕", async () => {
+          this.rootElement.classList.add("remove");
+          await sleep(225);
+          this.remove();
+        }, {
           attributes: {
             contenteditable: false
           }
@@ -220,6 +282,33 @@ class Widget {
       ])
     );
   }
+  
+  isSelectAble () {
+    return true;
+  }
+  
+  select () {
+    if (this.isSelectAble()) {
+      this.rootElement.classList.add(WIDGET_SELECTION_CLASS);
+      return;
+    }
+  
+    if (this.parentWidget === null || this.parentWidget === undefined) return;
+  
+    this.parentWidget.select();
+  }
+  
+  toggleSelect () {
+    if (this.isSelectAble()) {
+      this.rootElement.classList.toggle(WIDGET_SELECTION_CLASS);
+      return;
+    }
+  
+    if (this.parentWidget === null || this.parentWidget === undefined) return;
+  
+    this.parentWidget.toggleSelect();
+  }
+  
 
   /**
    * @param {Widget} after 
@@ -268,6 +357,10 @@ class ContainerWidget extends Widget {
     }
   }
   
+  makeOutsideChildrenDragNotAllowed () {
+    this.rootElement.classList.add("confined-container");
+  }
+  
   /**
    * @override
    * @param {ContainerWidgetChildSupport} value
@@ -296,17 +389,104 @@ class ContainerWidget extends Widget {
       return this.appendWidget(WCommand.default(this));
     }
   }
-
+  
+  
   /**
-   * @param {Widget} widget 
+   * @param {Widget} widget
+   * @param {boolean} doAppendToRootElement
    */
-  appendWidget (widget) {
+  appendWidget(widget, doAppendToRootElement = true) {
+    this.#adoptWidget(widget);
+    return super.appendWidget(widget);
+  }
+  
+  insertBeforeWidget(widget, child = null, doInsertToRootElement = true) {
+    this.#adoptWidget(widget);
+    return super.insertBeforeWidget(widget, child, doInsertToRootElement);
+  }
+  
+  /**
+   * @param {Widget} widget
+   */
+  #adoptWidget (widget) {
     if (this.#doRemoveDefaultCommand === true) {
       super.removeWidget(this.children[0]);
       this.#doRemoveDefaultCommand = false;
     }
-
-    return super.appendWidget(widget);
+  
+    if (this.allowsDragAndDrop()) {
+      widget.rootElement.ondragover = (evt) => this.updateDragHint(widget.rootElement, evt);
+      widget.rootElement.ondragleave = (evt) => this.removeDragHint(widget.rootElement, evt);
+    }
+  }
+  
+  dragHint;
+  
+  /**
+   * @param {HTMLElement} currentTarget
+   * @param {DragEvent} evt
+   */
+  updateDragHint (currentTarget, evt) {
+    const widgetRect = currentTarget.getBoundingClientRect();
+    const percentage = (evt.clientY - widgetRect.top) / widgetRect.height;
+    let dragHint = $(".drag-hint");
+    
+    if (percentage <= 0.5) {
+      if (currentTarget.previousElementSibling !== null && currentTarget.previousElementSibling.classList.contains("drag-hint")) {
+        return;
+      }
+      
+      if (dragHint === null) {
+        dragHint = Div("drag-hint", __, {attributes: {contenteditable: true}});
+        currentTarget.parentElement.insertBefore(dragHint, currentTarget);
+        dragHint.classList.add("expand");
+        return;
+      }
+      
+      dragHint.classList.remove("expand");
+      setTimeout(() => {
+        currentTarget.parentElement.insertBefore(dragHint, currentTarget);
+        dragHint.classList.add("expand");
+      }, 100);
+      return;
+    }
+    
+    if (currentTarget.nextElementSibling !== null && currentTarget.nextElementSibling.classList.contains("drag-hint")) {
+      return;
+    }
+    
+    if (dragHint === null) {
+      dragHint = Div("drag-hint", __, {attributes: {contenteditable: true}});
+      if (currentTarget.nextElementSibling === null) {
+        currentTarget.parentElement.appendChild(dragHint);
+      } else {
+        currentTarget.parentElement.insertBefore(dragHint, currentTarget.nextElementSibling);
+      }
+      dragHint.classList.add("expand");
+      return;
+    }
+  
+    dragHint.classList.remove("expand");
+    setTimeout(() => {
+      if (currentTarget.nextElementSibling === null) {
+        currentTarget.parentElement.appendChild(dragHint);
+      } else {
+        currentTarget.parentElement.insertBefore(dragHint, currentTarget.nextElementSibling);
+      }
+      dragHint.classList.add("expand");
+    }, 100);
+  }
+  
+  /**
+   * @param {HTMLElement} currentTarget
+   * @param {DragEvent} evt
+   */
+  removeDragHint (currentTarget, evt) {
+    // $(".drag-hint")?.remove();
+  }
+  
+  allowsDragAndDrop () {
+    return true;
   }
 }
 

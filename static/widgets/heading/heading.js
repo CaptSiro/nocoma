@@ -21,7 +21,8 @@ class WHeading extends Widget { // var is used because it creates reference on g
         Number(json.level ?? 3),
         "w-heading"
       ),
-      parent
+      parent,
+      editable
     );
     this.childSupport = 1;
     

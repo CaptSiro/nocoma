@@ -51,9 +51,11 @@ class WLink extends Widget {
     }
     
     this.rootElement.addEventListener("click", evt => {
+      document.body?.classList.remove("cursor-pointer");
       if ((evt.ctrlKey || editable === false) && confirm("Do you want to open this link?\n" + json.url)) return;
       
       evt.preventDefault();
+      evt.stopImmediatePropagation();
     });
   }
   
@@ -141,6 +143,10 @@ class WLink extends Widget {
   }
   
   isSelectAble() {
+    return false;
+  }
+  
+  isSelectionPropagable() {
     return false;
   }
 }

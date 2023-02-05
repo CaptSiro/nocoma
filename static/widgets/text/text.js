@@ -18,6 +18,7 @@ class WText extends Widget {
    */
   constructor (json, parent, editable = false) {
     super(Paragraph("w-text"), parent, editable);
+    this.removeInspectHandler();
     this.#textEditor = WTextEditor.build(json.textEditor, this, editable);
     
     this.childSupport = 1;

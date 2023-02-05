@@ -25,6 +25,7 @@ class WHeading extends Widget { // var is used because it creates reference on g
       editable
     );
     this.childSupport = 1;
+    this.removeInspectHandler();
     
     this.appendWidget(WTextEditor.build({
       content: [json.text],

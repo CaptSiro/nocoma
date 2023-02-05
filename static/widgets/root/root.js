@@ -46,7 +46,7 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
     super(
       Div("w-root"),
       parent,
-      false
+      editable
     );
     this.removeMargin();
     
@@ -300,7 +300,7 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
     if (this.#hasAddedThemeSelectShrinkListener === false) {
       window.addEventListener("click", () => themeSelect.classList.remove("expand"))
       themeSelect.addEventListener("click", evt => {
-        themeSelect.classList.add("expand");
+        themeSelect.classList.toggle("expand");
         evt.stopImmediatePropagation();
       });
       themeSelect.style.setProperty("--height", "200px");

@@ -1,26 +1,25 @@
 .w-link.widget {
+  --color: var(--text-color-2);
+  --color-highligh: var(--text-color-opposite-0);
+  --bg-color: var(--container-opposite-1);
+
   display: inline-block;
   text-decoration: underline;
   font-weight: bold;
-  color: var(--text-color-2);
+  color: var(--color);
   cursor: default;
-  outline: 0 solid var(--container-opposite-1);
+  outline: 0 solid var(--bg-color);
 }
 .w-link.widget.not-edit:hover,
 .cursor-pointer .w-link.widget:hover {
   cursor: pointer;
   outline-width: 2px;
-  color: var(--text-color-opposite-0);
-  background-color: var(--container-opposite-1);
+  color: var(--color-highligh);
+  background-color: var(--bg-color);
 }
 
 .w-link.opposite.widget {
-  color: var(--text-color-opposite-1);
-  outline: 0 solid var(--container-2);
-}
-.w-link.widget.opposite.not-edit:hover,
-.cursor-pointer .w-link.widget.opposite:hover {
-  cursor: pointer;
-  color: var(--text-color-0);
-  background-color: var(--container-2);
+  --color: var(--text-color-opposite-1);
+  --color-highligh: var(--text-color-0);
+  --bg-color: var(--container-2);
 }

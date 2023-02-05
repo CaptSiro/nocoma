@@ -350,7 +350,7 @@ nav {
 }
 .i-select select {
   appearance: none;
-  background-color: transparent;
+  background-color: var(--container-2);
   border: none;
   padding: 0 1em 0 0;
   margin: 0;
@@ -361,7 +361,12 @@ nav {
   line-height: inherit;
   outline: none;
 }
+.i-select select option {
+  background-color: var(--container-2);
+  color: var(--text-color-1);
+}
 .i-select .select-container {
+  color: var(--text-color-0);
   width: 5em;
   border: 1px solid var(--container-3);
   padding: 0.25em 0.5em;
@@ -386,7 +391,8 @@ nav {
 .i-select.small .select-container {
   width: 3em;
 }
-.i-select .select-container:focus-within {
+.i-select .select-container:focus-within,
+.i-select .select-container select:focus {
   background-color: var(--container-1);
   border-color: var(--container-3);
   outline: unset;

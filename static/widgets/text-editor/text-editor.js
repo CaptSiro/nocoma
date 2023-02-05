@@ -18,6 +18,7 @@ class WTextEditor extends Widget {
    * @property {undefined | "simple" | "fancy"} mode
    * @property {string=} hint
    * @property {boolean=} disableLinks
+   * @property {boolean=} doRequestNewLine
    *
    * @typedef {TextEditorJSONType & WidgetJSON} TextEditorJSON
    */
@@ -93,10 +94,16 @@ class WTextEditor extends Widget {
               replacement.remove();
             });
             
+            if (element === linesContents.at(-1)) {
+              line.appendChild(document.createElement("br"));
+            }
             continue;
           }
           
           line.appendChild(widgets.get(element.type).build(element, this, editable).rootElement);
+          if (element === linesContents.at(-1)) {
+            line.appendChild(document.createElement("br"));
+          }
         }
       }
       
@@ -186,7 +193,11 @@ class WTextEditor extends Widget {
     
     this.#article.addEventListener("keydown", this.forceSingleLineHandler());
     
-    this.#article.addEventListener("keyup", () => {
+    this.#article.addEventListener("keyup", (evt) => {
+      if (this.rootElement.classList.contains("show-hint") && evt.key === "Backspace" || evt.key === "Delete") {
+        this.dispatch("remove");
+      }
+      
       if (this.#article.textContent !== "") {
         this.rootElement.classList.remove("show-hint");
         return;
@@ -221,6 +232,39 @@ class WTextEditor extends Widget {
       selection.collapseToEnd();
     });
   }
+  
+  /**
+   * @callback TextEditorListener
+   * @param {WTextEditor} context
+   */
+  /**
+   * @type {Object.<string, TextEditorListener[]>}
+   */
+  #listeners = {};
+  
+  /**
+   * @param {string} event
+   * @param {TextEditorListener} listener
+   */
+  addListener (event, listener) {
+    if (this.#listeners[event] === undefined) {
+      this.#listeners[event] = [listener];
+      return;
+    }
+    
+    this.#listeners[event].push(listener);
+  }
+  
+  /**
+   * @param {string} event
+   */
+  dispatch (event) {
+    if (this.#listeners[event] === undefined) return;
+    for (const listener of this.#listeners[event]) {
+      listener(this);
+    }
+  }
+  
   
   /**
    * @param {undefined | "simple" | "fancy"} mode
@@ -263,7 +307,20 @@ class WTextEditor extends Widget {
   
   forceSingleLineHandler () {
     return (evt => {
-      if (evt.key === "Enter" && this.#json.forceSingleLine) {
+      if (evt.key !== "Enter") return;
+      
+      if (this.#json.forceSingleLine) {
+        evt.preventDefault();
+        return;
+      }
+      
+      if (this.#json.doRequestNewLine) {
+        if (evt.shiftKey) {
+          return;
+        }
+        
+        this.dispatch("next-default");
+        // this.parentWidget.nextDefault?.call(this.parentWidget, this);
         evt.preventDefault();
       }
     }).bind(this);
@@ -384,6 +441,11 @@ class WTextEditor extends Widget {
     let buffer = Div();
     
     for (const node of [...this.#article.childNodes]) {
+      if (node.nodeName === "BR") {
+        node.remove();
+        continue;
+      }
+      
       if (node.nodeType === Node.TEXT_NODE || node.nodeName === "SPAN" || node.nodeName === "A") {
         buffer.append(node);
         continue;
@@ -742,21 +804,30 @@ class WTextEditor extends Widget {
     const lines = [];
     
     for (const line of this.#article.children) {
-      const lineContents = [];
+      let lineContents = [];
       
-      for (const child of line.childNodes) {
+      const childrenOfLine = Array.from(line.childNodes);
+      for (const child of childrenOfLine) {
         if (child.nodeType === Node.TEXT_NODE) {
+          if (child.textContent === "") continue;
+          
           lineContents.push(child.textContent);
           continue;
         }
         
+        if (child.nodeName === "BR" && child !== childrenOfLine.at(-1)) {
+          lines.push(lineContents);
+          lineContents = [];
+          continue;
+        }
+        
         if (child.widget instanceof WTextDecoration) {
-          lineContents.push(child.widget.saveCompact());
+          lineContents.push(...child.widget.saveCompact());
           continue;
         }
         
         if (child.widget) {
-          lineContents.push(child.widget[child.widget instanceof WTextDecoration ? "saveEfficiently" : "save"]());
+          lineContents.push(child.widget.save());
         }
       }
       

@@ -36,7 +36,14 @@ class Widget {
         return;
       }
       
+      evt.stopPropagation();
       this.toggleSelect();
+      
+      if (this.rootElement.classList.contains(WIDGET_SELECTION_CLASS)) {
+        for (const child of this.children) {
+          child.removeSelect();
+        }
+      }
     });
 
     this.parentWidget = parent;
@@ -125,7 +132,6 @@ class Widget {
   
   removeInspectHandler () {
     if (window.inspect === undefined) return;
-    
     this.rootElement.removeEventListener("click", this.inspectHandler);
   }
   
@@ -133,8 +139,8 @@ class Widget {
     this.rootElement.classList.remove("margin");
   }
 
-  remove (doRemoveFromRootElement = true) {
-    this.parentWidget.removeWidget(this, doRemoveFromRootElement);
+  remove (doRemoveFromRootElement = true, doAnimate = true) {
+    return this.parentWidget.removeWidget(this, doRemoveFromRootElement, doAnimate);
   }
   
   /**
@@ -147,13 +153,26 @@ class Widget {
   /**
    * @param {Widget} widget
    * @param {boolean} doRemoveFromRootElement
+   * @param {boolean} doAnimate
+   * @returns {Promise<boolean> | boolean}
    */
-  removeWidget (widget, doRemoveFromRootElement = true) {
+  removeWidget (widget, doRemoveFromRootElement = true, doAnimate = true) {
+    if (doAnimate !== true) {
+      return this.#removeWidget(widget, doRemoveFromRootElement);
+    }
+    
+    widget.rootElement.classList.add("remove");
+    return sleep(225)
+      .then(() => this.#removeWidget(widget, doRemoveFromRootElement));
+  }
+  
+  #removeWidget (widget, doRemoveFromRootElement) {
     if (doRemoveFromRootElement === true) {
       widget.rootElement.remove();
     }
-    
+  
     this.children.splice(this.children.indexOf(widget), 1);
+    return true;
   }
   
   /**
@@ -270,9 +289,7 @@ class Widget {
             }
           }
         }),
-        Button(__, "✕", async () => {
-          this.rootElement.classList.add("remove");
-          await sleep(225);
+        Button(__, "✕", () => {
           this.remove();
         }, {
           attributes: {
@@ -287,12 +304,17 @@ class Widget {
     return true;
   }
   
+  isSelectionPropagable () {
+    return true;
+  }
+  
   select () {
     if (this.isSelectAble()) {
       this.rootElement.classList.add(WIDGET_SELECTION_CLASS);
       return;
     }
-  
+    
+    if (!this.isSelectionPropagable()) return;
     if (this.parentWidget === null || this.parentWidget === undefined) return;
   
     this.parentWidget.select();
@@ -301,12 +323,29 @@ class Widget {
   toggleSelect () {
     if (this.isSelectAble()) {
       this.rootElement.classList.toggle(WIDGET_SELECTION_CLASS);
+      this.removeParentSelect();
       return;
     }
-  
+    
+    if (!this.isSelectionPropagable()) return;
     if (this.parentWidget === null || this.parentWidget === undefined) return;
   
     this.parentWidget.toggleSelect();
+  }
+  
+  removeSelect (isRecursive = true) {
+    this.rootElement.classList.remove(WIDGET_SELECTION_CLASS);
+    
+    if (!isRecursive) return;
+  
+    for (const child of this.children) {
+      child.removeSelect();
+    }
+  }
+  
+  removeParentSelect () {
+    this.parentWidget?.removeSelect(false);
+    this.parentWidget?.removeParentSelect();
   }
   
 
@@ -341,20 +380,49 @@ class ContainerWidget extends Widget {
    * @typedef {"multiple" | number} ContainerWidgetChildSupport
    */
 
-  #doRemoveDefaultCommand = false;
+  #doRemoveFirstDefault = false;
+  
+  defaultChild;
 
   /**
-   * @param {HTMLElement} root 
-   * @param {Widget} parent 
+   * @param {HTMLElement} root
+   * @param {Widget} parent
    * @param {boolean} editable
+   * @param {typeof Widget} defaultChild
+   * @param {boolean} doRemoveFirstChild
    */
-  constructor (root, parent, editable = false) {
+  constructor (root, parent, editable = false, defaultChild = undefined, doRemoveFirstChild = true) {
     super(root, parent, editable);
-    
+  
     if (editable) {
-      this.appendWidget(WCommand.default(this));
-      this.#doRemoveDefaultCommand = true;
+      this.defaultChild = defaultChild ?? WCommand;
     }
+    
+    if (editable && doRemoveFirstChild) {
+      this.appendWidget(this.defaultChild.default(this, editable));
+      this.#doRemoveFirstDefault = doRemoveFirstChild;
+    }
+  }
+  
+  /**
+   * @param {Widget} after
+   * @returns {Widget}
+   */
+  nextDefault (after) {
+    if (document?.widgetElement.editable !== true) return null;
+  
+    const indexOfAfter = this.children.indexOf(after);
+    const defaultWidget = this.defaultChild.default(this, this.editable);
+  
+    this.children.splice(indexOfAfter + 1, 0, defaultWidget);
+  
+    if (indexOfAfter + 2 === this.children.length) {
+      this.rootElement.appendChild(defaultWidget.rootElement);
+    } else {
+      this.rootElement.insertBefore(defaultWidget.rootElement, this.children[indexOfAfter + 2].rootElement);
+    }
+  
+    return defaultWidget;
   }
   
   makeOutsideChildrenDragNotAllowed () {
@@ -373,21 +441,26 @@ class ContainerWidget extends Widget {
 
     super.childSupport = value;
   }
-
+  
   /**
    * @override
-   * @param {Widget} widget 
+   * @param {Widget} widget
+   * @param {boolean} doRemoveFromRootElement
+   * @param {boolean} doAnimate
+   * @returns {Promise<boolean> | boolean}
    */
-  removeWidget (widget) {
-    // when only children = command block do NOT remove
-    if (widget instanceof WCommand && this.children.length === 1) return;
+  removeWidget(widget, doRemoveFromRootElement = true, doAnimate = true) {
+    // when only child is default (command block) do NOT remove
+    if (widget.constructor.name === this.defaultChild.name && this.children.length === 1) return false;
+  
+    const result = super.removeWidget(widget, doRemoveFromRootElement, doAnimate);
     
-    super.removeWidget(widget);
-    
-    // when children (Widget) length = 0 place new command block
+    // when child (Widget) length is 0 place new default (command block)
     if (this.children.length === 0) {
-      return this.appendWidget(WCommand.default(this));
+      this.appendWidget(this.defaultChild.default(this, this.editable));
     }
+    
+    return result;
   }
   
   
@@ -405,17 +478,25 @@ class ContainerWidget extends Widget {
     return super.insertBeforeWidget(widget, child, doInsertToRootElement);
   }
   
+  replaceWidget(find, replacement) {
+    this.#adoptWidget(replacement);
+    super.replaceWidget(find, replacement);
+  }
+  
   /**
    * @param {Widget} widget
    */
   #adoptWidget (widget) {
-    if (this.#doRemoveDefaultCommand === true) {
+    if (this.#doRemoveFirstDefault === true) {
       super.removeWidget(this.children[0]);
-      this.#doRemoveDefaultCommand = false;
+      this.#doRemoveFirstDefault = false;
     }
   
     if (this.allowsDragAndDrop()) {
-      widget.rootElement.ondragover = (evt) => this.updateDragHint(widget.rootElement, evt);
+      widget.rootElement.ondragover = (evt) => {
+        if (getClosestByClass(widget.rootElement, "confined-container", false) !== getClosestByClass(beingDragged, "confined-container", false)) return;
+        this.updateDragHint(widget.rootElement, evt);
+      }
       widget.rootElement.ondragleave = (evt) => this.removeDragHint(widget.rootElement, evt);
     }
   }

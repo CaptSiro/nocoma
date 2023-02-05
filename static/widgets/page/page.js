@@ -39,7 +39,7 @@ class WPage extends ContainerWidget {
    * @returns {WPage}
    */
   static default (parent, editable = false) {
-    return new WPage({}, parent);
+    return new WPage({}, parent, editable);
   }
 
   /**
@@ -50,7 +50,7 @@ class WPage extends ContainerWidget {
    * @returns {WPage}
    */
   static build (json, parent, editable = false) {
-    return new WPage(json, parent);
+    return new WPage(json, parent, editable);
   }
 
   /**

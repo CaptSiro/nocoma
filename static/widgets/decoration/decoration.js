@@ -83,23 +83,38 @@ class WTextDecoration extends Widget {
     };
   }
   
-  saveEfficiently () {
-    const classes = this.getFilteredClasses();
-    if (classes.length === 0) {
-      return this.rootElement.textContent;
-    }
-    
-    return this.save();
-  }
+  // saveEfficiently () {
+  //   const classes = this.getFilteredClasses();
+  //   if (classes.length === 0) {
+  //     return this.rootElement.textContent;
+  //   }
+  //
+  //   return this.save();
+  // }
   
   saveCompact () {
+    console.log("compact")
+    this.rootElement.normalize();
     const classes = this.getFilteredClasses();
-    if (classes.length === 0) {
-      return this.rootElement.textContent;
+    const decorationsAndWidgets = [];
+  
+    const indexes = classes.map(c => WTextDecoration.#typesCompatibilityIndexes[c]);
+    for (const child of this.rootElement.childNodes) {
+      if (child.nodeName === "BR") continue;
+      
+      if (child.widget !== undefined) {
+        decorationsAndWidgets.push(child?.widget.save());
+        continue;
+      }
+      
+      decorationsAndWidgets.push(
+        indexes.length === 0
+          ? child.textContent
+          : [child.textContent, ...indexes]
+      );
     }
     
-    const indexes = classes.map(c => WTextDecoration.#typesCompatibilityIndexes[c]);
-    return [this.rootElement.textContent, ...indexes];
+    return decorationsAndWidgets;
   }
   
   focus () {

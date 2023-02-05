@@ -198,6 +198,7 @@ const widgetSelect = $("#widget-select-mount");
 /** @type {HTMLElement} */
 let selectedWidget = undefined;
 let isInSearchMode = false;
+let currentCmd;
 
 /**
  * @param {boolean} isInSearch
@@ -278,7 +279,9 @@ AJAX.get("/bundler/resource/*", JSONHandlerSync(resources => {
               ], {
                 listeners: {
                   click: function () {
-                    console.log(widgets.get(resource.properties.class).default(null));
+                    if (currentCmd === undefined) return;
+                    currentCmd.replaceSelf(widgets.get(resource.properties.class).default(currentCmd.parentWidget, true));
+                    widgetSelect.style.visibility = "hidden";
                   },
                   mouseover: function () {
                     widgetSelect.querySelectorAll(".widget-option").forEach(w => w.classList.remove("selected"));
@@ -314,6 +317,10 @@ window.addEventListener("load", async () => {
  * @param {HTMLElement} to
  */
 function moveWidgetSelect (to) {
+  if ("widget" in to) {
+    currentCmd = to.widget;
+  }
+  
   to.scrollIntoView();
   const toBoundingBox = to.getBoundingClientRect();
   const mountBoundingBox = viewportMount.getBoundingClientRect();
@@ -424,19 +431,22 @@ fileSelectModal.querySelector("#file-upload-input").addEventListener("change", a
 
 
 let beingDragged;
+let beingHovered;
 
 //* drag-and-drop
 document.body.addEventListener("drop", evt => {
   evt.preventDefault();
   const dragHint = $(".drag-hint");
   const parentWidget = dragHint?.closest(".widget")?.widget;
+  const dropAtContainer = getClosestByClass(dragHint, "confined-container");
   
   if (dragHint !== null || !(parentWidget === null || parentWidget === undefined)) {
     const toBeMoved = $$("." + WIDGET_SELECTION_CLASS);
     for (const toBeMovedElement of toBeMoved) {
       if (!toBeMovedElement.classList.contains("widget")) continue;
+      if (dropAtContainer !== getClosestByClass(toBeMovedElement, "confined-container", false)) continue;
 
-      toBeMovedElement.widget.remove(false);
+      toBeMovedElement.widget.remove(false, false);
       parentWidget.insertBeforeWidget(toBeMovedElement.widget, dragHint.nextElementSibling?.widget, false);
       dragHint.parentElement.insertBefore(toBeMovedElement, dragHint);
     }
@@ -448,16 +458,26 @@ document.body.addEventListener("dragend", evt => {
   cleanUpAfterDrag(evt);
 });
 document.body.addEventListener("dragover", evt => {
-  evt.dataTransfer.dropEffect = beingDragged.closest(".confined-container") === evt.target.closest(".confined-container")
-    ? "all"
-    : "none";
+  if (getClosestByClass(beingDragged, "confined-container", false) === getClosestByClass(evt.target, "confined-container", false)) {
+    evt.dataTransfer.dropEffect = "move";
+    return;
+  }
+  
+  evt.dataTransfer.dropEffect = "none";
+  evt.stopPropagation();
 });
-function cleanUpAfterDrag (evt) {
+async function cleanUpAfterDrag (evt) {
   document.body.classList.remove("dragging");
   for (const widgetElement of $$("." + WIDGET_SELECTION_CLASS)) {
     widgetElement.classList.remove(WIDGET_SELECTION_CLASS);
   }
-  $(".drag-hint")?.remove();
+  
+  await sleep(10);
+  const dragHint = $(".drag-hint");
+  if (dragHint === null) return;
+  dragHint.classList.remove("expand");
+  await sleep(100);
+  dragHint.remove();
 }
 window.addEventListener("keydown", evt => {
   if (evt.key === "Escape") {
@@ -466,7 +486,46 @@ window.addEventListener("keydown", evt => {
     }
   }
 });
+window.addEventListener("mousemove", evt => {
+  const hoveringOver = getClosestByClass(evt.target, "edit");
+  
+  if (hoveringOver === null) {
+    beingHovered?.classList.remove("hover");
+    beingHovered = undefined;
+    return;
+  }
+  
+  if (hoveringOver === beingHovered) {
+    return;
+  }
+  
+  beingHovered?.classList.remove("hover");
+  hoveringOver.classList.add("hover");
+  beingHovered = hoveringOver;
+});
 
+
+/**
+ * @param {HTMLElement} element
+ * @param {string} className
+ * @param {boolean} includeArgumentElement
+ */
+function getClosestByClass (element, className, includeArgumentElement = true) {
+  if (element === undefined || element === null || element.classList === undefined) {
+    return null;
+  }
+  
+  do {
+    if (element.classList.contains(className) && element.widget !== undefined && includeArgumentElement === true) {
+      return element;
+    }
+    
+    element = element.parentElement;
+    includeArgumentElement = true;
+  } while (element !== document.documentElement && element !== null);
+  
+  return null;
+}
 
 
 

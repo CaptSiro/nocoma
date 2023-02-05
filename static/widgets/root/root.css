@@ -43,19 +43,26 @@ body {
   height: 10px;
 }
 
-.widget:hover > .gui,
+.widget.edit {
+  outline: 2px solid transparent;
+  transition: outline-color 150ms linear;
+}
+
+.widget.hover > .gui,
 .widget:focus > .gui {
   visibility: visible;
   opacity: 1 !important;
 }
 
 .widget.selected-widget-for-operation,
-.widget.edit:hover,
+.widget.edit.hover,
 .widget.edit:focus {
-  outline: 2px solid var(--container-opposite-2);
+  outline-color: var(--container-opposite-2);
   z-index: 3;
+
+  transition: outline-color 0ms linear;
 }
-.widget.edit:hover {
+.widget.edit.hover {
   z-index: 5;
 }
 

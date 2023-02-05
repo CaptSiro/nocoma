@@ -102,6 +102,11 @@
         </style>
         <text transform="matrix(1 0 0 1 61.0796 314.2594)" class="st0 st1" fill="currentColor">&lt;/&gt;</text>
       </g>
+      <g id="WList">
+        <rect fill="currentColor" x="194.9" y="186.4" width="110.2" height="110.2"/>
+        <polygon fill="currentColor" points="305.1,403.7 194.9,340 194.9,467.4 "/>
+        <circle fill="currentColor" cx="250" cy="87.8" r="55.1"/>
+      </g>
     </defs>
   </svg>
   <div class="modals">

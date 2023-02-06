@@ -6,7 +6,7 @@
         <div class="dropdown">
 <!--          <div class="dropdown-item"><span class="content">Undo</span><span class="hint">ctrl + z</span></div>-->
 <!--          <div class="dropdown-item"><span class="content">Redo</span><span class="hint">ctrl + shift + z</span></div>-->
-          <div class="dropdown-item" onclick="save()">
+          <div class="dropdown-item" onclick="file_save()">
             <span class="content">Save</span>
             <span class="hint">ctrl + s</span>
           </div>
@@ -21,11 +21,11 @@
           <div class="dropdown-item">
             <span class="content">Delete</span>
           </div>
-          <div class="dropdown-item next-section" onclick="openPost()">
+          <div class="dropdown-item next-section" onclick="file_open()">
             <span class="content">Open</span>
             <span class="hint">ctrl + o</span>
           </div>
-          <div class="dropdown-item" onclick="exit()">
+          <div class="dropdown-item" onclick="file_exit()">
             <span class="content">Exit</span>
             <span class="hint">ctrl + e</span>
           </div>
@@ -34,7 +34,22 @@
       <div class="settings-drop">
         <span class="content">Edit</span>
         <div class="dropdown">
-          <div class="dropdown-item" id="edit-website-properties"><span class="content">Website properties</span></div>
+          <div class="dropdown-item" id="edit-delete">
+            <span class="content">Delete</span>
+          </div>
+          <div class="dropdown-item" id="edit-copy">
+            <span class="content">Copy</span>
+            <span class="hint">ctrl + c</span>
+          </div>
+          <div class="dropdown-item" id="edit-cut">
+            <span class="content">Cut</span>
+            <span class="hint">ctrl + x</span>
+          </div>
+          <div class="dropdown-item" id="edit-paste">
+            <span class="content">Paste</span>
+            <span class="hint">ctrl + v</span>
+          </div>
+          <div class="dropdown-item next-section" id="edit-website-properties"><span class="content">Website properties</span></div>
         </div>
       </div>
 <!--      <div class="settings-drop">-->

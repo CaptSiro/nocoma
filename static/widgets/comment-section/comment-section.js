@@ -160,6 +160,14 @@ class WCommentSection extends Widget {
     console.error("WCommentSection cannot be removed.");
   }
   
+  isSelectionPropagable() {
+    return false;
+  }
+  
+  isSelectAble() {
+    return false;
+  }
+  
   /**
    * @param {HTMLElement} commentElement
    */

@@ -222,7 +222,7 @@ class WCommand extends Widget { // var is used because it creates reference on g
    * @returns {WidgetJSON}
    */
   save () {
-    //TODO: when content => save as text (more on Notion)
+    //TODO: when content => file_save as text (more on Notion)
     return {
       type: "WCommand"
     };
@@ -236,6 +236,10 @@ class WCommand extends Widget { // var is used because it creates reference on g
   }
   
   isSelectAble() {
+    return false;
+  }
+  
+  isSelectionPropagable() {
     return false;
   }
   

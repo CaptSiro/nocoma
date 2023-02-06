@@ -47,8 +47,12 @@ window.addEventListener("resize", () => {
 });
 
 onViewportResize(dimensions => {
-  viewport.style.height = `min(${dimensions.convertedHeight}px, 100%)`;
-  viewport.style.width = `min(${dimensions.convertedWidth}px, 100%)`;
+  viewport.style.width = Math.max(Math.min(dimensions.convertedWidth, dimensions.width), 324.22) + "px";
+  viewport.style.height = Math.min(dimensions.convertedHeight, dimensions.height) + "px";
+  
+  // old way that wasn't as hard coded
+  // viewport.style.width = `min(${dimensions.convertedWidth}px, 100%)`;
+  // viewport.style.height = `min(${dimensions.convertedHeight}px, 100%)`;
 });
 
 /**
@@ -433,21 +437,21 @@ fileSelectModal.querySelector("#file-upload-input").addEventListener("change", a
 let beingDragged;
 let beingHovered;
 
-//* drag-and-drop
-document.body.addEventListener("drop", evt => {
+//* Drag&Drop
+document.body.addEventListener("drop", async evt => {
   evt.preventDefault();
   const dragHint = $(".drag-hint");
   const parentWidget = dragHint?.closest(".widget")?.widget;
-  const dropAtContainer = getClosestByClass(dragHint, "confined-container");
+  const dropAtContainerName = getClosestByClass(dragHint, "confined-container")?.constructor.name;
   
   if (dragHint !== null || !(parentWidget === null || parentWidget === undefined)) {
     const toBeMoved = $$("." + WIDGET_SELECTION_CLASS);
     for (const toBeMovedElement of toBeMoved) {
       if (!toBeMovedElement.classList.contains("widget")) continue;
-      if (dropAtContainer !== getClosestByClass(toBeMovedElement, "confined-container", false)) continue;
-
-      toBeMovedElement.widget.remove(false, false);
-      parentWidget.insertBeforeWidget(toBeMovedElement.widget, dragHint.nextElementSibling?.widget, false);
+      if (dropAtContainerName !== getClosestByClass(toBeMovedElement, "confined-container", false)?.constructor.name) continue;
+  
+      toBeMovedElement.widget.remove(false, false, true);
+      await parentWidget.insertBeforeWidget(toBeMovedElement.widget, dragHint.nextElementSibling?.widget, false);
       dragHint.parentElement.insertBefore(toBeMovedElement, dragHint);
     }
   }
@@ -458,7 +462,7 @@ document.body.addEventListener("dragend", evt => {
   cleanUpAfterDrag(evt);
 });
 document.body.addEventListener("dragover", evt => {
-  if (getClosestByClass(beingDragged, "confined-container", false) === getClosestByClass(evt.target, "confined-container", false)) {
+  if (getClosestByClass(beingDragged, "confined-container", false)?.constructor.name === getClosestByClass(evt.target, "confined-container", false)?.constructor.name) {
     evt.dataTransfer.dropEffect = "move";
     return;
   }
@@ -474,7 +478,9 @@ async function cleanUpAfterDrag (evt) {
   
   await sleep(10);
   const dragHint = $(".drag-hint");
+  
   if (dragHint === null) return;
+  
   dragHint.classList.remove("expand");
   await sleep(100);
   dragHint.remove();
@@ -484,6 +490,10 @@ window.addEventListener("keydown", evt => {
     for (const widgetElement of $$("." + WIDGET_SELECTION_CLASS)) {
       widgetElement.classList.remove(WIDGET_SELECTION_CLASS);
     }
+  }
+  
+  if ((evt.key === "Delete" || evt.key === "Backspace") && evt.handledAction !== true) {
+    edit_delete();
   }
 });
 window.addEventListener("mousemove", evt => {
@@ -503,6 +513,108 @@ window.addEventListener("mousemove", evt => {
   hoveringOver.classList.add("hover");
   beingHovered = hoveringOver;
 });
+
+
+
+
+//* Copy&Paste
+/**
+ * @type {{element: HTMLElement, containerName: string}[]}
+ */
+let clipboardBuffer = [];
+
+function edit_delete () {
+  for (const widgetElement of $$("." + WIDGET_SELECTION_CLASS)) {
+    widgetElement?.widget.remove(true, true, true);
+  }
+}
+function edit_copy (evt) {
+  if (evt.clipboardActionHandled === true) return;
+  
+  evt.stopPropagation();
+  evt.preventDefault();
+  
+  clipboardBuffer = Array.from($$("." + WIDGET_SELECTION_CLASS))
+    .map(element => ({
+      element,
+      containerName: element?.widget.getClosestConfinedContainer()?.constructor.name
+    }));
+}
+function edit_cut (evt) {
+  if (evt.clipboardActionHandled === true) return;
+  
+  evt.stopPropagation();
+  evt.preventDefault();
+  
+  clipboardBuffer = [];
+  for (const element of $$("." + WIDGET_SELECTION_CLASS)) {
+    if (element.widget === undefined) continue;
+    
+    const containerName = element.widget.getClosestConfinedContainer()?.constructor.name;
+    element.classList.remove(WIDGET_SELECTION_CLASS);
+    element?.widget.remove(true, true, true);
+    
+    clipboardBuffer.push({ element, containerName });
+  }
+}
+function edit_paste (evt) {
+  if (evt.clipboardActionHandled === true) return;
+  
+  evt.preventDefault();
+  
+  const selectedWidgets = Array.from($$("." + WIDGET_SELECTION_CLASS));
+  if (selectedWidgets.length === 0) return;
+  
+  const insertAfter = selectedWidgets.at(-1);
+  if (insertAfter === null) return;
+  
+  const parentWidget = insertAfter?.widget.parentWidget;
+  if (parentWidget === undefined || parentWidget === null) return;
+  
+  const destinationContainerName = insertAfter.widget?.getClosestConfinedContainer()?.constructor.name;
+  const insertBeforeChild = parentWidget.children[parentWidget.children.indexOf(insertAfter?.widget) + 1];
+  
+  let lastInsertedElement;
+  for (const {element, containerName} of clipboardBuffer) {
+    if (destinationContainerName !== containerName) continue;
+    
+    const widgetCopy = element?.widget.constructor.build(element?.widget.save(), parentWidget, rootWidget.editable);
+    parentWidget.insertBeforeWidget(widgetCopy, insertBeforeChild);
+    
+    lastInsertedElement = widgetCopy.rootElement;
+  }
+  
+  for (const element of selectedWidgets) {
+    element.classList.remove(WIDGET_SELECTION_CLASS);
+  }
+  
+  lastInsertedElement?.classList.add(WIDGET_SELECTION_CLASS);
+}
+
+$("#edit-delete").addEventListener("pointerdown", evt => {
+  edit_delete(evt);
+  stopDropdown();
+  // evt.stopImmediatePropagation();
+});
+$("#edit-copy").addEventListener("pointerdown", evt => {
+  edit_copy(evt);
+  stopDropdown();
+  // evt.stopImmediatePropagation();
+});
+$("#edit-cut").addEventListener("pointerdown", evt => {
+  edit_cut(evt);
+  stopDropdown();
+  // evt.stopImmediatePropagation();
+});
+$("#edit-paste").addEventListener("pointerdown", evt => {
+  edit_paste(evt);
+  stopDropdown();
+  // evt.stopImmediatePropagation();
+});
+
+window.addEventListener("cut", edit_cut);
+window.addEventListener("copy", edit_copy);
+window.addEventListener("paste", edit_paste);
 
 
 /**
@@ -606,9 +718,9 @@ function inspect (inspectorHTML, widget) {
  * @type {Object.<string, ()=>(void | Promise<void>)>}
  */
 const shortCuts = {
-  "s": save,
-  "o": openPost,
-  "e": exit
+  "s": file_save,
+  "o": file_open,
+  "e": file_exit
 };
 window.addEventListener("keydown", async evt => {
   for (const shortCutKey in shortCuts) {
@@ -620,7 +732,7 @@ window.addEventListener("keydown", async evt => {
     break;
   }
 });
-async function save () {
+async function file_save () {
   const structure = window.rootWidget.save();
   
   const response = await AJAX.post("/page/" + webpage.src, JSONHandler(), {
@@ -638,10 +750,10 @@ async function save () {
   
   alert(response.message);
 }
-function openPost () {
+function file_open () {
   redirect(postLink);
 }
-function exit () {
+function file_exit () {
   redirect(AJAX.SERVER_HOME + '/dashboard');
 }
 

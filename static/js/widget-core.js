@@ -68,6 +68,10 @@ class Widget {
     evt.stopInspector = true;
     // evt.stopPropagation();
   }
+  
+  actionHandler (evt) {
+    evt.handledAction = true;
+  }
 
   /**
    * @param {Widget} parent
@@ -130,6 +134,17 @@ class Widget {
       }, []);
   }
   
+  /**
+   * @param {Widget} child
+   * @param {number} insertionIndex
+   */
+  childAdded (child, insertionIndex) {}
+  /**
+   * @param {Widget} child
+   * @param {number} beforeRemovalIndex
+   */
+  childRemoved (child, beforeRemovalIndex) {}
+  
   removeInspectHandler () {
     if (window.inspect === undefined) return;
     this.rootElement.removeEventListener("click", this.inspectHandler);
@@ -139,8 +154,8 @@ class Widget {
     this.rootElement.classList.remove("margin");
   }
 
-  remove (doRemoveFromRootElement = true, doAnimate = true) {
-    return this.parentWidget.removeWidget(this, doRemoveFromRootElement, doAnimate);
+  remove (doRemoveFromRootElement = true, doAnimate = true, force = false) {
+    return this.parentWidget.removeWidget(this, doRemoveFromRootElement, doAnimate, force);
   }
   
   /**
@@ -154,9 +169,10 @@ class Widget {
    * @param {Widget} widget
    * @param {boolean} doRemoveFromRootElement
    * @param {boolean} doAnimate
+   * @param {boolean} force
    * @returns {Promise<boolean> | boolean}
    */
-  removeWidget (widget, doRemoveFromRootElement = true, doAnimate = true) {
+  removeWidget (widget, doRemoveFromRootElement = true, doAnimate = true, force = false) {
     if (doAnimate !== true) {
       return this.#removeWidget(widget, doRemoveFromRootElement);
     }
@@ -171,7 +187,11 @@ class Widget {
       widget.rootElement.remove();
     }
   
-    this.children.splice(this.children.indexOf(widget), 1);
+    widget.parentWidget = null;
+    const index = this.children.indexOf(widget);
+    
+    this.children.splice(index, 1);
+    this.childRemoved(widget, index);
     return true;
   }
   
@@ -182,7 +202,14 @@ class Widget {
   replaceWidget (find, replacement) {
     find.rootElement.parentElement.insertBefore(replacement.rootElement, find.rootElement);
     find.rootElement.remove();
-    this.children.splice(this.children.indexOf(find), 1, replacement);
+    
+    find.parentWidget = null;
+    replacement.parentWidget = this;
+    const index = this.children.indexOf(find);
+    
+    this.children.splice(index, 1, replacement);
+    this.childRemoved(find, index);
+    this.childAdded(replacement, index);
   }
   
   /**
@@ -195,7 +222,9 @@ class Widget {
       return;
     }
   
+    widget.parentWidget = this;
     this.children.push(widget);
+    this.childAdded(widget, this.children.length - 1);
     
     if (doAppendToRootElement) {
       this.rootElement.appendChild(widget.rootElement);
@@ -254,7 +283,9 @@ class Widget {
       this.rootElement.insertBefore(widget.rootElement, child.rootElement);
     }
     
+    widget.parentWidget = this;
     this.children.splice(index, 0, widget);
+    this.childAdded(widget, index);
   }
 
   appendEditGui () {
@@ -370,6 +401,23 @@ class Widget {
 
     cmd.rootElement.focus();
   }
+  
+  /**
+   * @param {boolean} includeSelf
+   * @return {Widget|null}
+   */
+  getClosestConfinedContainer (includeSelf = false) {
+    let widget = this;
+    do {
+      if (widget.isConfinedContainer === true && includeSelf === true) {
+        return widget;
+      }
+      
+      widget = widget.parentWidget;
+      includeSelf = true;
+    } while (widget !== null && widget !== undefined);
+    return null;
+  }
 }
 
 
@@ -425,8 +473,9 @@ class ContainerWidget extends Widget {
     return defaultWidget;
   }
   
-  makeOutsideChildrenDragNotAllowed () {
+  createConfinedContainer () {
     this.rootElement.classList.add("confined-container");
+    this.isConfinedContainer = true;
   }
   
   /**
@@ -447,11 +496,12 @@ class ContainerWidget extends Widget {
    * @param {Widget} widget
    * @param {boolean} doRemoveFromRootElement
    * @param {boolean} doAnimate
+   * @param {boolean} force
    * @returns {Promise<boolean> | boolean}
    */
-  removeWidget(widget, doRemoveFromRootElement = true, doAnimate = true) {
+  removeWidget(widget, doRemoveFromRootElement = true, doAnimate = true, force = false) {
     // when only child is default (command block) do NOT remove
-    if (widget.constructor.name === this.defaultChild.name && this.children.length === 1) return false;
+    if ((widget.constructor.name === this.defaultChild.name && this.children.length === 1) && !force) return false;
   
     const result = super.removeWidget(widget, doRemoveFromRootElement, doAnimate);
     
@@ -461,6 +511,14 @@ class ContainerWidget extends Widget {
     }
     
     return result;
+  }
+  
+  childRemoved(child, beforeRemovalIndex) {
+    super.childRemoved(child, beforeRemovalIndex);
+  
+    if (this.children.length === 0) {
+      this.appendWidget(this.defaultChild.default(this, this.editable));
+    }
   }
   
   
@@ -494,7 +552,7 @@ class ContainerWidget extends Widget {
   
     if (this.allowsDragAndDrop()) {
       widget.rootElement.ondragover = (evt) => {
-        if (getClosestByClass(widget.rootElement, "confined-container", false) !== getClosestByClass(beingDragged, "confined-container", false)) return;
+        if (getClosestByClass(widget.rootElement, "confined-container", false)?.constructor.name !== getClosestByClass(beingDragged, "confined-container", false)?.constructor.name) return;
         this.updateDragHint(widget.rootElement, evt);
       }
       widget.rootElement.ondragleave = (evt) => this.removeDragHint(widget.rootElement, evt);

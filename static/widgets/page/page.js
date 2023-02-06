@@ -24,14 +24,22 @@ class WPage extends ContainerWidget {
       editable
     );
     this.removeMargin();
-    this.makeOutsideChildrenDragNotAllowed();
+    this.createConfinedContainer();
     this.childSupport = this.childSupport;
     
     if (json.forceFullscreen !== true) {
       this.rootElement.style.maxWidth = (json.width ?? 960) + "px";
     }
   }
-
+  
+  isSelectAble() {
+    return false;
+  }
+  
+  isSelectionPropagable() {
+    return false;
+  }
+  
   /**
    * @override
    * @param {Widget} parent

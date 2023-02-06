@@ -15,6 +15,9 @@
     color: inherit;
 }
 
+.w-text-editor article {
+    overflow: auto;
+}
 .w-text-editor article:focus {
     outline: unset;
 }

@@ -89,7 +89,7 @@ class WTextDecoration extends Widget {
   //     return this.rootElement.textContent;
   //   }
   //
-  //   return this.save();
+  //   return this.file_save();
   // }
   
   saveCompact () {

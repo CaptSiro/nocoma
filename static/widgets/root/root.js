@@ -150,7 +150,7 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
   static default (parent, editable = false) {
     return new WRoot({}, parent);
   }
-
+  
   /**
    * @override
    * @returns {ComponentContent}
@@ -492,6 +492,10 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
   }
   
   isSelectAble() {
+    return false;
+  }
+  
+  isSelectionPropagable() {
     return false;
   }
   

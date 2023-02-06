@@ -192,6 +192,19 @@ class WTextEditor extends Widget {
     }
     
     this.#article.addEventListener("keydown", this.forceSingleLineHandler());
+    this.#article.addEventListener("keydown", evt => {
+      this.actionHandler(evt);
+      
+      if (this.#json.doRequestNewLine && evt.key === "Enter") {
+        if (evt.shiftKey) {
+          return;
+        }
+    
+        this.dispatch("next-default");
+        // this.parentWidget.nextDefault?.call(this.parentWidget, this);
+        evt.preventDefault();
+      }
+    });
     
     this.#article.addEventListener("keyup", (evt) => {
       if (this.rootElement.classList.contains("show-hint") && evt.key === "Backspace" || evt.key === "Delete") {
@@ -207,7 +220,10 @@ class WTextEditor extends Widget {
     });
     
     this.#article.addEventListener("paste", evt => {
+      if (this.#article !== document.activeElement && !this.#article.contains(document.activeElement)) return;
+      
       evt.preventDefault();
+      this.actionHandler(evt);
       
       const pasteString = (evt.clipboardData || window.clipboardData).getData('text');
       const selection = window.getSelection();
@@ -312,16 +328,6 @@ class WTextEditor extends Widget {
       if (this.#json.forceSingleLine) {
         evt.preventDefault();
         return;
-      }
-      
-      if (this.#json.doRequestNewLine) {
-        if (evt.shiftKey) {
-          return;
-        }
-        
-        this.dispatch("next-default");
-        // this.parentWidget.nextDefault?.call(this.parentWidget, this);
-        evt.preventDefault();
       }
     }).bind(this);
   }

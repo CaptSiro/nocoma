@@ -154,8 +154,8 @@ class Widget {
     this.rootElement.classList.remove("margin");
   }
 
-  remove (doRemoveFromRootElement = true, doAnimate = true, force = false) {
-    return this.parentWidget.removeWidget(this, doRemoveFromRootElement, doAnimate, force);
+  remove (doRemoveFromRootElement = true, doAnimate = true) {
+    return this.parentWidget.removeWidget(this, doRemoveFromRootElement, doAnimate);
   }
   
   /**
@@ -169,10 +169,9 @@ class Widget {
    * @param {Widget} widget
    * @param {boolean} doRemoveFromRootElement
    * @param {boolean} doAnimate
-   * @param {boolean} force
    * @returns {Promise<boolean> | boolean}
    */
-  removeWidget (widget, doRemoveFromRootElement = true, doAnimate = true, force = false) {
+  removeWidget (widget, doRemoveFromRootElement = true, doAnimate = true) {
     if (doAnimate !== true) {
       return this.#removeWidget(widget, doRemoveFromRootElement);
     }
@@ -321,6 +320,7 @@ class Widget {
           }
         }),
         Button(__, "✕", () => {
+          if (this.parentWidget?.isLastAndDefault(this)) return;
           this.remove();
         }, {
           attributes: {
@@ -423,6 +423,19 @@ class Widget {
 
 
 
+
+
+
+
+
+//? WIDGET CONTAINER
+
+
+
+
+
+
+
 class ContainerWidget extends Widget {
   /**
    * @typedef {"multiple" | number} ContainerWidgetChildSupport
@@ -496,13 +509,9 @@ class ContainerWidget extends Widget {
    * @param {Widget} widget
    * @param {boolean} doRemoveFromRootElement
    * @param {boolean} doAnimate
-   * @param {boolean} force
    * @returns {Promise<boolean> | boolean}
    */
-  removeWidget(widget, doRemoveFromRootElement = true, doAnimate = true, force = false) {
-    // when only child is default (command block) do NOT remove
-    if ((widget.constructor.name === this.defaultChild.name && this.children.length === 1) && !force) return false;
-  
+  removeWidget(widget, doRemoveFromRootElement = true, doAnimate = true) {
     const result = super.removeWidget(widget, doRemoveFromRootElement, doAnimate);
     
     // when child (Widget) length is 0 place new default (command block)
@@ -511,6 +520,10 @@ class ContainerWidget extends Widget {
     }
     
     return result;
+  }
+  
+  isLastAndDefault (widget) {
+    return widget.constructor.name === this.defaultChild.name && this.children.length === 1;
   }
   
   childRemoved(child, beforeRemovalIndex) {
@@ -632,6 +645,16 @@ class ContainerWidget extends Widget {
 
 
 
+
+
+
+
+
+
+
+
+
+
 class WidgetRegistry {
   /**
    * @type {Object.<string, typeof Widget>}
@@ -646,7 +669,7 @@ class WidgetRegistry {
    */
   #callbacks = {};
   
-  #setoff (className) {
+  #setOff (className) {
     if (this.#callbacks[className] === undefined) return;
     
     for (const callback of this.#callbacks[className]) {
@@ -660,7 +683,7 @@ class WidgetRegistry {
    */
   define (className, constructor) {
     this.#map[className] = constructor;
-    this.#setoff(className);
+    this.#setOff(className);
   }
   
   

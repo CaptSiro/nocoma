@@ -106,9 +106,9 @@ class WList extends ContainerWidget {
     ];
   }
   
-  removeWidget(widget, doRemoveFromRootElement = true, doAnimate = true, force = false) {
+  removeWidget(widget, doRemoveFromRootElement = true, doAnimate = true) {
     const removedIndex = this.children.indexOf(widget);
-    let hasBeenRemoved = super.removeWidget(widget, doRemoveFromRootElement, doAnimate, force);
+    let hasBeenRemoved = super.removeWidget(widget, doRemoveFromRootElement, doAnimate);
     
     if (!doRemoveFromRootElement) return false;
     if (typeof hasBeenRemoved === "boolean") {

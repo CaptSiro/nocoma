@@ -450,7 +450,7 @@ document.body.addEventListener("drop", async evt => {
       if (!toBeMovedElement.classList.contains("widget")) continue;
       if (dropAtContainerName !== getClosestByClass(toBeMovedElement, "confined-container", false)?.constructor.name) continue;
   
-      toBeMovedElement.widget.remove(false, false, true);
+      toBeMovedElement.widget.remove(false, false);
       await parentWidget.insertBeforeWidget(toBeMovedElement.widget, dragHint.nextElementSibling?.widget, false);
       dragHint.parentElement.insertBefore(toBeMovedElement, dragHint);
     }
@@ -525,7 +525,7 @@ let clipboardBuffer = [];
 
 function edit_delete () {
   for (const widgetElement of $$("." + WIDGET_SELECTION_CLASS)) {
-    widgetElement?.widget.remove(true, true, true);
+    widgetElement?.widget.remove(true, true);
   }
 }
 function edit_copy (evt) {
@@ -552,7 +552,7 @@ function edit_cut (evt) {
     
     const containerName = element.widget.getClosestConfinedContainer()?.constructor.name;
     element.classList.remove(WIDGET_SELECTION_CLASS);
-    element?.widget.remove(true, true, true);
+    element?.widget.remove(true, true);
     
     clipboardBuffer.push({ element, containerName });
   }

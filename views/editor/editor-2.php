@@ -34,7 +34,16 @@
       <div class="settings-drop">
         <span class="content">Edit</span>
         <div class="dropdown">
-          <div class="dropdown-item" id="edit-delete">
+          <div class="dropdown-item" id="edit-select-all">
+            <span class="content">Select all</span>
+            <span class="hint">ctrl + a</span>
+          </div>
+          <div class="dropdown-item" id="edit-deselect-all">
+            <span class="content">Deselect all</span>
+            <span class="hint">ctrl + shift + a</span>
+          </div>
+          
+          <div class="dropdown-item next-section" id="edit-delete">
             <span class="content">Delete</span>
           </div>
           <div class="dropdown-item" id="edit-copy">
@@ -49,6 +58,7 @@
             <span class="content">Paste</span>
             <span class="hint">ctrl + v</span>
           </div>
+          
           <div class="dropdown-item next-section" id="edit-website-properties"><span class="content">Website properties</span></div>
         </div>
       </div>

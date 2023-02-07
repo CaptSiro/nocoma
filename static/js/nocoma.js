@@ -81,99 +81,67 @@ document.querySelectorAll(".login-button").forEach(button => {
 
 
 
-const themeSwitcher = $("#themes-showcase");
-const leftArrow = $("#themes > .left-arrow");
-const rightArrow = $("#themes > .right-arrow");
-let firstConditionMet = false;
-
-window.addEventListener("themesLoaded", makeThemeVisible);
-window.addEventListener("themeSelect", makeThemeVisible);
-let currentChild = 0;
-function makeThemeVisible () {
-  if (firstConditionMet === false) {
-    firstConditionMet = true;
-    return;
-  }
+const usersThemesPromise = Theme.getUsers("/theme/user/all");
+Theme.get("/theme/user")
+  .then(async theme => {
+    const themeSelect = $("#themes-showcase");
+    const leftArrow = $("#themes > .left-arrow");
+    const rightArrow = $("#themes > .right-arrow");
+    let currentChild = 0;
+    
+    const userThemes = await usersThemesPromise;
   
-  const currentThemeSource = sessionStorage.getItem("themesSRC");
-  let index = 0;
-  for (const theme of themeSwitcher.children) {
-    if (theme.dataset.source.endsWith(currentThemeSource)) {
-      currentChild = index;
-      break;
+    for (const userTheme of userThemes) {
+      themeSelect.appendChild(
+        Div(__,
+          Heading(3, __, userTheme.name),
+          { attributes: { "data-source": /* AJAX.SERVER_HOME + "/theme/" + */userTheme.src } }
+        )
+      );
     }
     
-    index++;
-  }
-  
-  themeSwitcher.scrollTo(currentChild * 200, 0);
-  leftArrow.classList.remove("hide");
-  rightArrow.classList.remove("hide");
-  if (currentChild === 0) {
-    leftArrow.classList.add("hide");
-  }
-  if (currentChild === themeSwitcher.children.length - 1) {
-    rightArrow.classList.add("hide");
-  }
-  
-  window.removeEventListener("themesLoaded", makeThemeVisible);
-  window.removeEventListener("themeSelect", makeThemeVisible);
-}
-
-AJAX.get("/theme/user/all", JSONHandlerSync(themes => {
-  for (const theme of themes) {
-    themeSwitcher.appendChild(
-      Div(__,
-        Heading(3, __, theme.name),
-        { attributes: { "data-source": AJAX.SERVER_HOME + "/theme/" + theme.src } }
-      )
-    );
-  }
-  
-  window.dispatchEvent(new CustomEvent("themeSelect"));
-  
-  leftArrow.classList.add("hide");
-  leftArrow.addEventListener("pointerdown", () => {
-    if (currentChild === 0) return;
+    leftArrow.addEventListener("pointerdown", () => {
+      if (currentChild === 0) return;
     
-    rightArrow.classList.remove("hide");
-    currentChild--;
-    setTheme(themeSwitcher.children[currentChild].dataset.source);
-    themeSwitcher.scrollTo(currentChild * 200, 0);
+      rightArrow.classList.remove("hide");
+      currentChild--;
+      Theme.setAsLink(themeSelect.children[currentChild].dataset.source);
+      themeSelect.scrollTo(currentChild * 200, 0);
+    
+      if (currentChild === 0) {
+        leftArrow.classList.add("hide");
+      }
+    });
+    rightArrow.addEventListener("pointerdown", () => {
+      if (currentChild === themeSelect.children.length - 1) return;
+    
+      leftArrow.classList.remove("hide");
+      currentChild++;
+      Theme.setAsLink(themeSelect.children[currentChild].dataset.source);
+      themeSelect.scrollTo(currentChild * 200, 0);
+    
+      if (currentChild === themeSelect.children.length - 1) {
+        rightArrow.classList.add("hide");
+      }
+    });
+  
+    let index = 0;
+    for (const themeOption of themeSelect.children) {
+      if (themeOption.dataset.source.endsWith(theme.src)) {
+        currentChild = index;
+        break;
+      }
+    
+      index++;
+    }
+  
+    themeSelect.scrollTo(currentChild * 200, 0);
     
     if (currentChild === 0) {
       leftArrow.classList.add("hide");
     }
-  });
-  
-  rightArrow.addEventListener("click", () => {
-    if (currentChild === themeSwitcher.children.length - 1) return;
-  
-    leftArrow.classList.remove("hide");
-    currentChild++;
-    setTheme(themeSwitcher.children[currentChild].dataset.source);
-    themeSwitcher.scrollTo(currentChild * 200, 0);
-  
-    if (currentChild === themeSwitcher.children.length - 1) {
+    
+    if (currentChild === themeSelect.children.length - 1) {
       rightArrow.classList.add("hide");
     }
   });
-}));
-
-function setTheme (source) {
-  const themeLink = $(".themes-link");
-  const newThemeLink = Component("link", "theme-link", __, {
-    attributes: {
-      id: "themes-link",
-      rel: "stylesheet",
-      href: source
-    }
-  });
-  document.head.appendChild(newThemeLink);
-  newThemeLink.addEventListener("load", () => {
-    setTimeout(() => {
-      assignColors();
-      themeLink?.remove();
-    })
-  });
-}

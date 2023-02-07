@@ -319,6 +319,9 @@ input[type="radio"]:after {
 
   --height: 100px;
 }
+.select-dropdown .label:hover {
+  cursor: pointer;
+}
 .select-dropdown .label {
   display: flex;
   justify-content: space-between;

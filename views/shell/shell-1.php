@@ -15,7 +15,7 @@
     const webpage = Object.freeze(JSON.parse(`<?= json_encode($GLOBALS["webpage"]) ?>`));
     const user = Object.freeze(JSON.parse(`<?= json_encode($GLOBALS["user"]) ?>`));
   </script>
-  <script src="<?= $GLOBALS["__SERVER_HOME__"] ?>/public/js/user-theme-setter.js" url="/theme/website/<?= $GLOBALS["webpage"]->src ?>"></script>
+  <script src="<?= $GLOBALS["__SERVER_HOME__"] ?>/public/js/theme.js"></script>
   <script src="<?= $GLOBALS["__SERVER_HOME__"] ?>/public/js/widget-core.js"></script>
   <script src="<?= $GLOBALS["__SERVER_HOME__"] ?>/public/js/components/InfiniteScroller.js"></script>
   <script src="<?= $GLOBALS["__SERVER_HOME__"] ?>/bundler/js/?widgets=WRoot" id="widgets-scripts"></script>

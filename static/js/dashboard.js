@@ -160,41 +160,52 @@ function changeUserPreferredSetting (css, datasetPropertyName, storageKey, scrol
 
 
 
-const themeSwitcher = $("#theme-select");
-window.addEventListener("click", () => themeSwitcher.classList.remove("expand"))
-themeSwitcher.addEventListener("click", evt => {
-  themeSwitcher.classList.add("expand");
-  evt.stopImmediatePropagation();
-});
-themeSwitcher.style.setProperty("--height", ((window.innerHeight - 40) - (themeSwitcher.getBoundingClientRect().bottom % window.innerHeight)) + "px");
-const themeLabel = themeSwitcher.querySelector("#theme-name");
-const themeContent = themeSwitcher.querySelector(".content");
-
-const themeLoaderCallback = makeThemeVisibleFactory(themeSwitcher, themeContent, themeLabel);
-window.addEventListener("themesLoaded", themeLoaderCallback);
-window.addEventListener("themeSelect", themeLoaderCallback);
-
-AJAX.get("/theme/user/all-v2", JSONHandlerSync(themes => {
-  if (themes.error) {
-    console.log(themes);
-    return;
-  }
+const usersThemesPromise = Theme.getUsers("/theme/user/all-v2");
+Theme.get("/theme/user")
+  .then(async theme => {
+    const themeSelect = $("#theme-select");
+    window.addEventListener("click", () => themeSelect.classList.remove("expand"))
+    themeSelect.addEventListener("click", evt => {
+      themeSelect.classList.add("expand");
+      evt.stopImmediatePropagation();
+    });
+    
+    themeSelect.style.setProperty("--height", ((window.innerHeight - 40) - (themeSelect.getBoundingClientRect().bottom % window.innerHeight)) + "px");
+    const themeLabel = themeSelect.querySelector("#theme-name");
+    const themeContent = themeSelect.querySelector(".content");
+    
+    themeContent.append(
+      ...(await usersThemesPromise)
+        .map(theme => Theme.createColor(theme, themeSelect))
+    );
   
-  themeContent.append(
-    ...themes
-      .map(raw => ThemeColor(parseTheme(raw), themeSwitcher))
-  );
+    for (const themeOption of themeContent.children) {
+      if (themeOption.dataset.value !== theme.src) continue;
+      
+      themeSelect.value = themeOption.dataset.value;
+      themeLabel.innerText = themeOption.innerText;
+      break;
+    }
+    
+    themeSelect.addEventListener("change", async () => {
+      const themeChangeResponse = await AJAX.patch("/profile/theme-src", JSONHandler(), {
+        body: JSON.stringify({
+          src: themeSelect.dataset.value.substring(themeSelect.dataset.value.length - 8)
+        })
+      });
   
-  window.dispatchEvent(new CustomEvent("themeSelect"));
-}));
-
-themeSwitcher.addEventListener("change", themeChangeListenerFactory(
-  () => AJAX.patch("/profile/theme-src", JSONHandler(), {
-    body: JSON.stringify({
-      src: themeSwitcher.dataset.value.substring(themeSwitcher.dataset.value.length - 8)
-    })
-  }),
-  themeSwitcher,
-  themeContent,
-  themeLabel
-));
+      if (themeChangeResponse.error !== undefined) {
+        console.log(themeChangeResponse);
+        return;
+      }
+      
+      await Theme.setAsLink(themeSelect.dataset.value);
+  
+      for (const option of themeContent.children) {
+        if (option.dataset.value === themeSelect.dataset.value) {
+          themeLabel.innerText = option.innerText;
+          break;
+        }
+      }
+    });
+  });

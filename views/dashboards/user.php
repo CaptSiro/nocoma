@@ -22,7 +22,7 @@
     AJAX.HOST_NAME = "<?=$GLOBALS["env_home"]?>";
     AJAX.PROTOCOL = "<?=$GLOBALS["protocol"]?>";
   </script>
-  <script src="<?= $GLOBALS["__HOME__"] ?>/public/js/user-theme-setter.js"></script>
+  <script src="<?= $GLOBALS["__HOME__"] ?>/public/js/theme.js"></script>
   
   <script src="<?=$GLOBALS["__HOME__"]?>/public/js/grid.js" defer></script>
   <script src="<?=$GLOBALS["__HOME__"]?>/public/js/dashboard.js" defer></script>
@@ -537,7 +537,7 @@
           <h3>Select theme:</h3>
           <div class="select-dropdown" id="theme-select">
             <div class="label">
-              <span id="theme-name">Theme...</span>
+              <span id="theme-name">Loading theme...</span>
               <svg class="icon" viewBox="0 0 500 500">
                 <use xlink:href="#icon-arrow"></use>
               </svg>

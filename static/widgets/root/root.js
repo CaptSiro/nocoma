@@ -287,7 +287,7 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
     
     
     const themeContent = Div("content");
-    const themeLabel = Span(__, "Theme...");
+    const themeLabel = Span(__, "Loading theme...", );
     
     const themeSelect = Div("select-dropdown", [
       Div("label", [
@@ -295,53 +295,62 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
         SVG("icon-arrow", "icon")
       ]),
       themeContent
-    ]);
-    
-    if (this.#hasAddedThemeSelectShrinkListener === false) {
-      window.addEventListener("click", () => themeSelect.classList.remove("expand"))
-      themeSelect.addEventListener("click", evt => {
+    ], {
+      attributes: {style: "--height: 200px"},
+      listeners: {click: evt => {
         themeSelect.classList.toggle("expand");
         evt.stopImmediatePropagation();
-      });
-      themeSelect.style.setProperty("--height", "200px");
-  
-      const themeLoaderCallback = makeThemeVisibleFactory(themeSelect, themeContent, themeLabel);
-      window.addEventListener("themesLoaded", themeLoaderCallback);
-      window.addEventListener("themeSelect", themeLoaderCallback);
-      
-      AJAX.get("/theme/user/all-v2", JSONHandlerSync(themes => {
-        if (themes.error) {
-          console.log(themes);
-          return;
-        }
-  
+      }}
+    });
+    
+    Theme.get("/theme/website/" + webpage.src)
+      .then(async theme => {
+        const usersThemes = await Theme.getUsers("/theme/user/all-v2");
+        
         themeContent.append(
-          ...themes
-            .map(raw => ThemeColor(parseTheme(raw), themeSelect))
+          ...usersThemes
+            .map(theme => Theme.createColor(theme, themeSelect))
         );
   
-        window.dispatchEvent(new CustomEvent("themeSelect"));
-      }));
+        for (const themeOption of themeContent.children) {
+          if (themeOption.dataset.value !== theme.src) continue;
   
-      themeSelect.addEventListener("change", themeChangeListenerFactory(
-        () => AJAX.patch("/page/", JSONHandler(), {
-          body: JSON.stringify({
-            id: webpage.ID,
-            property: "themesSRC",
-            value: themeSelect.dataset.value.substring(themeSelect.dataset.value.length - 8)
-          })
-        }),
-        themeSelect,
-        themeContent,
-        themeLabel,
-        true
-      ));
-      
+          themeSelect.value = themeOption.dataset.value;
+          themeLabel.innerText = themeOption.innerText;
+          break;
+        }
+        
+        themeSelect.addEventListener("change", async () => {
+          const themeChangeResponse = AJAX.patch("/page/", JSONHandler(), {
+            body: JSON.stringify({
+              id: webpage.ID,
+              property: "themesSRC",
+              value: themeSelect.dataset.value.substring(themeSelect.dataset.value.length - 8)
+            })
+          });
+  
+          if (themeChangeResponse.error !== undefined) {
+            console.log(themeChangeResponse);
+            return;
+          }
+  
+          validated(themeSelect);
+          
+          await Theme.setAsLink(themeSelect.dataset.value);
+  
+          for (const themeOption of themeContent.children) {
+            if (themeOption.dataset.value === themeSelect.dataset.value) {
+              themeLabel.innerText = themeOption.innerText;
+              break;
+            }
+          }
+        });
+      });
+    
+    if (this.#hasAddedThemeSelectShrinkListener === false) {
+      window.addEventListener("click", () => themeSelect.classList.remove("expand"));
       this.#hasAddedThemeSelectShrinkListener = true;
     }
-    
-    
-    
     
     return [
       TitleInspector("Website"),
@@ -461,7 +470,7 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
       
       HRInspector(),
       
-      TitleInspector("Theme"),
+      TitleInspector("ThemeType"),
       themeSelect,
       // Div("i-controls-row", [
       //   Button("button-like-main", "Change"),

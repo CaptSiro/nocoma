@@ -1,3 +1,5 @@
+Theme.get("/theme/website/" + webpage.src);
+
 const viewportMount = $(".viewport-mount");
 let switcher = false;
 $(".toggle-viewport").addEventListener("pointerdown", () => {
@@ -523,6 +525,30 @@ window.addEventListener("mousemove", evt => {
  */
 let clipboardBuffer = [];
 
+function edit_selectAll () {
+  if (window.rootWidget === undefined) return;
+  
+  edit_deselectAll();
+  
+  for (const child of window.rootWidget.page.children) {
+    child.select();
+  }
+}
+function edit_deselectAll () {
+  for (const selectedElement of $$("." + WIDGET_SELECTION_CLASS)) {
+    selectedElement.classList.remove(WIDGET_SELECTION_CLASS);
+  }
+}
+
+$("#edit-select-all").addEventListener("click", evt => {
+  edit_selectAll();
+  stopDropdown();
+});
+$("#edit-deselect-all").addEventListener("click", evt => {
+  edit_deselectAll();
+  stopDropdown();
+});
+
 function edit_delete () {
   for (const widgetElement of $$("." + WIDGET_SELECTION_CLASS)) {
     widgetElement?.widget.remove(true, true);
@@ -841,7 +867,7 @@ function TitleInspector (title, className = undefined) {
 
 function HRInspector (className = undefined) {
   return (
-    Div("i-hr" + (className !== undefined ? " " + className : ""))
+    Div("i-hr" + (className !== undefined ? " " + className : ""), "​") //todo does not display without zero-width-character (?)
   )
 }
 

@@ -47,7 +47,7 @@
   
   
   function serveTheme ($themeSRC, $website, $response) {
-    if ($themeSRC === null) {
+    if ($themeSRC === null && $website !== "") {
       $themeSRC = User::getByWebsite($website)
         ->forwardFailure($response)
         ->getSuccess()->themesSRC;

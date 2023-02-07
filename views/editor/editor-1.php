@@ -17,10 +17,11 @@
     const user = Object.freeze(JSON.parse(`<?= json_encode($GLOBALS["user"]) ?>`));
     const postLink = `<?= $GLOBALS["postLink"] ?>`;
   </script>
-  <script src="<?= $GLOBALS["__HOME__"] ?>/public/js/user-theme-setter.js" url="/theme/website/<?= $GLOBALS["webpage"]->src ?>"></script>
+  <script src="<?= $GLOBALS["__HOME__"] ?>/public/js/theme.js"></script>
   <script src="<?= $GLOBALS["__HOME__"] ?>/public/js/editor.js" defer></script>
   <script src="<?= $GLOBALS["__HOME__"] ?>/public/js/widget-core.js"></script>
   <script src="<?= $GLOBALS["__SERVER_HOME__"] ?>/public/js/components/InfiniteScroller.js"></script>
+  <script src="<?= $GLOBALS["__SERVER_HOME__"] ?>/public/js/components/Resizeable.js"></script>
   <script src="<?= $GLOBALS["__HOME__"] ?>/bundler/js/?widgets=*" id="widgets-scripts"></script>
   <script src="<?=$GLOBALS["__HOME__"]?>/public/js/modal.js" defer></script>
   <script src="<?=$GLOBALS["__HOME__"]?>/public/js/forms.js" defer></script>
@@ -30,6 +31,7 @@
   <link rel="stylesheet" href="<?= $GLOBALS["__HOME__"] ?>/public/css/editor.css">
   <link rel="stylesheet" href="<?=$GLOBALS["__HOME__"]?>/public/css/modal.css">
   <link rel="stylesheet" href="<?=$GLOBALS["__HOME__"]?>/public/css/forms.css">
+  <link rel="stylesheet" href="<?=$GLOBALS["__HOME__"]?>/public/css/resizeable.css">
   
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -43,7 +45,7 @@
 </head>
 <body>
   <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="display: none;">
-    <defs>
+    <defs id="icon-definitions">
       <g id="icon-arrow">
         <g>
           <polygon fill="currentColor" points="411.8,250.1 87.7,450.4 87.7,391.8 364.3,220.7 	"/>

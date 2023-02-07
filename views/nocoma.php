@@ -19,7 +19,7 @@
     AJAX.DOMAIN_HOME = "<?=$GLOBALS["__HOME__"]?>";
     AJAX.SERVER_HOME = "<?=$GLOBALS["__SERVER_HOME__"] ?? $GLOBALS["__HOME__"]?>";
   </script>
-  <script src="<?= $GLOBALS["__HOME__"] ?>/public/js/user-theme-setter.js"></script>
+  <script src="<?= $GLOBALS["__HOME__"] ?>/public/js/theme.js"></script>
   <script src="<?= $GLOBALS["__HOME__"] ?>/public/js/nocoma.js" defer></script>
 
   <link href='https://css.gg/chevron-double-down.css' rel='stylesheet'>

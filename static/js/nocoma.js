@@ -100,29 +100,35 @@ Theme.get("/theme/user")
       );
     }
     
-    leftArrow.addEventListener("pointerdown", () => {
+    leftArrow.addEventListener("pointerdown", async () => {
       if (currentChild === 0) return;
     
       rightArrow.classList.remove("hide");
       currentChild--;
-      Theme.setAsLink(themeSelect.children[currentChild].dataset.source);
+      await Theme.setAsLink(themeSelect.children[currentChild].dataset.source);
       themeSelect.scrollTo(currentChild * 200, 0);
     
       if (currentChild === 0) {
         leftArrow.classList.add("hide");
       }
+  
+      await sleep(50);
+      assignColors();
     });
-    rightArrow.addEventListener("pointerdown", () => {
+    rightArrow.addEventListener("pointerdown", async () => {
       if (currentChild === themeSelect.children.length - 1) return;
     
       leftArrow.classList.remove("hide");
       currentChild++;
-      Theme.setAsLink(themeSelect.children[currentChild].dataset.source);
+      await Theme.setAsLink(themeSelect.children[currentChild].dataset.source);
       themeSelect.scrollTo(currentChild * 200, 0);
     
       if (currentChild === themeSelect.children.length - 1) {
         rightArrow.classList.add("hide");
       }
+      
+      await sleep(50);
+      assignColors();
     });
   
     let index = 0;
@@ -144,4 +150,7 @@ Theme.get("/theme/user")
     if (currentChild === themeSelect.children.length - 1) {
       rightArrow.classList.add("hide");
     }
+    
+    await sleep(50);
+    assignColors();
   });

@@ -1,3 +1,76 @@
+class Observable {
+  #value;
+  
+  /**
+   * @template V
+   * @param {V} defaultValue
+   */
+  constructor(defaultValue) {
+    this.#value = defaultValue;
+  }
+  
+  /**
+   * @return {V}
+   */
+  get value () {
+    return this.#value;
+  }
+  
+  /**
+   * @param {V} newValue
+   */
+  set value (newValue) {
+    this.#value = newValue;
+    this.dispatch();
+  }
+  
+  /**
+   * @template O
+   * @callback ObserverCallback
+   * @param {O} value
+   */
+  /**
+   * @type {ObserverCallback<V>[]}
+   */
+  #listeners = [];
+  
+  /**
+   * @param {ObserverCallback<V>} listener
+   */
+  onChange (listener) {
+    this.#listeners.push(listener);
+    return (() => this.removeListener(listener)).bind(this);
+  }
+  
+  /**
+   * @param listener
+   */
+  removeListener (listener) {
+    this.#listeners.splice(this.#listeners.indexOf(listener), 1);
+  }
+  
+  dispatch () {
+    for (const listener of this.#listeners) {
+      listener(this.#value);
+    }
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 /**
  * @typedef WidgetJSON
  * @property {string=} type

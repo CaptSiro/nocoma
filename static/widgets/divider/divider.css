@@ -1,0 +1,28 @@
+.w-divider {
+    --amount: 64px;
+    --fill-amount: 2px;
+    --fill-position: center;
+
+    height: var(--amount);
+}
+.w-divider-container {
+    display: flex;
+    align-items: var(--fill-position);
+}
+.w-divider .filling {
+    width: 100%;
+    height: var(--fill-amount);
+    background-color: var(--container-opposite-3);
+}
+.w-divider.transparent .filling {
+    visibility: hidden;
+}
+
+.reverse .w-divider {
+    width: var(--amount);
+    height: 100%;
+}
+.reverse .w-divider .filling {
+    width: var(--fill-amount);
+    height: 100%;
+}

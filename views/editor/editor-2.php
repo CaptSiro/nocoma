@@ -40,7 +40,7 @@
           </div>
           <div class="dropdown-item" id="edit-deselect-all">
             <span class="content">Deselect all</span>
-            <span class="hint">ctrl + shift + a</span>
+            <span class="hint">escape</span>
           </div>
           
           <div class="dropdown-item next-section" id="edit-delete">

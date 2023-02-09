@@ -25,6 +25,41 @@ new ResizeObserver(entries => {
 
 
 
+
+const viewportListeners = [];
+/**
+ * @type {ViewportDimensions}
+ */
+let viewportDimensions;
+window.addEventListener("resize", () => {
+  const width = window.innerWidth;
+  const height = window.innerHeight;
+  
+  viewportDimensions = {
+    width,
+    height,
+    convertedHeight: height,
+    convertedWidth: width,
+    maxHeight: height,
+    maxWidth: width
+  }
+  
+  for (const viewportListener of viewportListeners) {
+    viewportListener(viewportDimensions)
+  }
+});
+/**
+ * @param {ViewportListener} callback
+ */
+function onViewportResize (callback) {
+  viewportListeners.push(callback);
+}
+
+function viewportResize () {
+  window.dispatchEvent(new Event("resize"));
+}
+
+
 widgets.on("WRoot", async () => {
   const pageData = $("#page-data");
   const json = JSON.parse(pageData.textContent);

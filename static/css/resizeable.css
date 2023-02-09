@@ -38,9 +38,9 @@
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    border: 2px solid var(--container-opposite-2);
+    border: 2px solid black;
     position: absolute;
-    outline: 1px solid white;
+    outline: 2px solid white;
     pointer-events: auto;
 
     top: 10px;

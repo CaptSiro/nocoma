@@ -4,13 +4,30 @@ class WImage extends Widget {
   // or json.children for array of widgets
   /**
    * @typedef ImageJSONType
-   * @property {string} src
+   * @property {string=} src
    * @property {string=} alt
    * @property {string=} width
    * @property {string=} height
-   * 
+   * @property {string=} borderRadius
+   * @property {string=} aspectRatio
+   *
    * @typedef {ImageJSONType & WidgetJSON} ImageJSON
    */
+  
+  /**
+   * @type {Observable<ImageJSON>}
+   */
+  #json;
+  #resizeable;
+  /**
+   * @type {HTMLImageElement}
+   */
+  #imageElement;
+  #imageContainer;
+  // [width(%), height(px), border-radius(%), aspect-ratio(width(px) / height(px) | null)]
+  #dimensions = new Observable([0, 0, 0, 0]);
+  static VIEWPORT_MARGIN = 16;
+  
   
   /**
    * @param {ImageJSON} json
@@ -18,32 +35,106 @@ class WImage extends Widget {
    * @param {boolean} editable
    */
   constructor (json, parent, editable = false) {
+    const image = Img(
+      json.src !== undefined
+        ? WImage.createSourceURL(json.src)
+        : AJAX.SERVER_HOME + "/public/images/backgrounds-mono/0.png",
+      json.alt ?? "Unnamed image",
+      "w-image"
+    );
+    const imageContainer = Div("w-image-container", image);
     super(
-      Div("w-image-container",
-        Img(json.src, json.alt ?? "Unnamed image",
-          "w-image"
-          + (json.height !== undefined || json.width !== undefined
-            ? " obey"
-            : "")
-        ), {
-          modify: container => {
-            if (json.height !== undefined || json.width !== undefined) {
-              container.style.width = json.width ?? container.style.width;
-              container.style.height = json.height ?? container.style.height;
-            }
-          }
-        }
-      ),
+      Div("w-image-mount", imageContainer),
       parent,
       editable
     );
+    
+    this.#imageElement = image;
+    this.#imageContainer = imageContainer;
     this.childSupport = "none";
     
     if (editable) {
+      this.#json = new Observable(json);
+      this.#json.onChange(descriptor => {
+        this.#imageElement.src = WImage.createSourceURL(descriptor.src);
+      });
+      
+      this.#resizeable = new Resizeable(imageContainer, {axes: "diagonal", borderRadius: "enabled"});
+      this.#resizeable.on("resize", (width, height) => {
+        const oldDimensions = this.#dimensions.value;
+        this.#dimensions.value = [
+          clamp(0.05, 1, width / this.rootElement.getBoundingClientRect().width),
+          clamp(16, 4096, height),
+          oldDimensions[2]
+        ];
+      });
+      this.#resizeable.on("radius", borderRadius => {
+        this.#dimensions.setProperty(2, borderRadius);
+      });
+      this.#resizeable.content.style.width = "unset";
+      this.#resizeable.content.style.height = "unset";
+      
       this.appendEditGui();
+    } else {
+      this.#imageContainer.style.overflow = "hidden";
     }
+  
+    
+    this.#dimensions.onChange(([width, height, borderRadius]) => {
+      const oldDimensions = this.#dimensions.value;
+  
+      oldDimensions[3] =
+        (this.rootElement.getBoundingClientRect().width * width) / height;
+      this.#dimensions.setValueSafe(oldDimensions);
+      
+      this.setImageDimensions(width, height, borderRadius);
+    });
+    this.#dimensions.value = [json.width ?? 0.70, json.height ?? 400, json.borderRadius ?? 0, json.aspectRatio];
+  
+    
+    const resizeListener = () => {
+      if (this.#dimensions.value[3] === undefined || typeof this.#dimensions.value[3] !== "number") return;
+      
+      const oldDimensions = this.#dimensions.value;
+      oldDimensions[1] =
+        (this.rootElement.getBoundingClientRect().width * oldDimensions[0]) / this.#dimensions.value[3];
+      
+      this.#dimensions.setValueSafe(oldDimensions);
+      this.setImageDimensions(oldDimensions[0], oldDimensions[1], oldDimensions[2]);
+    };
+  
+    onViewportResize(resizeListener);
+  
+    if (viewportDimensions !== undefined) {
+      resizeListener(viewportDimensions);
+      return;
+    }
+  
+    viewportResize();
   }
-
+  
+  setImageDimensions (widthPercentage, height, borderRadius) {
+    this.#imageContainer.style.width = (widthPercentage * 100) + "%";
+    
+    if (this.editable === false) {
+      this.#imageContainer.style.height = height + "px";
+      this.#imageContainer.style.borderRadius = borderRadius + "%";
+      return;
+    }
+  
+    this.#resizeable.content.style.height = height + "px";
+    this.#resizeable.content.style.borderRadius = borderRadius + "%";
+    this.#resizeable.setRadiusHandlesPositions(borderRadius);
+  }
+  
+  /**
+   * @param {string} src
+   * @return {string}
+   */
+  static createSourceURL (src) {
+    return `${AJAX.SERVER_HOME}/file/${webpage.src}/${src}`;
+  }
+  
   /**
    * @override
    * @param {Widget} parent
@@ -52,8 +143,9 @@ class WImage extends Widget {
    */
   static default (parent, editable = false) {
     return this.build({
-      src: AJAX.SERVER_HOME + "/public/images/theme-stock-pictures/__8219034641.png",
-      alt: "Unnamed image"
+      alt: "Unnamed image",
+      width: 0.75,
+      height: 400
     }, parent, editable);
   }
 
@@ -65,17 +157,40 @@ class WImage extends Widget {
    * @returns {WImage}
    */
   static build (json, parent, editable = false) {
-    return new WImage(json, parent);
+    return new WImage(json, parent, editable);
   }
-
+  
   /**
    * @override
    * @returns {ComponentContent}
    */
   get inspectorHTML () {
-    return (
-      TitleInspector("Image")
-    );
+    return [
+      TitleInspector("Image"),
+      
+      HRInspector(),
+      
+      TitleInspector("Properties"),
+      
+      TextFieldInspector(this.#json.value.alt, (value, parentElement) => {
+        this.#json.setProperty("alt", value);
+        validated(parentElement);
+      }, "Text description:"),
+      
+      Div("i-row", [
+        Span(__, "Image:"),
+        Button("button-like-main", "Select", evt => {
+          const win = showWindow("file-select");
+          win.dataset.multiple = "false";
+          win.dataset.fileType = "image";
+          win.dispatchEvent(new Event("fetch"));
+          win.onsubmit = submitEvent => {
+            this.#json.setProperty("src", submitEvent.detail[0].serverName);
+            validated(evt.target.parentElement);
+          };
+        })
+      ])
+    ];
   }
 
   /**
@@ -84,7 +199,13 @@ class WImage extends Widget {
    */
   save () {
     return {
-      type: "WImage"
+      type: "WImage",
+      src: this.#json.value.src,
+      alt: this.#json.value.alt,
+      width: this.#dimensions.value[0],
+      height: this.#dimensions.value[1],
+      borderRadius: this.#dimensions.value[2],
+      aspectRatio: this.#dimensions.value[3],
     };
   }
 }

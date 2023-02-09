@@ -19,6 +19,11 @@ class Resizeable {
   content;
   
   #listeners = {};
+  
+  /**
+   * @param {"resize" | "radius"} event
+   * @param callback
+   */
   on (event, callback) {
     if (this.#listeners[event] === undefined) {
       this.#listeners[event] = [callback];
@@ -293,9 +298,7 @@ class Resizeable {
     const difference = cursorLeft - (parentLeft + parentWidth);
     
     const width = parentWidth + difference - this.#styles.paddingX - this.#styles.borderX;
-    if (this.#styles.contentX < width && width < this.#styles.contentMaxX) {
-      this.dispatch("resize", width, this.#e.scrollHeight);
-    }
+    this.dispatch("resize", width, this.#e.clientHeight);
   }
 
   /**
@@ -308,9 +311,7 @@ class Resizeable {
     const difference = parentLeft - cursorLeft;
     
     const width = parentWidth + difference - this.#styles.paddingX - this.#styles.borderX;
-    if (this.#styles.contentX < width && width < this.#styles.contentMaxX) {
-      this.dispatch("resize", width, this.#e.scrollHeight);
-    }
+    this.dispatch("resize", width, this.#e.clientHeight);
   }
 
 
@@ -324,9 +325,7 @@ class Resizeable {
     const difference = cursorTop - (parentTop + parentHeight);
   
     const height = parentHeight + difference - this.#styles.paddingY - this.#styles.borderY;
-    if (this.#styles.contentY < height && height < this.#styles.contentMaxY) {
-      this.dispatch("resize", this.#e.scrollWidth, height);
-    }
+    this.dispatch("resize", this.#e.clientWidth, height);
   }
 
   /**
@@ -339,9 +338,7 @@ class Resizeable {
     const difference = parentTop - cursorTop;
     
     const height = parentHeight + difference - this.#styles.paddingY - this.#styles.borderY;
-    if (this.#styles.contentY < height && height < this.#styles.contentMaxY) {
-      this.dispatch("resize", this.#e.scrollWidth, height);
-    }
+    this.dispatch("resize", this.#e.clientWidth, height);
   }
 
   /**
@@ -367,9 +364,11 @@ class Resizeable {
 
     this.dispatch("radius", percentage);
     // this.#contentBox.style.borderRadius = percentage + "%";
-
-    const handlePos = `calc(${percentage / 5}% + 10px)`;
-    evt.target.style.top = handlePos;
-    evt.target.style.left = handlePos;
+  }
+  
+  setRadiusHandlesPositions (percentage) {
+    const borderRadiusHandle = this.#e.querySelector(".br-handle");
+    borderRadiusHandle.style.top = `calc(${percentage / 5}% + 10px)`;
+    borderRadiusHandle.style.left = `calc(${percentage / 5}% + 10px)`;
   }
 }

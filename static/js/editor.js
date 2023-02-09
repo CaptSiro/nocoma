@@ -7,16 +7,18 @@ $(".toggle-viewport").addEventListener("pointerdown", () => {
   viewport.classList.toggle("mobile", switcher);
   viewport.classList.toggle("viewport-smartphone", switcher);
   
-  window.dispatchEvent(new Event("resize"));
+  viewportResize();
 });
 
 
 /**
  * @typedef ViewportDimensions
- * @property {number} width
- * @property {number} height
+ * @property {number} maxWidth
+ * @property {number} maxHeight
  * @property {number} convertedWidth
  * @property {number} convertedHeight
+ * @property {number} width
+ * @property {number} height
  *
  * @callback ViewportListener
  * @param {ViewportDimensions} dimensions
@@ -27,20 +29,29 @@ const viewportListeners = [];
 const inspectorRoot = $(".table > .inspector");
 const nav = $("nav");
 const viewport = $("#viewport");
+/**
+ * @type {ViewportDimensions}
+ */
+let viewportDimensions;
 window.addEventListener("resize", () => {
-  const width = window.innerWidth - inspectorRoot.getBoundingClientRect().width;
-  const height = window.innerHeight - nav.getBoundingClientRect().height;
+  const maxWidth = window.innerWidth - inspectorRoot.getBoundingClientRect().width;
+  const maxHeight = window.innerHeight - nav.getBoundingClientRect().height;
   const isInMobileMode = viewport.classList.contains("mobile");
   
-  const viewportDimensions = {
-    width,
-    height,
-    convertedWidth: isInMobileMode
-      ? height / 16 * 9
-      : height / 9 * 16,
-    convertedHeight: isInMobileMode
-      ? width / 9 * 16
-      : width / 16 * 9,
+  const convertedWidth = isInMobileMode
+    ? maxHeight / 16 * 9
+    : maxHeight / 9 * 16;
+  const convertedHeight = isInMobileMode
+    ? maxWidth / 9 * 16
+    : maxWidth / 16 * 9;
+  
+  viewportDimensions = {
+    maxWidth,
+    maxHeight,
+    convertedWidth,
+    convertedHeight,
+    width: Math.max(Math.min(convertedWidth, maxWidth), 324.22),
+    height: Math.min(convertedHeight, maxHeight)
   }
   
   for (const viewportListener of viewportListeners) {
@@ -49,19 +60,21 @@ window.addEventListener("resize", () => {
 });
 
 onViewportResize(dimensions => {
-  viewport.style.width = Math.max(Math.min(dimensions.convertedWidth, dimensions.width), 324.22) + "px";
-  viewport.style.height = Math.min(dimensions.convertedHeight, dimensions.height) + "px";
-  
-  // old way that wasn't as hard coded
-  // viewport.style.width = `min(${dimensions.convertedWidth}px, 100%)`;
-  // viewport.style.height = `min(${dimensions.convertedHeight}px, 100%)`;
+  viewport.style.width = dimensions.width + "px";
+  viewport.style.height = dimensions.height + "px";
 });
+
+viewportResize();
 
 /**
  * @param {ViewportListener} callback
  */
 function onViewportResize (callback) {
   viewportListeners.push(callback);
+}
+
+function viewportResize () {
+  window.dispatchEvent(new Event("resize"));
 }
 
 
@@ -489,9 +502,7 @@ async function cleanUpAfterDrag (evt) {
 }
 window.addEventListener("keydown", evt => {
   if (evt.key === "Escape") {
-    for (const widgetElement of $$("." + WIDGET_SELECTION_CLASS)) {
-      widgetElement.classList.remove(WIDGET_SELECTION_CLASS);
-    }
+    edit_deselectAll();
   }
   
   if ((evt.key === "Delete" || evt.key === "Backspace") && evt.handledAction !== true) {

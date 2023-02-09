@@ -25,6 +25,15 @@ class Observable {
   }
   
   /**
+   * @param {string | number} key Ability to address indexes in array with number as a key
+   * @param {any} value
+   */
+  setProperty (key, value) {
+    this.#value[key] = value;
+    this.dispatch();
+  }
+  
+  /**
    * @template O
    * @callback ObserverCallback
    * @param {O} value
@@ -40,6 +49,16 @@ class Observable {
   onChange (listener) {
     this.#listeners.push(listener);
     return (() => this.removeListener(listener)).bind(this);
+  }
+  
+  /**
+   * Setting value this way won't trigger change event.
+   *
+   * Helpful for setting different value in callback `onChange`
+   * @param {V} value
+   */
+  setValueSafe (value) {
+    this.#value = value;
   }
   
   /**
@@ -104,25 +123,27 @@ class Widget {
       this.rootElement.addEventListener("click", this.inspectHandler.bind(this));
     }
     
-    this.rootElement.addEventListener("click", evt => {
-      if (!(evt.ctrlKey && editable === true)) {
-        return;
-      }
-      
-      evt.stopPropagation();
-      this.toggleSelect();
-      
-      if (this.rootElement.classList.contains(WIDGET_SELECTION_CLASS)) {
-        for (const child of this.children) {
-          child.removeSelect();
-        }
-      }
-    });
+    this.rootElement.addEventListener("click", this.selectHandler.bind(this));
 
     this.parentWidget = parent;
 
     /** @type {Widget[]} */
     this.children = [];
+  }
+  
+  selectHandler (evt) {
+    if (!(evt.ctrlKey && this.editable === true)) {
+      return;
+    }
+  
+    evt.stopPropagation();
+    this.toggleSelect();
+  
+    if (this.rootElement.classList.contains(WIDGET_SELECTION_CLASS)) {
+      for (const child of this.children) {
+        child.removeSelect();
+      }
+    }
   }
   
   /**

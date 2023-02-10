@@ -11,10 +11,40 @@ body {
   user-select: none;
 }
 
+.gui > button,
+.gui > .button-like-main {
+  font-size: 20px !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  box-sizing: unset;
+  height: 32px;
+  width: 32px;
+  aspect-ratio: 1 / 1;
+  text-align: center;
+  display: grid;
+  place-items: center;
+  font-family: monospace;
+}
+
 .edit-controls {
-  top: 100%;
+  top: calc(100% - 16px);
+  right: 12px;
+  padding: 0 4px 8px 8px;
+}
+
+.edit-controls .drag-handle {
+  position: relative;
+}
+.edit-controls .drag-handle * {
+  color: var(--text-color-opposite-0) !important;
+}
+.edit-controls .drag-handle::after {
+  content: '';
+  top: 0;
+  left: 0;
   right: 0;
-  padding: 0 16px 16px 16px;
+  bottom: 0;
+  position: absolute;
 }
 
 .widget.margin {

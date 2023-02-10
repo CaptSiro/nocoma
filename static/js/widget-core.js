@@ -387,41 +387,30 @@ class Widget {
     
     this.rootElement.appendChild(
       Div("gui edit-controls", [
-        Button(__, "+", () => {
+        Button(__, Span(__, "+"), () => {
           this.parentWidget.placeCommandBlock(this);
-        }, {
-          attributes: {
-            contenteditable: false
-          }
         }),
-        Button(__, "::", evt => {}, {
-          attributes: {
-            contenteditable: false,
-            draggable: true
-          },
+        Div("button-like-main drag-handle", Span(__, "::"), {
+          attributes: {draggable: true},
           listeners: {
             dragstart: evt => {
               this.select();
-              
+      
               beingDragged = this.rootElement;
-              
+      
               evt.dataTransfer.setData("text/html", "widget");
               evt.dataTransfer.setDragImage(this.rootElement, 32, 32);
               evt.dataTransfer.effectAllowed = "all";
-              
+      
               document.body.classList.add("dragging");
             }
           }
         }),
-        Button(__, "✕", () => {
+        Button(__, Span(__, "✕"), () => {
           if (this.parentWidget?.isLastAndDefault(this)) return;
           this.remove();
-        }, {
-          attributes: {
-            contenteditable: false
-          }
         })
-      ])
+      ], {attributes: {contenteditable: false}})
     );
   }
   

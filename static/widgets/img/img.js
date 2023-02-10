@@ -226,6 +226,7 @@ class WImage extends Widget {
       TextFieldInspector(this.#json.value.alt, (value, parentElement) => {
         this.#json.setProperty("alt", value);
         validated(parentElement);
+        return true;
       }, "Text description:"),
       
       Div("i-row", [

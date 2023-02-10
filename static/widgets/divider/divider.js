@@ -4,8 +4,8 @@ class WDivider extends Widget {
   // or json.children for array of widgets
   /**
    * @typedef DividerJSONType
-   * @property {boolean=} transparent
-   * @property {"start" | "center" | "end"} fillPosition
+   * @property {boolean=} doShowFilling Default true
+   * @property {"start" | "center" | "end"=} fillPosition
    * @property {number=} dividerAmount
    *
    * @typedef {DividerJSONType & WidgetJSON} DividerJSON
@@ -29,8 +29,8 @@ class WDivider extends Widget {
    */
   constructor (json, parent, editable = false) {
     super(Div(
-      "w-divider w-divider-container" + (json?.transparent === true
-        ? " transparent"
+      "w-divider w-divider-container" + (json?.doShowFilling === true
+        ? " doShowFilling"
         : ""),
     ), parent, editable);
     this.childSupport = this.childSupport;
@@ -57,9 +57,7 @@ class WDivider extends Widget {
       
       this.#resizeable = new Resizeable(this.rootElement, {axes: "vertical"});
       this.#resizeable.on("resize", (width, height) => {
-        const json = this.#json.value;
-        json.dividerAmount = clamp(WDivider.MIN_AMOUNT, WDivider.MAX_AMOUNT, height);
-        this.#json.value = json;
+        this.#json.setProperty("dividerAmount", clamp(WDivider.MIN_AMOUNT, WDivider.MAX_AMOUNT, height));
       });
       
       this.#resizeable.content.classList.add("w-divider-container");
@@ -81,7 +79,9 @@ class WDivider extends Widget {
    * @returns {WDivider}
    */
   static default (parent, editable = false) {
-    return new WDivider({}, parent, editable);
+    return new WDivider({
+      doShowFilling: true
+    }, parent, editable);
   }
 
   /**
@@ -106,7 +106,7 @@ class WDivider extends Widget {
     if (this.#dividerHeightField === undefined || this.#fillPositionRadioGroup === undefined) {
       this.#json.onChange(descriptor => {
         this.#dividerHeightField.querySelector("input").value = String(Math.round(descriptor.dividerAmount));
-        this.#fillPositionRadioGroup.classList.toggle("display-none", descriptor.transparent);
+        this.#fillPositionRadioGroup.classList.toggle("display-none", !descriptor.doShowFilling);
         this.rootElement.style.setProperty("--fill-position", descriptor.fillPosition ?? "center");
       });
     }
@@ -119,9 +119,7 @@ class WDivider extends Widget {
           return false;
         }
       
-        const json = this.#json.value;
-        json.dividerAmount = clamp(WDivider.MIN_AMOUNT, WDivider.MAX_AMOUNT, number);
-        this.#json.value = json;
+        this.#json.setProperty("dividerAmount", clamp(WDivider.MIN_AMOUNT, WDivider.MAX_AMOUNT, number));
         
         validated(parentElement);
         return true;
@@ -131,10 +129,7 @@ class WDivider extends Widget {
     );
     
     this.#fillPositionRadioGroup ||= RadioGroupInspector((value, parentElement) => {
-      const json = this.#json.value;
-      json.fillPosition = value;
-      this.#json.value = json;
-      
+      this.#json.setProperty("fillPosition", value);
       validated(parentElement);
       return true;
     }, selectOption([
@@ -142,6 +137,7 @@ class WDivider extends Widget {
       {text: "Center", value: "center"},
       {text: "Bottom", value: "end"}
     ], this.#json.value.fillPosition, "center"), "Line position");
+    this.#fillPositionRadioGroup.classList.toggle("display-none", !this.#json.value.doShowFilling)
     
     
     this.#json.dispatch();
@@ -154,12 +150,9 @@ class WDivider extends Widget {
       
       TitleInspector("Properties"),
       this.#dividerHeightField,
-      CheckboxInspector(!(this.#json.value.transparent ?? false), value => {
-        const json = this.#json.value;
-        json.transparent = !value;
-        this.#json.value = json;
-        
-        this.rootElement.classList.toggle("transparent", !value);
+      CheckboxInspector(this.#json.value.doShowFilling ?? true, value => {
+        this.#json.setProperty("doShowFilling", value);
+        this.rootElement.classList.toggle("doShowFilling", value);
         return true;
       }, "Show line"),
       this.#fillPositionRadioGroup
@@ -174,7 +167,7 @@ class WDivider extends Widget {
     return {
       type: "WDivider",
       dividerAmount: this.#json.value.dividerAmount,
-      transparent: this.#json.value.transparent,
+      doShowFilling: this.#json.value.doShowFilling,
       fillPosition: this.#json.value.fillPosition
     };
   }

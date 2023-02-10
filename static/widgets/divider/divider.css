@@ -14,7 +14,10 @@
     height: var(--fill-amount);
     background-color: var(--container-opposite-3);
 }
-.w-divider.transparent .filling {
+.w-divider.doShowFilling .filling {
+    visibility: visible;
+}
+.w-divider .filling {
     visibility: hidden;
 }
 

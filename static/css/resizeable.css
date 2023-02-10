@@ -3,7 +3,7 @@
 }
 
 .widget.edit.boundaries {
-    outline: 2px dashed var(--container-opposite-2);
+    /*outline: 2px dashed var(--container-opposite-2);*/
 }
 
 .resizeable > .content {

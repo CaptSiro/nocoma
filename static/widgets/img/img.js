@@ -6,10 +6,11 @@ class WImage extends Widget {
    * @typedef ImageJSONType
    * @property {string=} src
    * @property {string=} alt
-   * @property {string=} width
-   * @property {string=} height
-   * @property {string=} borderRadius
-   * @property {string=} aspectRatio
+   * @property {number=} width
+   * @property {number=} height
+   * @property {number=} borderRadius
+   * @property {number=} aspectRatio
+   * @property {[number, number]=} position
    *
    * @typedef {ImageJSONType & WidgetJSON} ImageJSON
    */
@@ -26,6 +27,7 @@ class WImage extends Widget {
   #imageContainer;
   // [width(%), height(px), border-radius(%), aspect-ratio(width(px) / height(px) | null)]
   #dimensions = new Observable([0, 0, 0, 0]);
+  #position;
   static VIEWPORT_MARGIN = 16;
   
   
@@ -40,7 +42,8 @@ class WImage extends Widget {
         ? WImage.createSourceURL(json.src)
         : AJAX.SERVER_HOME + "/public/images/backgrounds-mono/0.png",
       json.alt ?? "Unnamed image",
-      "w-image"
+      "w-image",
+      {attributes: {draggable: "false"}}
     );
     const imageContainer = Div("w-image-container", image);
     super(
@@ -48,10 +51,14 @@ class WImage extends Widget {
       parent,
       editable
     );
-    
+  
+    this.rootElement.style.userSelect = "none";
     this.#imageElement = image;
     this.#imageContainer = imageContainer;
     this.childSupport = "none";
+    this.#position = json.position ?? [50, 50];
+    this.#imageElement.style.objectPosition = this.#position[0] + "% " + this.#position[1] + "%";
+    
     
     if (editable) {
       this.#json = new Observable(json);
@@ -74,6 +81,33 @@ class WImage extends Widget {
       this.#resizeable.content.style.width = "unset";
       this.#resizeable.content.style.height = "unset";
       
+      
+      const imagePositioner = evt => {
+        const width = this.#dimensions.value[0] * this.rootElement.getBoundingClientRect().width;
+        const height = this.#dimensions.value[1];
+        const aspectRatio = width / height;
+        const naturalAspectRatio = this.#imageElement.naturalWidth / this.#imageElement.naturalHeight;
+        
+        if (aspectRatio > naturalAspectRatio) {
+          // recalculate only y object position
+          this.#position[1] = clamp(0, 100, this.#position[1] - (evt.movementY / (aspectRatio * naturalAspectRatio / 2.5)));
+        } else {
+          // recalculate only x object position
+          this.#position[0] = clamp(0, 100, this.#position[0] - (evt.movementX * (aspectRatio / naturalAspectRatio / 2.5)));
+        }
+        
+        this.#imageElement.style.objectPosition = this.#position[0] + "% " + this.#position[1] + "%";
+      };
+      this.#imageElement.addEventListener("pointerdown", evt => {
+        this.#imageElement.setPointerCapture(evt.pointerId);
+        
+        this.#imageElement.addEventListener("pointermove", imagePositioner);
+        this.#imageElement.addEventListener("pointerup", () => {
+          this.#imageElement.removeEventListener("pointermove", imagePositioner);
+        });
+      });
+      this.#imageElement.classList.add("move-able");
+      
       this.appendEditGui();
     } else {
       this.#imageContainer.style.overflow = "hidden";
@@ -89,7 +123,17 @@ class WImage extends Widget {
       
       this.setImageDimensions(width, height, borderRadius);
     });
-    this.#dimensions.value = [json.width ?? 0.70, json.height ?? 400, json.borderRadius ?? 0, json.aspectRatio];
+    
+    new Promise(resolve => {
+      const id = guid(true);
+      this.rootElement.id = id;
+      untilElement("#" + id)
+        .then(() => {
+          this.rootElement.id = undefined;
+          freeID(id);
+          resolve();
+        });
+    }).then(() => this.#dimensions.value = [json.width ?? 0.70, json.height ?? 400, json.borderRadius ?? 0, json.aspectRatio]);
   
     
     const resizeListener = () => {
@@ -123,8 +167,15 @@ class WImage extends Widget {
     }
   
     this.#resizeable.content.style.height = height + "px";
-    this.#resizeable.content.style.borderRadius = borderRadius + "%";
+    // this.#resizeable.content.style.borderRadius = borderRadius + "%";
     this.#resizeable.setRadiusHandlesPositions(borderRadius);
+    
+    this.#resizeable.content.animate({
+      borderRadius: borderRadius + "%",
+    }, {
+      duration: 500,
+      fill: "forwards"
+    });
   }
   
   /**
@@ -206,6 +257,7 @@ class WImage extends Widget {
       height: this.#dimensions.value[1],
       borderRadius: this.#dimensions.value[2],
       aspectRatio: this.#dimensions.value[3],
+      position: this.#position
     };
   }
 }

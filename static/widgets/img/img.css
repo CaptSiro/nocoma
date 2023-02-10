@@ -3,6 +3,10 @@
   place-items: center;
 }
 
+.w-image-mount .move-able:hover {
+  cursor: all-scroll;
+}
+
 .w-image-container {
   width: max-content;
 }

@@ -4,6 +4,16 @@
     <content url="file://$MODULE_DIR$">
       <excludeFolder url="file://$MODULE_DIR$/lib/structure/src/compiled-widgets" />
       <excludeFolder url="file://$MODULE_DIR$/lib/structure/src/template" />
+      <excludeFolder url="file://$MODULE_DIR$/.idea/dataSources" />
+      <excludeFolder url="file://$MODULE_DIR$/hosts/__test-bot__" />
+      <excludeFolder url="file://$MODULE_DIR$/hosts/admin" />
+      <excludeFolder url="file://$MODULE_DIR$/hosts/ceyif" />
+      <excludeFolder url="file://$MODULE_DIR$/hosts/giro" />
+      <excludeFolder url="file://$MODULE_DIR$/hosts/horakja19" />
+      <excludeFolder url="file://$MODULE_DIR$/hosts/nibad" />
+      <excludeFolder url="file://$MODULE_DIR$/hosts/wifono" />
+      <excludeFolder url="file://$MODULE_DIR$/.vscode" />
+      <excludeFolder url="file://$MODULE_DIR$/.VSCodeCounter" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

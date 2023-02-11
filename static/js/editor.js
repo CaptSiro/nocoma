@@ -79,11 +79,11 @@ function viewportResize () {
 
 
 
-$$(".id > img").forEach(img => {
-  img.addEventListener("pointerdown", evt => {
-    img.closest(".w-category").classList.toggle("expanded");
-  });
-});
+// $$(".id > img").forEach(img => {
+//   img.addEventListener("pointerdown", evt => {
+//     img.closest(".w-category").classList.toggle("expanded");
+//   });
+// });
 
 
 
@@ -175,31 +175,31 @@ $("#edit-website-properties").addEventListener("click", evt => {
 
 
 //? controls resizer
-$$(".controls .resize-divider").forEach(rd => {
-  rd.addEventListener("pointerdown", evt => {
-    rd.setPointerCapture(evt.pointerId);
-
-    const pmove = pmoveEvt => {
-      const parentHeight = rd.parentElement.clientHeight;
-      const rectPrev = rd.previousElementSibling.getBoundingClientRect();
-      const cursorTop = pmoveEvt.clientY;
-      
-      const prev = parentHeight + (cursorTop - (rectPrev.top + parentHeight));
-      const next = parentHeight - prev;
-
-      if (prev > 50 && next > 50) {
-        rd.previousElementSibling.style.height = prev + "px";
-        rd.nextElementSibling.style.height = next + "px";
-      }
-    };
-
-    rd.addEventListener("pointermove", pmove);
-
-    rd.addEventListener("pointerup", _ => {
-      rd.removeEventListener("pointermove", pmove);
-    });
-  });
-});
+// $$(".controls .resize-divider").forEach(rd => {
+//   rd.addEventListener("pointerdown", evt => {
+//     rd.setPointerCapture(evt.pointerId);
+//
+//     const pmove = pmoveEvt => {
+//       const parentHeight = rd.parentElement.clientHeight;
+//       const rectPrev = rd.previousElementSibling.getBoundingClientRect();
+//       const cursorTop = pmoveEvt.clientY;
+//
+//       const prev = parentHeight + (cursorTop - (rectPrev.top + parentHeight));
+//       const next = parentHeight - prev;
+//
+//       if (prev > 50 && next > 50) {
+//         rd.previousElementSibling.style.height = prev + "px";
+//         rd.nextElementSibling.style.height = next + "px";
+//       }
+//     };
+//
+//     rd.addEventListener("pointermove", pmove);
+//
+//     rd.addEventListener("pointerup", _ => {
+//       rd.removeEventListener("pointermove", pmove);
+//     });
+//   });
+// });
 
 
 
@@ -262,9 +262,11 @@ function moveSelection (direction) {
   } while (selectionPool[pointer] !== selectedWidget);
   
   selectedWidget.classList.add("selected");
+  selectedWidget.scrollIntoView({behavior: "smooth"});
 }
 
 
+const defs = $("#icon-definitions");
 AJAX.get("/bundler/resource/*", JSONHandlerSync(resources => {
   /** @type {Map<string, { properties: { category: string, label: string, class: string, searchIndex: string }, files: { icon: string } }[]>} */
   const grouped = Array.from(resources)
@@ -282,7 +284,7 @@ AJAX.get("/bundler/resource/*", JSONHandlerSync(resources => {
     }, new Map())
   
   widgetSelect.textContent = "";
-  const filenameRegex = /^.*[\\\/]/;
+  // const filenameRegex = /^.*[\\\/]/;
   for (const key of Array.from(grouped.keys()).sort()) {
     widgetSelect.appendChild(
       Div("widget-category", [
@@ -291,6 +293,22 @@ AJAX.get("/bundler/resource/*", JSONHandlerSync(resources => {
         ),
         Div("content",
           grouped.get(key).map(resource => {
+            let svg = HTML(resource.files.icon);
+            
+            do {
+              if (svg.nodeName === "svg") break;
+              svg = svg.nextSibling;
+            } while (svg !== null && svg !== undefined);
+            
+            const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+            g.id = resource.properties.class;
+            
+            if (svg?.innerHTML !== undefined) {
+              g.innerHTML = svg.innerHTML;
+            }
+            
+            defs.appendChild(g);
+            
             return (
               Div("widget-option", [
                 SVG(resource.properties.class),

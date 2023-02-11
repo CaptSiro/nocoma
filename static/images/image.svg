@@ -2,8 +2,8 @@
 <!-- Generate: Adobe Illustrator 26.0.3, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
 <svg version="1.1" id="Vrstva_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 500 500" style="enable-background:new 0 0 500 500;" xml:space="preserve">
-<path d="M87,87v326h326V87H87z M389.5,389.5h-278v-278h278V389.5z"/>
-<polygon points="217.6,224.6 136,366 299.3,366 "/>
-<polygon points="305.5,263 246.1,366 365,366 "/>
-<circle cx="305.5" cy="187.8" r="26.7"/>
+<path fill="currentColor" d="M87,87v326h326V87H87z M389.5,389.5h-278v-278h278V389.5z"/>
+<polygon fill="currentColor" points="217.6,224.6 136,366 299.3,366 "/>
+<polygon fill="currentColor" points="305.5,263 246.1,366 365,366 "/>
+<circle fill="currentColor" cx="305.5" cy="187.8" r="26.7"/>
 </svg>

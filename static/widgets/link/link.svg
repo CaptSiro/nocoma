@@ -2,24 +2,14 @@
 <!-- Generator: Adobe Illustrator 26.0.3, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
 <svg version="1.1" id="Vrstva_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
 	 viewBox="0 0 500 500" style="enable-background:new 0 0 500 500;" xml:space="preserve">
-<style type="text/css">
-	.iiDUfjHe{fill:none;stroke:#000000;stroke-width:10;stroke-miterlimit:10;}
-	.feoo2d9R{fill:#FFFFFF;}
-	.gtKL-PvG{font-family:'Times New Roman';}
-	.z2qWRBfs{font-size:89.3619px;}
-	.bUvEmpc2{letter-spacing:8;}
-</style>
-<g>
-	<path d="M250.6,87.6c-89.6,0-162.3,72.6-162.3,162.3S161,412.1,250.6,412.1s162.3-72.6,162.3-162.3S340.3,87.6,250.6,87.6z
-		 M250.6,398.5c-82,0-148.5-66.5-148.5-148.5s66.5-148.5,148.5-148.5S399.1,168,399.1,250S332.6,398.5,250.6,398.5z"/>
-	<line class="iiDUfjHe" x1="250" y1="94.6" x2="250" y2="407.6"/>
-	<path class="iiDUfjHe" d="M250,407.6"/>
-	<path class="iiDUfjHe" d="M250,94.6"/>
-	<path class="iiDUfjHe" d="M250,93.3c-128.9,60.2-108.5,282.3,0,313"/>
-	<path class="iiDUfjHe" d="M250,407.6c128.9-60.2,108.5-282.3,0-313"/>
-	<path class="iiDUfjHe" d="M144.6,136.6c28.7,28.9,184.6,29.9,213.4,0"/>
-	<path class="iiDUfjHe" d="M356.7,366c-28.6-26.4-184.5-31.3-213.4,0"/>
-</g>
-<rect x="76.5" y="195.8" width="347" height="108"/>
-<text transform="matrix(1 0 0 1 110.9948 283.5309)" class="feoo2d9R gtKL-PvG z2qWRBfs bUvEmpc2">WWW</text>
+<path fill="currentColor" d="M250.6,87.6c-89.6,0-162.3,72.6-162.3,162.3S161,412.1,250.6,412.1s162.3-72.6,162.3-162.3S340.3,87.6,250.6,87.6z
+	 M250.6,398.5c-82,0-148.5-66.5-148.5-148.5s66.5-148.5,148.5-148.5S399.1,168,399.1,250S332.6,398.5,250.6,398.5z"/>
+<rect fill="currentColor" x="242.7" y="93.3" width="13.6" height="313"/>
+<path fill="currentColor" d="M251.3,401.3l-15.1,10.1C141,377.8,108.3,163.5,235,88.3l16.3,10C157.8,141.8,128.3,339.8,251.3,401.3z"/>
+<path fill="currentColor" d="M251.3,99.6l15-11.3c95.1,33.7,125.7,247.9-1.1,323.1l-13.9-8.8C344.8,359.1,374.3,161.1,251.3,99.6z"/>
+<path fill="currentColor" d="M145.8,134.2c27.5,24.4,168.8,29.5,208.6,0c6.6,5.8,5.6,4.3,12.2,10.1c-30.5,31.6-198.4,31-228.9-0.5
+	C141.6,138,145.8,134.2,145.8,134.2z"/>
+<path fill="currentColor" d="M355.5,365.2c-27.3-24.4-167.6-29.5-207.2,0c-14.3-12.1-7.7-6.2-14.3-12.1c30.3-31.6,210.6-29.5,232.4,0.9
+	C355.5,365.2,355.5,365.2,355.5,365.2z"/>
+<rect fill="currentColor" x="95.2" y="242.8" width="308.7" height="14.1"/>
 </svg>

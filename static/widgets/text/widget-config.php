@@ -10,7 +10,7 @@
   ],
   "files" => [
     "source" => "text.js", // file of class
-    "icon" => "text.svg", // file of icon for editor
+    "icon" => "paragraph.svg", // file of icon for editor
     "styles" => "text.css" // styles scoped to element
   ]
 

@@ -1,12 +1,15 @@
 class TextSlider {
   /** @type {HTMLElement} */
   #element;
+  get element () {
+    return this.#element;
+  }
   /** @type {HTMLSpanElement} */
   #spanElement;
   /** @type {number} */
   #speed;
   /** @type {number} */
-  #gapSize;
+  #gap;
   /** @type {string} */
   #content = "";
   /** @type {SequantialAnimation} */
@@ -25,14 +28,14 @@ class TextSlider {
   constructor (element, {
     speed = 50,
     onHover = true,
-    gapSize = 200,
+    gap = 200,
     delay = 500
   } = {}) {
 
     // Object setup
     this.#element = element;
     this.#speed = speed;
-    this.#gapSize = gapSize;
+    this.#gap = gap;
     
     
     // HTML setup
@@ -133,15 +136,16 @@ class TextSlider {
       // spwn gap and new span
       const additionalSpan = this.#spanElement.cloneNode(true);
       const spanGap = document.createElement("div");
-      spanGap.style.minWidth = this.#gapSize + "px";
+      spanGap.style.minWidth = this.#gap + "px";
 
       this.#element.append(spanGap, additionalSpan);
       animation.state.hasNotBeenSpwned = true;
     }
-    
-    if (scrolled > (spanWidth + this.#gapSize)) {
+  
+    if (scrolled > (spanWidth + this.#gap + 25)) {
+      console.log(scrolled, spanWidth + this.#gap)
       // delete appended span and gap
-      scrolled -= spanWidth + this.#gapSize;
+      scrolled -= spanWidth + this.#gap;
       this.#element.textContent = "";
       this.#element.append(this.#spanElement);
       animation.state.hasNotBeenSpwned = false;

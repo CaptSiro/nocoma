@@ -22,6 +22,9 @@
   <script src="<?= $GLOBALS["__HOME__"] ?>/public/js/widget-core.js"></script>
   <script src="<?= $GLOBALS["__SERVER_HOME__"] ?>/public/js/components/InfiniteScroller.js"></script>
   <script src="<?= $GLOBALS["__SERVER_HOME__"] ?>/public/js/components/Resizeable.js"></script>
+  <script src="<?= $GLOBALS["__SERVER_HOME__"] ?>/public/js/components/FireAble.js"></script>
+  <script src="<?= $GLOBALS["__SERVER_HOME__"] ?>/public/js/components/SequentialAnimation.js"></script>
+  <script src="<?= $GLOBALS["__SERVER_HOME__"] ?>/public/js/components/TextSlider.js"></script>
   <script src="<?= $GLOBALS["__HOME__"] ?>/bundler/js/?widgets=*" id="widgets-scripts"></script>
   <script src="<?=$GLOBALS["__HOME__"]?>/public/js/modal.js" defer></script>
   <script src="<?=$GLOBALS["__HOME__"]?>/public/js/forms.js" defer></script>

@@ -267,12 +267,14 @@
           " . self::IS_TAKEN_DOWN_CONDITION_PROJECTION . ",
           MIN(websites.timeCreated) timeCreated,
           " . self::JOIN_PLANNED_WEBSITES_PROJECTION . ",
+          " . self::WEBSITE_PROJECTION . ",
           " . self::THUMBNAIL_PROJECTION . "
         FROM
           `websites`
           " . self::IS_TAKEN_DOWN_CONDITION . "
           " . self::JOIN_PLANNED_WEBSITES . "
           " . self::THUMBNAIL . "
+          " . self::WEBSITE . "
           JOIN users ON users.ID = websites.usersID
             AND users.website = :website
             AND websites.src = :source",

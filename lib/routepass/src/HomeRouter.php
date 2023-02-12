@@ -96,6 +96,13 @@
       $realAbsoluteDirectoryPath = realpath($absoluteDirectoryPath);
       
       $staticRouter = new Router();
+      $staticRouter->options("/*", [function (Request $request, Response $response) {
+        $response->setHeader(Response::HEADER_CORS_METHODS, "GET");
+        $response->setHeader(Response::HEADER_CORS_HEADERS, "access-control-allow-origin");
+        $response->setHeader(Response::HEADER_CORS_CREDENTIALS, "true");
+        $response->setHeader(Response::HEADER_CORS_ORIGIN, "*");
+        $response->flush();
+      }]);
       $staticRouter->get("/*", [function (Request $request, Response $response) use ($absoluteDirectoryPath, $realAbsoluteDirectoryPath) {
         $filePath = realpath("$absoluteDirectoryPath/$request->remainingURI");
         
@@ -129,6 +136,7 @@
         $mimeTypeResult->forwardFailure($response);
         
         $response->setHeader("Content-Type", $mimeTypeResult->getSuccess());
+        $response->setHeader(Response::HEADER_CORS_ORIGIN, "*");
         
         if (preg_match("/\.php$/", $filePath)) {
           $response->generateHeaders();

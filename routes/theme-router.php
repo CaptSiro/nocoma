@@ -9,6 +9,7 @@
   require_once __DIR__ . "/../models/Theme.php";
   require_once __DIR__ . "/../models/User.php";
   require_once __DIR__ . "/../models/Website.php";
+  require_once __DIR__ . "/../models/Media.php";
   
   $themeRouter = new Router();
   
@@ -186,7 +187,7 @@
       $user = $request->session->get("user");
       
       $source = Generate::valid(
-        Generate::string(Generate::CHARSET_URL, 10),
+        Generate::string(Generate::CHARSET_URL, Media::SRC_LENGTH_LASTING),
         Theme::isSRCValid(HOSTS_DIR . "/$user->website/media/")
       )->forwardFailure($response)->getSuccess();
       

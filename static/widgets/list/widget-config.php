@@ -2,7 +2,7 @@
   "properties" => [
     "label" => "List", // label for editor
     "class" => "WList", // name of exported class
-    "category" => "Base", // editor category
+    "category" => "Layout", // editor category
   ],
   "imports" => [
     // widget->class, widget->class, ... (in order)

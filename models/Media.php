@@ -8,9 +8,18 @@
   require_once __DIR__ . "/Count.php";
 
   class Media extends StrictModel {
+    const SRC_LENGTH_TEMPORARY = 8;
+    const SRC_LENGTH_LASTING = 10;
+    
     protected $src, $usersID, $basename, $extension, $mimeContentType, $timeCreated, $hash, $size;
     const ALL_COLUMNS = ["src", "usersID", "basename", "extension", "mimeContentType", "timeCreated", "hash", "size"];
     const TABLE_NAME = "media";
+    
+    
+    public function name (): string {
+      return  "$this->basename.$this->extension";
+    }
+    
     
     protected static function getNumberProps (): array { return ["usersID", "size"]; }
     protected static function getBooleanProps (): array { return []; }
@@ -23,7 +32,7 @@
       }
       
       $sourceResult = Generate::valid(
-        Generate::string(Generate::CHARSET_URL, 10),
+        Generate::string(Generate::CHARSET_URL, self::SRC_LENGTH_LASTING),
         self::isSRCValid(HOSTS_DIR . "/$user->website/media/")
       );
       

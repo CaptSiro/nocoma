@@ -293,21 +293,9 @@ AJAX.get("/bundler/resource/*", JSONHandlerSync(resources => {
         ),
         Div("content",
           grouped.get(key).map(resource => {
-            let svg = HTML(resource.files.icon);
-            
-            do {
-              if (svg.nodeName === "svg") break;
-              svg = svg.nextSibling;
-            } while (svg !== null && svg !== undefined);
-            
-            const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
-            g.id = resource.properties.class;
-            
-            if (svg?.innerHTML !== undefined) {
-              g.innerHTML = svg.innerHTML;
-            }
-            
-            defs.appendChild(g);
+            defs.appendChild(
+              stringToSVGDef(resource.files.icon, resource.properties.class),
+            );
             
             return (
               Div("widget-option", [
@@ -401,7 +389,7 @@ const filesModalInfiniteScroller = new InfiniteScroller(filesModal, async (index
     ], {
       listeners: {
         click: evt => {
-          if (fileSelectModal.dataset.multiple != true) {
+          if (fileSelectModal.dataset.multiple !== "true") {
             for (let child of evt.currentTarget.parentElement.children) {
               child.classList.remove("selected");
               child.dataset.selected = "false";

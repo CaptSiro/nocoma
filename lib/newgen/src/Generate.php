@@ -26,7 +26,7 @@
   
     /**
      * @param Closure $generator
-     * @param Closure $validator (mixed $value): Result
+     * @param Closure $validator (mixed $value): Result<bool>
      * @param int $retries
      * @return Result
      */

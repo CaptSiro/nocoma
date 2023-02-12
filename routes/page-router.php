@@ -10,6 +10,7 @@
   require_once __DIR__ . "/../models/User.php";
   require_once __DIR__ . "/../models/Website.php";
   require_once __DIR__ . "/../models/Appeal.php";
+  require_once __DIR__ . "/../models/Media.php";
   
   $pageRouter = new Router();
 //  $env = new Env(ENV_FILE);
@@ -47,7 +48,7 @@
         $response->json(["error" => "You are not allowed to create more websites."]);
       }
     
-      $source = Generate::valid(Generate::string(Generate::CHARSET_URL, 10), Website::isSRCValid())
+      $source = Generate::valid(Generate::string(Generate::CHARSET_URL, Media::SRC_LENGTH_LASTING), Website::isSRCValid())
         ->forwardFailure($response)
         ->getSuccess();
       

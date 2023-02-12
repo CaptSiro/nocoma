@@ -483,6 +483,29 @@ function SVG (definitionID, className = undefined, viewBox = undefined, options 
 }
 
 /**
+ * @param {string} svgStringRepresentation
+ * @param {string} id
+ * @return {SVGGElement}
+ */
+function stringToSVGDef (svgStringRepresentation, id) {
+  let svg = HTML(svgStringRepresentation);
+  
+  do {
+    if (svg.nodeName === "svg") break;
+    svg = svg.nextSibling;
+  } while (svg !== null && svg !== undefined);
+  
+  const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  g.id = id;
+  
+  if (svg?.innerHTML !== undefined) {
+    g.innerHTML = svg.innerHTML;
+  }
+  
+  return g;
+}
+
+/**
  * @param {string} src
  * @param {string} alt
  * @param {string} className

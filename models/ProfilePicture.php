@@ -6,6 +6,7 @@
   
   require_once __DIR__ . "/User.php";
   require_once __DIR__ . "/Count.php";
+  require_once __DIR__ . "/Media.php";
   
   class ProfilePicture extends StrictModel {
     protected $src, $usersID, $hash, $extension;
@@ -28,7 +29,7 @@
       }
   
       $sourceResult = Generate::valid(
-        Generate::string(Generate::CHARSET_URL, 10),
+        Generate::string(Generate::CHARSET_URL, Media::SRC_LENGTH_LASTING),
         self::isSRCValid(HOSTS_DIR . "/$user->website/media/")
       );
       

@@ -41,23 +41,23 @@
   }]);
   
   
-  $router->get("/hash", [function () {
-    foreach (
-      array_map(function ($path) { return [sha1_file(__DIR__ . "/static/css/themes/" . $path), $path]; }, array_diff(scandir(__DIR__ . "/static/css/themes"), [".", ".."]))
-      as $hash
-    ) {
-      echo "$hash[0]: $hash[1]<br>";
-    }
-  }]);
+//  $router->get("/hash", [function () {
+//    foreach (
+//      array_map(function ($path) { return [sha1_file(__DIR__ . "/static/css/themes/" . $path), $path]; }, array_diff(scandir(__DIR__ . "/static/css/themes"), [".", ".."]))
+//      as $hash
+//    ) {
+//      echo "$hash[0]: $hash[1]<br>";
+//    }
+//  }]);
   
   
   
-  $router->get("/server", [function () {
-    foreach ($_SERVER as $key => $value) {
-      echo "'$key' => $value<br>";
-    }
-    exit;
-  }]);
+//  $router->get("/server", [function () {
+//    foreach ($_SERVER as $key => $value) {
+//      echo "'$key' => $value<br>";
+//    }
+//    exit;
+//  }]);
   
   
   
@@ -67,9 +67,9 @@
   
   
   
-  $router->get("/inspector", [function (Request $request, Response $response) {
-    $response->render("inspector");
-  }]);
+//  $router->get("/inspector", [function (Request $request, Response $response) {
+//    $response->render("inspector");
+//  }]);
   
   
   

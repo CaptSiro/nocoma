@@ -1,7 +1,8 @@
 .w-comment-section {
-    border-top: 2px solid var(--container-2);
+    border-top: 2px solid var(--container-opposite-3);
     width: 100%;
-    margin-top: 64px;
+    margin-top: 32px;
+    padding-top: 32px;
 }
 
 .w-comment-section .comment-root {

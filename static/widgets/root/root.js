@@ -277,10 +277,12 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
       true
     );
     
+    const releaseDateNotice = Paragraph("blockquote note", HTML("After refreshing the editor, the hours of release date might not align, due to timezone conversion.<br>But it works, trust me bro.", true));
     const releaseDateInput = releaseDate.querySelector("input");
     
     if (this.#json.webpage.releaseDate === undefined) {
       releaseDate.classList.add("display-none");
+      releaseDateNotice.classList.add("display-none");
     }
     
     
@@ -377,6 +379,7 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
           
           validated(parentElement);
           releaseDate.classList.remove("display-none");
+          releaseDateNotice.classList.remove("display-none");
           this.#json.webpage.releaseDate = (releaseDateInput.valueAsDate !== null ? releaseDateInput.valueAsDate : new Date()).toISOString();
           this.dispatchJSONEvent();
           return true;
@@ -396,6 +399,7 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
   
         validated(parentElement);
         releaseDate.classList.add("display-none");
+        releaseDateNotice.classList.add("display-none");
         this.#json.webpage.releaseDate = undefined;
         this.#json.webpage.isPublic = value === "public";
         this.dispatchJSONEvent();
@@ -410,6 +414,7 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
           ? "planned"
           : "private")),
       releaseDate,
+      releaseDateNotice,
       
       HRInspector(),
       

@@ -26,4 +26,7 @@
   <link rel="stylesheet" href="<?= $GLOBALS["__SERVER_HOME__"] ?>/public/css/main.css">
 </head>
 <body id="viewport">
+  <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="display: none;">
+    <defs id="icon-definitions"></defs>
+  </svg>
   <div id="page-data" class="display-none viewport-tablet viewport-smartphone viewport-small-smartphone">

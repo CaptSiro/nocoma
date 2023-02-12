@@ -111,6 +111,15 @@
       
       return success($this->succ);
     }
+    
+    public function renderError (Response $response, array $locals = null, string $view = "error"): Result {
+      if (isset($this->failure)) {
+        $response->render($view, $locals ?? ["message" => $this->failure->getMessage()]);
+        return fail($this->failure);
+      }
+  
+      return success($this->succ);
+    }
   
     /**
      * @param Closure $successFunction (T $success)->Result

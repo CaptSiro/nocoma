@@ -61,12 +61,20 @@
     $website = $request->domain->get("website");
   
     /** @var Website $webpage */
-    $webpage = Website::getHomePage($website)->failed(function () use ($website, $response) {
-      return Website::getOldestPage($website)->failed(function (Exc $exception) use ($response) {
-        $response->render("error", ["message" => $exception->getMessage()]);
-      })->getSuccess();
-    })->getSuccess();
-  
+    $webpage = Website::getHomePage($website)
+      ->renderError($response, ["message" => "No website is set to homepage."])
+      ->getSuccess();
+    
+//    ->failed(function () use ($website, $response) {
+//      return Website::getOldestPage($website)->failed(function (Exc $exception) use ($response) {
+//        $response->render("error", ["message" => $exception->getMessage()]);
+//      })->getSuccess();
+//    })->getSuccess();
+    
+    if (!Website::isAccessible($webpage)) {
+      $response->render("error", ["message" => "Homepage is private."]);
+    }
+    
     canUserAccess($request, $webpage, $response);
   
     renderShell($request, $response, $webpage, $website);
@@ -78,9 +86,13 @@
     $website = $request->domain->get("website");
   
     /** @var Website $renderedPage */
-    $webpage = Website::getBySource($website, $request->param->get("source"))->failed(function (Exc $exception) use ($response) {
-      $response->render("error", ["message" => $exception->getMessage()]);
-    })->getSuccess();
+    $webpage = Website::getBySource($website, $request->param->get("source"))
+      ->renderError($response, ["message" => "There is no website for this url.<br>Check if the url is correct or the website no longer exists."])
+      ->getSuccess();
+  
+    if (!Website::isAccessible($webpage)) {
+      $response->render("error", ["message" => "Homepage is private."]);
+    }
   
     canUserAccess($request, $webpage, $response);
   

@@ -37,8 +37,23 @@
       "isTemplate", "isPublic", "isHomePage", "isTakenDown"
     ]; }
     
-    
-    
+    public static function parseProps($objectOrArray) {
+      $callback = function ($website) {
+        if ($website->releaseDate !== null && new DateTime() > new DateTime($website->releaseDate)) {
+          $website->ID = intval($website->ID);
+          Website::markPublic($website);
+        }
+        
+        return $website;
+      };
+      
+      return parent::parseProps(
+        is_array($objectOrArray)
+          ? array_map($callback, $objectOrArray)
+          : $callback($objectOrArray));
+    }
+  
+  
     public static function create (int $userID, string $title, string $src, int $isPublic, int $isHomePage): SideEffect {
       return Database::get()->statement(
         "INSERT INTO websites (`usersID`, `title`, `src`, `isPublic`, `isHomePage`)
@@ -268,7 +283,7 @@
         ]
       );
       
-      if (!$post) {
+      if (!isset($post->ID)) {
         return fail(new NotFoundExc("This website does not exist."));
       }
   
@@ -387,6 +402,29 @@
           )->amount != 0
         );
       };
+    }
+    
+    
+    
+    public static function isAccessible (Website $webpage): bool {
+      if ($webpage->isPublic === true) return true;
+  
+      if ($webpage->releaseDate !== null && new DateTime() > new DateTime($webpage->releaseDate)) {
+        Website::markPublic($webpage);
+        return true;
+      }
+  
+      return false;
+    }
+    
+    
+    
+    public static function markPublic (Website $plannedWebpage) {
+      Website::set($plannedWebpage->ID, "isPublic", new DatabaseParam("isPublicValue", 1));
+      Website::removePlannedStatus($plannedWebpage->ID);
+  
+      $plannedWebpage->releaseDate = null;
+      $plannedWebpage->isPublic = true;
     }
     
     

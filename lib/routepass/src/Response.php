@@ -281,16 +281,18 @@
     public function fail ($exc) {
       $this->json($exc);
     }
+    private function fileExists ($file) {
+      if (file_exists($file)) return;
+      
+      $this->error("RequestFile not found: $file", self::NOT_FOUND);
+    }
     /**
      * Reads file and sends it contents to the user.
      *
      * **This function does not download the file on user's end. It only sends file's contents.**
      */
     public function readFile (string $file, bool $doFlushResponse = true) {
-      if (!file_exists($file)) {
-        $this->error("RequestFile not found: $file", self::NOT_FOUND);
-      }
-      
+      $this->fileExists($file);
       $this->generateHeaders();
       readfile($file);
       
@@ -299,11 +301,9 @@
       }
     }
     public function readFileSafe (string $file, bool $doFlushResponse = true) {
-      if (!file_exists($file)) {
-        $this->error("RequestFile not found: $file", self::NOT_FOUND);
-      }
-  
+      $this->fileExists($file);
       $this->generateHeaders();
+      
       echo htmlspecialchars(file_get_contents($file));
   
       if ($doFlushResponse) {
@@ -315,15 +315,20 @@
      *
      * Checks for valid file path and sets headers to download it.
      */
-    public function download (string $file) {
+    public function download (string $file, string $downloadAs = null) {
+      $this->fileExists($file);
+      
       $this->setAllHeaders(
         ["Content-Description", "RequestFile Transfer"],
         ["Content-Type", 'application/octet-stream'],
-        ["Content-Disposition", "attachment; filename=" . basename($file)],
+        ["Content-Disposition", "attachment; filename=" . ($downloadAs ?? basename($file))],
         ["Pregma", "_public"],
         ["Content-Length", filesize($file)]
       );
-      $this->readFile($file);
+      
+      $this->generateHeaders();
+      
+      readfile($file);
     }
   
     /**

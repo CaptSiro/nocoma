@@ -32,13 +32,13 @@ body {
   padding: 0 4px 8px 8px;
 }
 
-.edit-controls .drag-handle {
+.edit-controls .drag-handle.ff-fix {
   position: relative;
 }
 .edit-controls .drag-handle * {
   color: var(--text-color-opposite-0) !important;
 }
-.edit-controls .drag-handle::after {
+.edit-controls .drag-handle.ff-fix::after {
   content: '';
   top: 0;
   left: 0;
@@ -124,6 +124,7 @@ body {
 .w-root {
   width: 100%;
   min-height: 100%;
+  overflow-x: hidden;
   /*padding: 0 16px;*/
 
   background-color: var(--container-0);

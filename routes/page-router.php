@@ -221,7 +221,7 @@
       if ($request->param->get("visibility") === "planned") {
         $response->json(Website::setAsPlanned(
           $request->body->get("id"),
-          $request->body->looselyGet("releaseDate")
+          date('Y-m-d H:i:s', strtotime($request->body->looselyGet("releaseDate")))
         ));
       }
       

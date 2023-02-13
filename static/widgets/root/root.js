@@ -475,7 +475,7 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
       
       HRInspector(),
       
-      TitleInspector("ThemeType"),
+      TitleInspector("Theme"),
       themeSelect,
       // Div("i-controls-row", [
       //   Button("button-like-main", "Change"),

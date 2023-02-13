@@ -351,6 +351,7 @@ nav {
 .i-select select {
   appearance: none;
   background-color: var(--container-2);
+  color: var(--text-color-0);
   border: none;
   padding: 0 1em 0 0;
   margin: 0;

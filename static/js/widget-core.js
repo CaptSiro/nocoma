@@ -390,7 +390,7 @@ class Widget {
         Button(__, Span(__, "+"), () => {
           this.parentWidget.placeCommandBlock(this);
         }),
-        Div("button-like-main drag-handle", Span(__, "::"), {
+        Div("button-like-main drag-handle" + (browserType === "firefox" ? " ff-fix" : ""), Span(__, "::"), {
           attributes: {draggable: true},
           listeners: {
             dragstart: evt => {

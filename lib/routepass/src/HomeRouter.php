@@ -166,7 +166,11 @@
       $_SERVER["HOME_DIR_PATH"] = $dir;
       
       $res = new Response();
-      $res->setStatusCode(Response::OK);
+      if (http_response_code() === 404) {
+        http_response_code(200);
+//        $res->setStatusCode(Response::OK);
+      }
+      
       $req = new Request(
         $res,
         $this,

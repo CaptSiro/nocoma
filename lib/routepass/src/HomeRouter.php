@@ -166,6 +166,7 @@
       $_SERVER["HOME_DIR_PATH"] = $dir;
       
       $res = new Response();
+      $res->setStatusCode(Response::OK);
       $req = new Request(
         $res,
         $this,

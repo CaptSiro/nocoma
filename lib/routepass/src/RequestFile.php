@@ -7,7 +7,7 @@
     
     public function __construct ($file) {
       $this->fullName = $file["name"];
-      [$name, $ext] = $this->getExt();
+      [$name, $ext] = self::getExtension($this->name);
       $this->name = $name;
       $this->ext = $ext;
       $this->type = $file["type"];
@@ -26,24 +26,37 @@
       return success(true);
     }
     
-    public function getExt (): array {
+    const FILE_NAME = 0;
+    const FILE_EXTENSION = 1;
+  
+    /**
+     * @param $path
+     * @return string[] [FILE_NAME, FILE_EXTENSION]
+     */
+    public static function getExtension ($path): array {
       $ext = "";
       $name = "";
       $switch = false;
       
-      for ($i = (strlen($this->fullName) - 1); $i >= 0; $i--) {
+      for ($i = (strlen($path) - 1); $i >= 0; $i--) {
         $var = &${$switch ? "name" : "ext"};
-        $var = $this->fullName[$i] . $var;
+        $var = $path[$i] . $var;
         
-        if ($this->fullName[$i] == "." && !$switch) {
+        if ($path[$i] == "." && !$switch) {
           $switch = true;
         }
       }
   
       if ($name === "") {
-        return [$ext, $name];
+        return [
+          self::FILE_NAME => $ext,
+          self::FILE_EXTENSION => ""
+        ];
       }
   
-      return [$name, $ext];
+      return [
+        self::FILE_NAME => $name,
+        self::FILE_EXTENSION => $ext
+      ];
     }
   }

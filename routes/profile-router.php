@@ -40,7 +40,10 @@
   $profileRouter->patch("/theme-src", [
     Middleware::requireToBeLoggedIn(),
     function (Request $request, Response $response) {
-      $theme = Theme::getBySRC($request->body->get("src"));
+      $theme = Theme::getBySRC($request->body->get("src"))
+        ->forwardFailure($response)
+        ->getSuccess();
+      
       if (!$theme) {
         $response->fail(new NotFoundExc("This theme does not exist."));
       }

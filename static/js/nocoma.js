@@ -15,7 +15,8 @@ new IntersectionObserver(entries => {
  * 
  * @param {number} stagger 
  * @param {Object3D} object3d 
- * @param {(number: dt)=>Rotation} rotationBuilder 
+ * @param {number} ypos
+ * @param {number} yrange
  */
 function animationFactory (stagger, object3d, ypos, yrange) {
   let localAcc = stagger;

@@ -49,6 +49,11 @@ class Theme {
    */
   static #usersThemes;
   
+  static reset () {
+    this.#usersThemes = undefined;
+    this.#usersTheme = undefined;
+  }
+  
   /**
    * @param url
    * @return {Promise<ThemeCoreType>}
@@ -63,12 +68,14 @@ class Theme {
      * @type {ThemeCoreType | ThemeResponse}
      */
     const theme = await this.#usersTheme;
-    
+  
+    console.log(theme);
     if (theme.error !== undefined) {
       this.#usersTheme = undefined;
       return Promise.reject(theme);
     }
-  
+    
+    $(".themes-link")?.remove();
     document.head.appendChild(
       Component("style", "themes-link", String(theme.styles))
     );
@@ -82,10 +89,9 @@ class Theme {
    * @returns {Promise<void>}
    */
   static async setAsLink (themeSRC) {
-    const themeLink = $(".themes-link");
-    const newThemeLink = Component("link", "theme-link", __, {
+    const themeLink = document.head.querySelector(".themes-link");
+    const newThemeLink = Component("link", "themes-link", __, {
       attributes: {
-        id: "themes-link",
         rel: "stylesheet",
         href: AJAX.SERVER_HOME + "/theme/" + themeSRC
       }

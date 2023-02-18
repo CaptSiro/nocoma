@@ -190,7 +190,9 @@ Theme.get("/theme/user")
     themeSelect.addEventListener("change", async () => {
       const themeChangeResponse = await AJAX.patch("/profile/theme-src", JSONHandler(), {
         body: JSON.stringify({
-          src: themeSelect.dataset.value.substring(themeSelect.dataset.value.length - 8)
+          src: themeSelect.dataset.value.length === 9 && themeSelect.dataset.value[0] === "_"
+            ? themeSelect.dataset.value.substring(1)
+            : themeSelect.dataset.value
         })
       });
   

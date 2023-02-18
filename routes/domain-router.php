@@ -91,7 +91,7 @@
       ->getSuccess();
   
     if (!Website::isAccessible($webpage)) {
-      $response->render("error", ["message" => "Homepage is private."]);
+      $response->render("error", ["message" => "Website is private."]);
     }
   
     canUserAccess($request, $webpage, $response);

@@ -233,6 +233,16 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
             })
           ])
         ]),
+        Div("i-row", [
+          Span(),
+          Button("button-like-main", "Generate theme", async evt => {
+            const win = showWindow("theme-creator");
+            win.dataset.imageSource = this.#json.webpage.thumbnail.substring(0, 10);
+            win.querySelector("#theme-name").value = "My theme";
+            // Theme.reset();
+            // this.rootElement.click();
+          })
+        ]),
         RadioGroupInspector(value => {
           this.#json.headerTitleAlign = value;
           this.dispatchJSONEvent();
@@ -277,7 +287,7 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
       true
     );
     
-    const releaseDateNotice = Paragraph("blockquote note", HTML("After refreshing the editor, the hours of release date might not align, due to timezone conversion.<br>But it works, trust me bro.", true));
+    const releaseDateNotice = Paragraph("blockquote note", HTML("After refreshing the editor, the hours of release date might not align, due to timezone conversion.", true));
     const releaseDateInput = releaseDate.querySelector("input");
     
     if (this.#json.webpage.releaseDate === undefined) {
@@ -305,8 +315,34 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
       }}
     });
     
+    const themeRemover = Div("i-row display-none", [
+      Span(),
+      Button("button-like-main", "Remove", async () => {
+        if (themeRemover.dataset.remove === "") return;
+        
+        const response = await AJAX.delete(`/theme/${themeRemover.dataset.remove}`, JSONHandler());
+        
+        if (response.error) {
+          console.log(response);
+          return;
+        }
+        
+        Theme.reset();
+        inspect(this.inspectorHTML, this);
+      })
+    ]);
+  
+    console.log("re-render")
     Theme.get("/theme/website/" + webpage.src)
       .then(async theme => {
+        if (!(theme.src.length === 9 && theme.src[0] === "_")) {
+          themeRemover.classList.remove("display-none");
+          themeRemover.dataset.remove = theme.src;
+        } else {
+          themeRemover.classList.add("display-none");
+          themeRemover.dataset.remove = "";
+        }
+        
         const usersThemes = await Theme.getUsers("/theme/user/all-v2");
         
         themeContent.append(
@@ -327,7 +363,9 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
             body: JSON.stringify({
               id: webpage.ID,
               property: "themesSRC",
-              value: themeSelect.dataset.value.substring(themeSelect.dataset.value.length - 8)
+              value: themeSelect.dataset.value.length === 9 && themeSelect.dataset.value[0] === "_"
+                ? themeSelect.dataset.value.substring(1)
+                : themeSelect.dataset.value
             })
           });
   
@@ -337,7 +375,15 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
           }
   
           validated(themeSelect);
-          
+  
+          console.log(themeSelect.dataset.value, !(themeSelect.dataset.value.length === 9 && themeSelect.dataset.value[0] === "_"));
+          if (!(themeSelect.dataset.value.length === 9 && themeSelect.dataset.value[0] === "_")) {
+            themeRemover.classList.remove("display-none");
+            themeRemover.dataset.remove = theme.src;
+          } else {
+            themeRemover.classList.add("display-none");
+            themeRemover.dataset.remove = "";
+          }
           await Theme.setAsLink(themeSelect.dataset.value);
   
           for (const themeOption of themeContent.children) {
@@ -477,6 +523,10 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
       
       TitleInspector("Theme"),
       themeSelect,
+      themeRemover,
+      
+      HRInspector(),
+      
       // Div("i-controls-row", [
       //   Button("button-like-main", "Change"),
       //   Button("button-like-main", "Delete"),

@@ -74,7 +74,6 @@ class WFileDownload extends Widget {
           AJAX.SERVER_HOME
         )
       );
-      console.log(this.#downloadSize.value);
     });
     
     if (json.files !== undefined) {
@@ -213,7 +212,6 @@ class WFileDownload extends Widget {
    * @returns {WidgetJSON}
    */
   save () {
-    console.log(this.#name)
     return {
       type: "WFileDownload",
       files: this.#files.value,

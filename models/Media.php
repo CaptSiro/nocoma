@@ -71,6 +71,54 @@
         ]
       ));
     }
+    public static function saveLocal (string $filePath, User $user): Result {
+      if (!file_exists($filePath)) {
+        return fail(new NotFoundExc("Could not find file: $filePath"));
+      }
+  
+      $sourceResult = Generate::valid(
+        Generate::string(Generate::CHARSET_URL, self::SRC_LENGTH_LASTING),
+        self::isSRCValid(HOSTS_DIR . "/$user->website/media/")
+      );
+  
+      if ($sourceResult->isFailure()) {
+        return $sourceResult;
+      }
+  
+      $footprint = sha1_file($filePath);
+      if (!self::isFileUnique($footprint, $user)) {
+        return fail(new NotUniqueValueExc("This file already exists on the server."));
+      }
+  
+      $source = $sourceResult->getSuccess();
+      $mimeTypeResult = Response::getMimeType($filePath);
+      if ($mimeTypeResult->isFailure()) {
+        return $mimeTypeResult;
+      }
+  
+      $mimeType = $mimeTypeResult->getSuccess();
+      [$name, $extension] = RequestFile::getExtension($filePath);
+      $size = filesize($filePath);
+      
+      $moveResult = rename($filePath, HOSTS_DIR . "/$user->website/media/$source$extension");
+      if ($moveResult === false) {
+        return fail(new Exc("Could not move file."));
+      }
+  
+      return success(Database::get()->statement(
+        "INSERT INTO `media` (`src`, `extension`, `basename`, `usersID`, `hash`, `size`, `mimeContentType`)
+        VALUE (:src, :ext, :basename, :userID, :hash, :size, :mimeType)",
+        [
+          new DatabaseParam("src", $source, PDO::PARAM_STR),
+          new DatabaseParam("ext", $extension, PDO::PARAM_STR),
+          new DatabaseParam("basename", $name, PDO::PARAM_STR),
+          new DatabaseParam("userID", $user->ID),
+          new DatabaseParam("hash", $footprint, PDO::PARAM_STR),
+          new DatabaseParam("size", $size),
+          new DatabaseParam("mimeType", $mimeType, PDO::PARAM_STR),
+        ]
+      ));
+    }
     public static function delete (string $source, User $user): Result {
       $fileResult = self::getBySource($source);
       if ($fileResult->isFailure()) {

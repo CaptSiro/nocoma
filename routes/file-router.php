@@ -199,7 +199,7 @@
       
       foreach ($request->files->get("uploaded") as $file) {
         Media::save($file, $request->session->get("user"))
-            ->forwardFailure($response);
+          ->forwardFailure($response);
       }
       
       $response->json(["message" => "ok"]);

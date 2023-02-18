@@ -452,6 +452,63 @@ fileSelectModal.querySelector("#file-upload-input").addEventListener("change", a
 
 
 
+const themeCreatorModal = $("#theme-creator");
+const parameterA = themeCreatorModal.querySelector("#parameter-a");
+const parameterB = themeCreatorModal.querySelector("#parameter-b");
+const colorBucketing = themeCreatorModal.querySelector("#color-group-size");
+const themeNameField = themeCreatorModal.querySelector("#theme-name");
+const themeCreatorError = themeCreatorModal.querySelector(".error");
+const themeCreatorSubmit = themeCreatorModal.querySelector("button[type=submit]");
+themeCreatorSubmit.addEventListener("click", async () => {
+  if (themeCreatorModal.dataset.imageSource === "") return;
+  
+  themeCreatorError.classList.remove("show");
+  themeCreatorError.textContent = "";
+  
+  const name = themeNameField.value.trim();
+  
+  if (name === "") {
+    themeCreatorError.classList.add("show");
+    themeCreatorError.textContent = "Name field is mandatory.";
+    return;
+  }
+  
+  themeCreatorSubmit.disabled = true;
+  const generationResponse = await AJAX.post("/theme/generate", JSONHandler(), {
+    body: JSON.stringify({
+      imageSRC: themeCreatorModal.dataset.imageSource,
+      name: themeNameField.value,
+      a: +parameterA.value,
+      b: +parameterB.value,
+      rounding: +colorBucketing.value,
+    })
+  });
+  themeCreatorSubmit.disabled = false;
+  
+  if (generationResponse.error !== undefined) {
+    console.log(generationResponse);
+    return;
+  }
+  
+  const themeChangeResponse = await AJAX.patch("/page/", JSONHandler(), {
+    body: JSON.stringify({
+      id: webpage.ID,
+      property: "themesSRC",
+      value: generationResponse.src
+    })
+  });
+  
+  if (themeChangeResponse.error !== undefined) {
+    console.log(themeChangeResponse);
+    return;
+  }
+  
+  Theme.reset();
+  console.log(window.rootWidget);
+  inspect(window.rootWidget.inspectorHTML, window.rootWidget);
+});
+
+
 
 
 

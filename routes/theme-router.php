@@ -28,7 +28,23 @@
       $response->readFile($path);
     }
     
-    $response->error("Custom themes are not implemented.", Response::NOT_IMPLEMENTED);
+    $themeResult = Theme::getBySRC($src);
+    if ($themeResult->isFailure()) {
+      $defaults = Theme::getDefaults();
+      if (!$defaults) {
+        $response->fail(new Exc("No default themes."));
+      }
+  
+      $defaultPath = GLOBAL_THEMES_DIR . "/" . substr($defaults[0]->src, 1) . ".css";
+      $response->setHeader("Content-Type", "text/css");
+      $response->readFile($defaultPath);
+    }
+    $theme = $themeResult->getSuccess();
+    
+    
+    $themeFilePath = HOSTS_DIR . "/$theme->website/media/$src.css";
+    $response->setHeader("Content-Type", "text/css");
+    $response->readFile($themeFilePath);
   }]);
   
   
@@ -160,7 +176,10 @@
   $themeRouter->delete("/:src", [
     Middleware::requireToBeLoggedIn(),
     function (Request $request, Response $response) {
-      $response->json(Theme::delete($request->param->get("src")));
+      $response->json(Theme::delete(
+        $request->param->get("src"),
+        $request->session->get("user")->website
+      ));
     }
   ]);
   
@@ -220,6 +239,36 @@
   
   
   
+  /**
+   * imageSRC
+   * name
+   * a = 3
+   * b = 2
+   * rounding = 20
+   */
+  $themeRouter->post("/generate", [
+    Middleware::requireToBeLoggedIn(),
+    function (Request $request, Response $response) {
+      require_once __DIR__ . "/../models/DynamicTheme.php";
+      
+      Image::$colorChannelRounding = intval($request->body->looselyGet("rounding", 20));
+      $response->json(
+        ["src" => DynamicTheme::createFrom(
+          $request->body->get("name"),
+          $request->body->get("imageSRC"),
+          $request->session->get("user")->website,
+          $request->body->looselyGet("a", 3),
+          $request->body->looselyGet("b", 2),
+        )
+          ->forwardFailure($response)
+          ->getSuccess()]
+      );
+    }
+  ]);
+  
+  
+  
+  
   
   
   $themeRouter->get("/user/", [
@@ -260,7 +309,7 @@
         $response->fail(new Exc("Could not find any themes."));
       }
     
-      $website = $request->session->get("user")->ID;
+      $website = $request->session->get("user")->website;
       $response->json(array_map(function ($theme) use ($website, $response) {
         $contents = getThemeContents($theme->src, $website);
         if ($contents->isFailure()) return null;

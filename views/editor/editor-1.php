@@ -89,5 +89,34 @@
         <p class="blockquote error error-modal"></p>
       </div>
     </div>
+  
+    <div class="window form large" id="theme-creator" data-image-source="">
+      <div class="wrapper">
+        <p class="label">Theme name:</p>
+        <input type="text" name="theme-name" id="theme-name" value="Theme">
+      </div>
+  
+      <div class="wrapper">
+        <p class="blockquote note">If the colors are not to your preference, try to adjust these sliders.</p>
+      </div>
+  
+      <div class="wrapper">
+        <p class="label">Parameter A:<br>(may change main color)</p>
+        <input type="range" min="1" max="20" step="1" value="3" name="parameter-a" id="parameter-a">
+        <p class="label">Parameter B:<br>(may change highlight color)</p>
+        <input type="range" min="1" max="20" step="1" value="2" name="parameter-b" id="parameter-b">
+        <p class="label">Color group size:<br>(lower the value, the more precise the result,<br>but the longer the wait time)</p>
+        <input type="range" min="1" max="40" step="1" value="20" name="color-group-size" id="color-group-size">
+      </div>
+    
+      <div class="wrapper sideways-end">
+        <button class="cancel-modal">Cancel</button>
+        <button class="submit" type="submit">Generate</button>
+      </div>
+    
+      <div class="wrapper">
+        <p class="blockquote error error-modal"></p>
+      </div>
+    </div>
   </div>
   <div class="display-none" id="page-data">

@@ -7,7 +7,7 @@
   require_once __DIR__ . "/Count.php";
 
   class Theme extends StrictModel {
-    protected $src, $usersID, $name, $hash;
+    protected $src, $usersID, $name, $hash, $website;
 
     protected static function getNumberProps (): array { return ["usersID"]; }
     protected static function getBooleanProps (): array { return []; }
@@ -72,20 +72,29 @@
     }
     
     
-    public static function getBySRC (string $src) {
-      return self::parseProps(Database::get()->fetch(
+    public static function getBySRC (string $src): Result {
+      $fetched = Database::get()->fetch(
         "SELECT
-            CASE WHEN themes.usersID = 0
-                THEN CONCAT('_', themes.src)
-                ELSE themes.src
-            END as src,
-            `name`,
-            usersID
+             CASE WHEN themes.usersID = 0
+                 THEN CONCAT('_', themes.src)
+                 ELSE themes.src
+             END as src,
+             `name`,
+             usersID,
+             hash,
+             website
         FROM themes
+        LEFT JOIN users ON users.ID = themes.usersID
         WHERE src = :src",
         self::class,
         [new DatabaseParam("src", $src, PDO::PARAM_STR)]
-      ));
+      );
+      
+      if ($fetched === false) {
+        return fail(new NotFoundExc("This theme does not exist."));
+      }
+      
+      return success(self::parseProps($fetched));
     }
     
     
@@ -118,11 +127,22 @@
     }
     
     
-    public static function delete (string $src): SideEffect {
+    public static function delete (string $src, string $website): SideEffect {
+      if (strlen($src) === 9 && $src[0] === "_") {
+        return new SideEffect(0, 0);
+      }
+      
       Database::get()->statement(
         "UPDATE websites SET themesSRC = NULL WHERE themesSRC = :src",
         [new DatabaseParam("src", $src, PDO::PARAM_STR)]
       );
+  
+      Database::get()->statement(
+        "DELETE FROM dynamicThemes WHERE themesSRC = :src LIMIT 1",
+        [new DatabaseParam("src", $src, PDO::PARAM_STR)]
+      );
+      
+      unlink(HOSTS_DIR . "/$website/media/$src.css");
       
       return Database::get()->statement(
         "DELETE FROM themes WHERE src = :src LIMIT 1",

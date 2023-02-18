@@ -151,7 +151,7 @@
     padding: 4px 8px;
     border-radius: 999px;
 
-    color: var(--text-color-0);
+    color: var(--text-color-2);
 }
 
 .comment .comment-controls button.action {
@@ -175,8 +175,8 @@
 .comment .comment-controls *[data-reaction="-1"] button.down,
 .comment .comment-controls button:hover {
     cursor: pointer;
-    color: var(--container-opposite-3);
-    background-color: var(--container-1);
+    color: var(--text-color-opposite-0);
+    background-color: var(--container-opposite-3);
 }
 
 .comment .comment-controls button.star-container {

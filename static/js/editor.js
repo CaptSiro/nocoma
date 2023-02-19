@@ -1,6 +1,6 @@
 Theme.get("/theme/website/" + webpage.src);
 
-const viewportMount = $(".viewport-mount");
+// const viewportMount = $(".viewport-mount");
 let switcher = false;
 $(".toggle-viewport").addEventListener("pointerdown", () => {
   switcher = !switcher;
@@ -33,7 +33,23 @@ const viewport = $("#viewport");
  * @type {ViewportDimensions}
  */
 let viewportDimensions;
-window.addEventListener("resize", () => {
+window.addEventListener("resize", viewportResize);
+
+onViewportResize(dimensions => {
+  viewport.style.width = dimensions.width + "px";
+  viewport.style.height = dimensions.height + "px";
+});
+
+viewportResize();
+
+/**
+ * @param {ViewportListener} callback
+ */
+function onViewportResize (callback) {
+  viewportListeners.push(callback);
+}
+
+function viewportResize () {
   const maxWidth = window.innerWidth - inspectorRoot.getBoundingClientRect().width;
   const maxHeight = window.innerHeight - nav.getBoundingClientRect().height;
   const isInMobileMode = viewport.classList.contains("mobile");
@@ -57,24 +73,6 @@ window.addEventListener("resize", () => {
   for (const viewportListener of viewportListeners) {
     viewportListener(viewportDimensions)
   }
-});
-
-onViewportResize(dimensions => {
-  viewport.style.width = dimensions.width + "px";
-  viewport.style.height = dimensions.height + "px";
-});
-
-viewportResize();
-
-/**
- * @param {ViewportListener} callback
- */
-function onViewportResize (callback) {
-  viewportListeners.push(callback);
-}
-
-function viewportResize () {
-  window.dispatchEvent(new Event("resize"));
 }
 
 
@@ -225,6 +223,13 @@ let currentCmd;
 function setSearchMode (isInSearch) {
   isInSearchMode = isInSearch;
   widgetSelect.classList.toggle("search-mode", isInSearch);
+  
+  if (isInSearch === false) {
+    $$(".not-search-satisfactory, .search-satisfactory").forEach(e => {
+      e.classList.remove("not-search-satisfactory");
+      e.classList.remove("search-satisfactory");
+    });
+  }
 }
 
 /**
@@ -262,7 +267,20 @@ function moveSelection (direction) {
   } while (selectionPool[pointer] !== selectedWidget);
   
   selectedWidget.classList.add("selected");
-  selectedWidget.scrollIntoView({behavior: "smooth"});
+  
+  scrollIntoViewIfNeeded(selectedWidget, widgetSelect);
+  // if ((selectedWidget.offsetTop + selectedWidget.offsetHeight) > (widgetSelect.scrollTop + widgetSelect.clientHeight)) {
+  //   widgetSelect.scrollTo({
+  //     top: (selectedWidget.offsetTop + selectedWidget.offsetHeight) - widgetSelect.clientHeight,
+  //     behavior: "smooth"
+  //   });
+  // } else if ((selectedWidget.offsetTop + selectedWidget.offsetHeight) < widgetSelect.scrollTop) {
+  //   widgetSelect.scrollTo({
+  //     top: selectedWidget.offsetTop,
+  //     behavior: "smooth"
+  //   });
+  // }
+  // selectedWidget.scrollIntoView({behavior: "smooth"});
 }
 
 
@@ -338,6 +356,23 @@ window.addEventListener("load", async () => {
 });
 
 
+
+/**
+ * @type {HTMLElement | undefined}
+ */
+let widgetSelectAnchor = undefined;
+function unfollowWidgetSelect () {
+  widgetSelectAnchor = undefined;
+}
+onViewportResize(() => {
+  if (widgetSelectAnchor === undefined || widgetSelectAnchor.parentElement === null || widgetSelectAnchor.parentElement === undefined) return;
+  
+  setTimeout(() => {
+    const rect = widgetSelectAnchor.getBoundingClientRect();
+    widgetSelect.style.left = (rect.x - widgetSelectAnchor.parentElement.getBoundingClientRect().x) + "px";
+    widgetSelect.style.top = (widgetSelectAnchor.offsetTop + rect.height) + "px";
+  }, 0);
+});
 /**
  * @param {HTMLElement} to
  */
@@ -347,25 +382,29 @@ function moveWidgetSelect (to) {
   }
   
   to.scrollIntoView();
+  widgetSelectAnchor = to;
+  
   const toBoundingBox = to.getBoundingClientRect();
-  const mountBoundingBox = viewportMount.getBoundingClientRect();
-  const selectBoundingBox = widgetSelect.getBoundingClientRect();
-  
-  let left = toBoundingBox.left;
-  if (left + selectBoundingBox.width > mountBoundingBox.width) {
-    left = mountBoundingBox.width - selectBoundingBox.width;
-  }
-  left /= (mountBoundingBox.width / 100);
-  
-  let top = toBoundingBox.top + toBoundingBox.height;
-  if (top + selectBoundingBox.height > mountBoundingBox.height) {
-    top = toBoundingBox.top - selectBoundingBox.height;
-  }
-  top -= mountBoundingBox.top;
-  top /= (mountBoundingBox.height / 100);
-  
-  widgetSelect.style.left = left + "%";
-  widgetSelect.style.top = top + "%";
+  widgetSelect.style.left = (toBoundingBox.x - to.parentElement.getBoundingClientRect().x) + "px";
+  widgetSelect.style.top = (to.offsetTop + toBoundingBox.height) + "px";
+  // const mountBoundingBox = viewportMount.getBoundingClientRect();
+  // const selectBoundingBox = widgetSelect.getBoundingClientRect();
+  //
+  // let left = toBoundingBox.left;
+  // if (left + selectBoundingBox.width > mountBoundingBox.width) {
+  //   left = mountBoundingBox.width - selectBoundingBox.width;
+  // }
+  // left /= (mountBoundingBox.width / 100);
+  //
+  // let top = toBoundingBox.top + toBoundingBox.height;
+  // if (top + selectBoundingBox.height > mountBoundingBox.height) {
+  //   top = toBoundingBox.top - selectBoundingBox.height;
+  // }
+  // top -= mountBoundingBox.top;
+  // top /= (mountBoundingBox.height / 100);
+  //
+  // widgetSelect.style.left = left + "%";
+  // widgetSelect.style.top = top + "%";
   
   widgetSelect.style.visibility = "visible";
 }

@@ -38,7 +38,7 @@ let browserType = "chrome";
 
 function isChromiumBased () {
   return browserType === "chrome" || browserType === "edge-chromium"
-};
+}
 
 /**
  * @param {String} css
@@ -740,6 +740,20 @@ function clamp (min, max, number) {
 }
 
 
+/**
+ * Maps value `from` interval `to` interval
+ * @param {Number} value
+ * @param {Number} fromStart
+ * @param {Number} fromEnd
+ * @param {Number} toStart
+ * @param {Number} toEnd
+ * @return {Number}
+ */
+function map (value, fromStart, fromEnd, toStart, toEnd) {
+  return ((value - fromStart) / (fromEnd - fromStart)) * (toEnd - toStart) + toStart;
+}
+
+
 
 /**
  * Adds delay to running code synchronously
@@ -839,6 +853,28 @@ function redirect (destination, savePositionToHistory = true) {
   
   window.location.replace(destination);
 }
+
+
+
+/**
+ * @param {HTMLElement} child
+ * @param {HTMLElement} parent
+ */
+function scrollIntoViewIfNeeded (child, parent) {
+  if ((child.offsetTop + child.offsetHeight) > (parent.scrollTop + parent.clientHeight)) {
+    parent.scrollTo({
+      top: (child.offsetTop + child.offsetHeight) - parent.clientHeight,
+      behavior: "smooth"
+    });
+  } else if ((child.offsetTop + child.offsetHeight) < parent.scrollTop) {
+    parent.scrollTo({
+      top: child.offsetTop,
+      behavior: "smooth"
+    });
+  }
+}
+
+
 
 /**
  * @param {number} maxSize

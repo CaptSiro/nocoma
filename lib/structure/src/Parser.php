@@ -97,7 +97,7 @@
         }
       }
 
-      if ($modified == true) {
+      if ($modified) {
         file_put_contents(__DIR__ . "/" . SAVE_FILE, json_encode($this->registry));
       }
     }
@@ -145,8 +145,13 @@
         return fail(new NotFoundExc("Could not find 'source' file for $class."));
       }
 
-      $source = fopen($fileName, "r");
       $outputFile = __DIR__ . "/compiled-widgets/" . $class . ".comp.js";
+      $source = fopen($fileName, "r");
+      if ($source === false) {
+        copy($fileName, $outputFile);
+        return fail(new Exc("Could not open source file."));
+      }
+
       $output = fopen($outputFile, "w");
 
 
@@ -154,7 +159,7 @@
       $inComment = false;
       $inString = false;
       $closingQuote = "";
-      while (!feof($source)) {
+      while (feof($source) === false) {
         $line = fgets($source);
 
         $out = "";

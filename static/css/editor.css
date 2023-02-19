@@ -603,6 +603,7 @@ input[type=text].invalid {
   background-color: var(--container-0);
   overflow: auto;
   box-shadow: var(--container-2) 0 7px 29px 0;
+  position: relative;
 }
 
 

@@ -116,10 +116,10 @@
 
   <div class="table">
     <div class="viewport-mount">
-      <div id="viewport"></div>
+      <div id="viewport">
+        <div id="widget-select-mount" style="visibility: hidden"></div>
+      </div>
       <button class="toggle-viewport">mobile/PC</button>
-
-      <div id="widget-select-mount" style="visibility: hidden"></div>
     </div>
 
     <div class="inspector">

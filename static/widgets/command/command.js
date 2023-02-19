@@ -70,11 +70,14 @@ class WCommand extends Widget { // var is used because it creates reference on g
     command.rootElement.addEventListener("keyup", evt => {
       if (doRemoveOnNextDelete === true && (evt.key === "Backspace" || evt.key === "Delete")) {
         command.remove();
+        //widgetSelect.style.visibility = "hidden";
+        //setSearchMode(false);
       }
 
       if (command.rootElement.textContent === "") {
         command.rootElement.classList.add("show-hint");
         widgetSelect.style.visibility = "hidden";
+        //setSearchMode(false);
         doRemoveOnNextDelete = true;
 
         return;
@@ -85,6 +88,7 @@ class WCommand extends Widget { // var is used because it creates reference on g
       
       if (command.rootElement.textContent === "/" && evt.key === "/") {
         moveWidgetSelect(command.rootElement);
+        setSearchMode(false);
         return;
       }
   
@@ -162,11 +166,13 @@ class WCommand extends Widget { // var is used because it creates reference on g
           
           const defaultWidget = widgets.get(selectedWidget.dataset.class).default(command.parentWidget, true);
           command.parentWidget.insertBeforeWidget(defaultWidget, command);
+          unfollowWidgetSelect();
           command.remove();
 
           setSearchMode(false);
           widgetSelect.style.visibility = "hidden";
           defaultWidget.focus();
+          defaultWidget.rootElement.scrollIntoView({behavior: "smooth"});
           
           return;
         }
@@ -187,9 +193,11 @@ class WCommand extends Widget { // var is used because it creates reference on g
         }, command.parentWidget, true);
         
         command.parentWidget.insertBeforeWidget(textWidget, command);
+        unfollowWidgetSelect();
         command.remove();
         
         textWidget.focus();
+        textWidget.rootElement.scrollIntoView({behavior: "smooth"});
       }
     });
 

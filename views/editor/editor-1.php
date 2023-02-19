@@ -36,6 +36,8 @@
   <link rel="stylesheet" href="<?=$GLOBALS["__HOME__"]?>/public/css/forms.css">
   <link rel="stylesheet" href="<?=$GLOBALS["__HOME__"]?>/public/css/resizeable.css">
   
+  <link rel="icon" href="<?= $GLOBALS["__HOME__"] ?>/public/images/nocoma-icon.ico">
+  
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">

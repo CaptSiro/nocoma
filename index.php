@@ -41,6 +41,19 @@
   }]);
   
   
+  
+  
+  $router->get("/tinter", [function (Request $request, Response $response) {
+    require_once __DIR__ . "/models/DynamicTheme.php";
+    
+    $response->json(
+      ["src" => DynamicTheme::createFrom("My theme#1", "OJSRxvAZeo", "__test-bot__", 8)
+        ->forwardFailure($response)
+        ->getSuccess()]
+    );
+  }]);
+  
+  
 //  $router->get("/hash", [function () {
 //    foreach (
 //      array_map(function ($path) { return [sha1_file(__DIR__ . "/static/css/themes/" . $path), $path]; }, array_diff(scandir(__DIR__ . "/static/css/themes"), [".", ".."]))
@@ -63,6 +76,10 @@
   
   $router->get("/error", [function (Request $request, Response $response) {
     $response->render("error", ["message" => $request->query->get("message")]);
+  }]);
+  
+  $router->get("/s", [function (Request $request, Response $response) {
+    $response->render("somthin");
   }]);
   
   

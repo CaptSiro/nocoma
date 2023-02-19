@@ -15,6 +15,8 @@
   <script src="<?=$GLOBALS["__SERVER_HOME__"]?>/public/js/background-loader.js"></script>
   <link rel="stylesheet" href="<?= $GLOBALS["__SERVER_HOME__"] ?>/public/css/main.css">
   
+  <link rel="icon" href="<?= $GLOBALS["__HOME__"] ?>/public/images/nocoma-icon.ico">
+  
   <style>
     body {
       width: 100vw;

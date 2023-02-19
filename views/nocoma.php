@@ -12,6 +12,7 @@
 
   <link rel="stylesheet" href="<?= $GLOBALS["__HOME__"] ?>/public/css/main.css">
   <link rel="stylesheet" href="<?= $GLOBALS["__HOME__"] ?>/public/css/nocoma.css">
+  <link rel="icon" href="<?= $GLOBALS["__HOME__"] ?>/public/images/nocoma-icon.ico">
 
   <script src="<?= $GLOBALS["__HOME__"] ?>/public/js/components/Renderer3D.js"></script>
   <script src="<?=$GLOBALS["__HOME__"]?>/public/js/main-v2.js"></script>

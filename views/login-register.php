@@ -9,6 +9,8 @@
   <link rel="stylesheet" href="<?=$GLOBALS["__HOME__"]?>/public/css/main.css">
   <link rel="stylesheet" href="<?=$GLOBALS["__HOME__"]?>/public/css/login-register.css">
   <link rel="stylesheet" href="<?=$GLOBALS["__HOME__"]?>/public/css/forms.css">
+  
+  <link rel="icon" href="<?= $GLOBALS["__HOME__"] ?>/public/images/nocoma-icon.ico">
 
   <script src="<?=$GLOBALS["__HOME__"]?>/public/js/main-v2.js"></script>
   <script>
@@ -62,7 +64,7 @@
 
     <div class="wrapper">
       <p>Don't have an account? <button class="link" link-to="register">Sign up.</button></p>
-      <p>Go back to <button class="link" onclick="window.location.replace('<?=$GLOBALS["__HOME__"]?>')">home page</button></p>
+      <p>Go back to <button class="link" onclick="window.location.replace('<?=$GLOBALS["__SERVER_HOME__"]?>')">home page</button></p>
     </div>
   </div>
 

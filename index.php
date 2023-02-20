@@ -47,7 +47,12 @@
     require_once __DIR__ . "/models/DynamicTheme.php";
     
     $response->json(
-      ["src" => DynamicTheme::createFrom("My theme#1", "OJSRxvAZeo", "__test-bot__", 8)
+      ["src" => DynamicTheme::createFrom(
+        "My theme#1",
+        "wjFBIebvzf",
+        "__test-bot__",
+        2,
+        15)
         ->forwardFailure($response)
         ->getSuccess()]
     );

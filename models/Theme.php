@@ -49,7 +49,8 @@
             `name`,
             usersID
         FROM themes
-        WHERE usersID IS NULL OR usersID = 0 OR usersID = :userID",
+        WHERE usersID IS NULL OR usersID = 0 OR usersID = :userID
+        ORDER BY usersID DESC",
         self::class,
         [new DatabaseParam("userID", $userID)]
       ));
@@ -147,6 +148,17 @@
       return Database::get()->statement(
         "DELETE FROM themes WHERE src = :src LIMIT 1",
         [new DatabaseParam("src", $src, PDO::PARAM_STR)]
+      );
+    }
+    
+    
+    public static function rename (string $src, string $name): SideEffect {
+      return Database::get()->statement(
+        "UPDATE themes SET `name` = :name WHERE src = :src",
+        [
+          new DatabaseParam("name", $name, PDO::PARAM_STR),
+          new DatabaseParam("src", $src, PDO::PARAM_STR),
+        ]
       );
     }
     

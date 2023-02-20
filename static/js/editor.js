@@ -526,6 +526,8 @@ themeCreatorSubmit.addEventListener("click", async () => {
   
   if (generationResponse.error !== undefined) {
     console.log(generationResponse);
+    themeCreatorError.classList.add("show");
+    themeCreatorError.textContent = generationResponse.error;
     return;
   }
   
@@ -539,6 +541,8 @@ themeCreatorSubmit.addEventListener("click", async () => {
   
   if (themeChangeResponse.error !== undefined) {
     console.log(themeChangeResponse);
+    themeCreatorError.classList.add("show");
+    themeCreatorError.textContent = generationResponse.error;
     return;
   }
   

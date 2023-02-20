@@ -45,7 +45,9 @@
     $themeFilePath = HOSTS_DIR . "/$theme->website/media/$src.css";
     $response->setHeader("Content-Type", "text/css");
     $response->readFile($themeFilePath);
-  }]);
+  }], [
+    "src" => Router::REGEX_BASE64_URL_SAFE
+  ]);
   
   
   $themeRouter->get("/defaults", [
@@ -181,7 +183,21 @@
         $request->session->get("user")->website
       ));
     }
-  ]);
+  ], ["src" => Router::REGEX_BASE64_URL_SAFE]);
+  
+  
+  
+  
+  
+  $themeRouter->patch("/rename/:src", [
+    Middleware::requireToBeLoggedIn(),
+    function (Request $request, Response $response) {
+      $response->json(Theme::rename(
+        $request->param->get("src"),
+        $request->body->get("name")
+      ));
+    }
+  ], ["src" => Router::REGEX_BASE64_URL_SAFE]);
   
   
   

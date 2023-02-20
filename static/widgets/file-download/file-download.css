@@ -18,7 +18,7 @@
 .w-file-download.edit > .container:hover {
     cursor: default;
 }
-.cursor-pointer .w-file-download.edit > div:hover,
+.cursor-pointer .w-file-download.edit > div:not(.gui):hover,
 .w-file-download > .container:hover {
     cursor: pointer;
     background-color: var(--container-opposite-1);

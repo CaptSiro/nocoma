@@ -44,7 +44,7 @@
           $pixelSaturationBezier = self::bezierCurve($pixelSaturation, $a, $b);
           
           $pixelPoints[0] += $pixelSaturationBezier * $pixelLightnessBezier;
-          $pixelPoints[1] += $pixelLightnessBezier * (1 - $pixelSaturationBezier);
+          $pixelPoints[1] += (1 - $pixelLightnessBezier) * (1 - $pixelSaturationBezier);
           
           $pixels->offsetSet($index, $pixelPoints);
           
@@ -124,6 +124,20 @@
         <span style=\"color: " . (self::colorLightness($rgb) > 0.5 ? "black" : "white") . ";\">$text</span>
       </div>";
     }
+  
+    public static function displayColorHSL ($hsl): string {
+      $text = round($hsl[0]) . ", " . round($hsl[1] * 100) . "%, " . round($hsl[2] * 100) . "%";
+      return "<div style=\"
+      background: hsl($text);
+      width: 200px;
+      height: 200px;
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;\">
+        <span style=\"color: " . ($hsl[2] > 0.5 ? "black" : "white") . ";\">$text</span>
+      </div>";
+    }
     
     public static function unhashPixel (int $hash, int $base): SplFixedArray {
       $pixel = new SplFixedArray(3);
@@ -168,6 +182,6 @@
      * @return float
      */
     public static function colorLightness ($pixel): float {
-      return (max(...$pixel) + min(...$pixel)) / 510;
+      return (max(...$pixel) + min(...$pixel)) / 510.0;
     }
   }

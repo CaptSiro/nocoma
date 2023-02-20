@@ -7,7 +7,7 @@
     
     public function __construct ($file) {
       $this->fullName = $file["name"];
-      [$name, $ext] = self::getExtension($this->name);
+      [$name, $ext] = self::getExtension($this->fullName);
       $this->name = $name;
       $this->ext = $ext;
       $this->type = $file["type"];

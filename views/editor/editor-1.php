@@ -103,9 +103,9 @@
       </div>
   
       <div class="wrapper">
-        <p class="label">Parameter A:<br>(may change main color)</p>
+        <p class="label">Parameter A:<br>(may change highlight color)</p>
         <input type="range" min="1" max="20" step="1" value="3" name="parameter-a" id="parameter-a">
-        <p class="label">Parameter B:<br>(may change highlight color)</p>
+        <p class="label">Parameter B:<br>(may change main color)</p>
         <input type="range" min="1" max="20" step="1" value="2" name="parameter-b" id="parameter-b">
         <p class="label">Color group size:<br>(lower the value, the more precise the result,<br>but the longer the wait time)</p>
         <input type="range" min="1" max="40" step="1" value="20" name="color-group-size" id="color-group-size">

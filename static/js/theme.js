@@ -69,7 +69,6 @@ class Theme {
      */
     const theme = await this.#usersTheme;
   
-    console.log(theme);
     if (theme.error !== undefined) {
       this.#usersTheme = undefined;
       return Promise.reject(theme);
@@ -169,7 +168,7 @@ class Theme {
             --bg-0: ${theme.variables.get("container-0") ?? "#000"};
             --bg-1: ${theme.variables.get("container-opposite-3") ?? "#000"};
             --color-0: ${theme.variables.get("text-color-0") ?? "#000"};
-            --color-1: ${theme.variables.get("text-color-opposite-3") ?? "#000"}
+            --color-1: ${theme.variables.get("text-color-opposite-0") ?? "#000"}
           `,
           "data-value": theme.src
         },

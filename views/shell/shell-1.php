@@ -26,8 +26,27 @@
   <script src="<?= $GLOBALS["__SERVER_HOME__"] ?>/public/js/shell.js" defer></script>
   
   <link rel="stylesheet" href="<?= $GLOBALS["__SERVER_HOME__"] ?>/public/css/main.css">
+  
+  <style>
+    .notice-box {
+      position: fixed;
+      width: 100%;
+      top: 0;
+      left: 0;
+      z-index: 100;
+    }
+
+    .notice-box p.blockquote.note {
+      margin-top: 0;
+    }
+  </style>
 </head>
 <body id="viewport">
+  <?php if (isset($GLOBALS["notice"])) { ?>
+    <div class="notice-box">
+      <p class="blockquote note"><?= $GLOBALS["notice"] ?></p>
+    </div>
+  <?php } ?>
   <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="display: none;">
     <defs id="icon-definitions"></defs>
   </svg>

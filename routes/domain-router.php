@@ -15,6 +15,17 @@
   
   
   
+  const ACCESS_STATUS = "access-status";
+  const ACCESS_STATUS_OK = 0;
+  const ACCESS_STATUS_WEBPAGE_RESTRICTED = 1;
+  const ACCESS_STATUS_USER_BANNED = 2;
+  
+  const USER_STATUS = "user-status";
+  const USER_STATUS_ADMIN = 0;
+  const USER_STATUS_CREATOR = 1;
+  const USER_STATUS_USER = 2;
+  const USER_STATUS_UNKNOWN = 3;
+  
   /**
    * @param Request $request
    * @param Website $webpage
@@ -35,11 +46,15 @@
       ->getSuccess();
   
     if ($isCreatorBanned) {
-      $response->json(["error" => "This creator has been restricted."]);
+      $response->render("error", ["message" => "This creator has been restricted."]);
     }
     
     if ($webpage->isTakenDown && $isNotCreator) {
-      $response->json(["error" => "Web page is no longer accessible."]);
+      $response->render("error", ["message" => "Web page is no longer accessible."]);
+    }
+    
+    if ($isNotCreator && !Website::isAccessible($webpage)) {
+      $response->render("error", ["message" => "Web page is private."]);
     }
   }
   
@@ -52,7 +67,10 @@
   
     $response->render("shell/shell-1", [
       "webpage" => $webpage,
-      "user" => $user
+      "user" => $user,
+      "notice" => !Website::isAccessible($webpage)
+        ? "This web page is private."
+        : null,
     ], "php", false);
     $response->readFileSafe(HOSTS_DIR . "/$website/$webpage->src.json", false);
     $response->render("shell/shell-2");
@@ -71,9 +89,9 @@
 //      })->getSuccess();
 //    })->getSuccess();
     
-    if (!Website::isAccessible($webpage)) {
-      $response->render("error", ["message" => "Homepage is private."]);
-    }
+//    if (!Website::isAccessible($webpage)) {
+//      $response->render("error", ["message" => "Homepage is private."]);
+//    }
     
     canUserAccess($request, $webpage, $response);
   
@@ -90,9 +108,9 @@
       ->renderError($response, ["message" => "There is no website for this url.<br>Check if the url is correct or the website no longer exists."])
       ->getSuccess();
   
-    if (!Website::isAccessible($webpage)) {
-      $response->render("error", ["message" => "Website is private."]);
-    }
+//    if (!Website::isAccessible($webpage)) {
+//      $response->render("error", ["message" => "Website is private."]);
+//    }
   
     canUserAccess($request, $webpage, $response);
   

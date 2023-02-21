@@ -37,6 +37,7 @@ function createPostLink (userWebsite, postSRC) {
  * @property {string} thumbnailSRC
  * @property {string} thumbnail
  * @property {string} timeCreated
+ * @property {string} releaseDate
  * @property {string} title
  * @property {number} usersID
  *
@@ -56,6 +57,17 @@ function PostComponent (idGroup, post, optionBodyItems, postOptions = undefined)
   
   postOptions.attributes.id = idGroup + "_" + post.src;
   
+  const visibilityState = post.isPublic
+    ? "public"
+    : post.releaseDate === undefined
+      ? "private"
+      : "planned"
+  
+  let iconDescription = undefined;
+  if (visibilityState === "planned") {
+    iconDescription = {attributes: {title: new Date(post.releaseDate).toLocaleString()}};
+  }
+  
   return Async(async () => {
     postOptions.attributes.style = post.thumbnail !== undefined
       ? `background-image: url(${AJAX.SERVER_HOME}/file/${post.src}/${post.thumbnail})`
@@ -69,6 +81,9 @@ function PostComponent (idGroup, post, optionBodyItems, postOptions = undefined)
     return (
       Div("post" + (post.isTakenDown ? " taken-down" : ""), [
         Div("content", [
+          Div("icon-mount", [
+            SVG("icon-" + visibilityState)
+          ], iconDescription),
           Div("post-info", [
             Div("date", "Created " + formatDate(new Date(post.timeCreated))),
             Heading(3, __, post.title, {

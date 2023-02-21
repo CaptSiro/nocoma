@@ -341,7 +341,7 @@
           " . self::THEME_SRC_PROJECTION . "
         FROM `websites`
           JOIN `" . self::PLANNED_WEBSITES_TABLE_NAME . "` ON `" . self::PLANNED_WEBSITES_TABLE_NAME . "`.websitesID = websites.ID
-          " . self::IS_TAKEN_DOWN_CONDITION . ",
+          " . self::IS_TAKEN_DOWN_CONDITION . "
           " . self::THUMBNAIL . "
           " . self::WEBSITE . "
           " . self::THEME_SRC . "
@@ -356,13 +356,14 @@
         ));
       }
   
-      $restrictions = ($restriction === self::SET_RESTRICTION_PRIVATE ? " AND websites.isPublic = 0" : "")
+      $restrictions = ($restriction === self::SET_RESTRICTION_PRIVATE ? " AND websites.isPublic = 0 AND releaseDate IS NULL" : "")
         . ($restriction === self::SET_RESTRICTION_PUBLIC ? " AND websites.isPublic = 1" : "");
       
       return self::parseProps(Database::get()->fetchAll(
         "SELECT
           " . self::generateSelectColumns(self::TABLE_NAME, self::ALL_COLUMNS, true) . "
           " . self::IS_TAKEN_DOWN_CONDITION_PROJECTION . ",
+          `" . self::PLANNED_WEBSITES_TABLE_NAME ."`.`releaseDate` as releaseDate,
           " . self::JOIN_PLANNED_WEBSITES_PROJECTION . ",
           " . self::THUMBNAIL_PROJECTION . ",
           " . self::WEBSITE_PROJECTION . ",

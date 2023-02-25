@@ -268,21 +268,41 @@
     
     public static function SHADE_DARK (): Closure {
       return function ($hsl) {
-        return [
-          $hsl[0] - 3,
-          $hsl[1] + 0.03,
-          $hsl[2] - 0.04
+        $shaded =  [
+          self::HSL_HUE => $hsl[self::HSL_HUE] - 3,
+          self::HSL_SATURATION => $hsl[self::HSL_SATURATION] + 0.03,
+          self::HSL_LIGHTNESS => $hsl[self::HSL_LIGHTNESS] - 0.04
         ];
+        
+        if ($shaded[self::HSL_SATURATION] > 1) {
+          $shaded[self::HSL_LIGHTNESS] -= 0.04;
+        }
+  
+        if ($shaded[self::HSL_LIGHTNESS] > 1) {
+          $shaded[self::HSL_SATURATION] += 0.3;
+        }
+        
+        return $shaded;
       };
     }
   
     public static function SHADE_LIGHT (): Closure {
       return function ($hsl) {
-        return [
-          $hsl[0] + 3,
-          $hsl[1] - 0.03,
-          $hsl[2] + 0.04
+        $shaded =  [
+          self::HSL_HUE => $hsl[self::HSL_HUE] + 3,
+          self::HSL_SATURATION => $hsl[self::HSL_SATURATION] - 0.03,
+          self::HSL_LIGHTNESS => $hsl[self::HSL_LIGHTNESS] + 0.04
         ];
+  
+        if ($shaded[self::HSL_SATURATION] > 1) {
+          $shaded[self::HSL_LIGHTNESS] += 0.04;
+        }
+  
+        if ($shaded[self::HSL_LIGHTNESS] > 1) {
+          $shaded[self::HSL_SATURATION] -= 0.3;
+        }
+  
+        return $shaded;
       };
     }
     

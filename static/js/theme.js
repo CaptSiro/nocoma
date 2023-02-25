@@ -50,8 +50,12 @@ class Theme {
   static #usersThemes;
   
   static reset () {
-    this.#usersThemes = undefined;
     this.#usersTheme = undefined;
+    this.resetUsersThemes();
+  }
+  
+  static resetUsersThemes () {
+    this.#usersThemes = undefined;
   }
   
   /**

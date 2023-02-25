@@ -18,23 +18,27 @@ for (const win of container.children) {
 
 /**
  * @param {string} id
+ * @param {boolean} doClearInputs
  * @returns {HTMLDivElement}
  */
-function showWindow (id) {
+function showWindow (id, doClearInputs = true) {
   clearWindows(false);
   
   const win = windows.get(id);
-  win.querySelectorAll("input").forEach(input => {
-    switch (input.getAttribute("type")) {
-      case "text": {
-        input.value = "";
-        break;
+  
+  if (doClearInputs) {
+    win.querySelectorAll("input").forEach(input => {
+      switch (input.getAttribute("type")) {
+        case "text": {
+          input.value = "";
+          break;
+        }
+        case "checkbox": {
+          input.checked = false;
+        }
       }
-      case "checkbox": {
-        input.checked = false;
-      }
-    }
-  });
+    });
+  }
   
   container.classList.add("darken");
   win.classList.add("show");

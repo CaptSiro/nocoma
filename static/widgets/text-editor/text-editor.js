@@ -94,14 +94,14 @@ class WTextEditor extends Widget {
               replacement.remove();
             });
             
-            if (element === linesContents.at(-1)) {
+            if (element === linesContents[linesContents.length - 1]) {
               line.appendChild(document.createElement("br"));
             }
             continue;
           }
           
           line.appendChild(widgets.get(element.type).build(element, this, editable).rootElement);
-          if (element === linesContents.at(-1)) {
+          if (element === linesContents[linesContents.length - 1]) {
             line.appendChild(document.createElement("br"));
           }
         }
@@ -821,7 +821,7 @@ class WTextEditor extends Widget {
           continue;
         }
         
-        if (child.nodeName === "BR" && child !== childrenOfLine.at(-1)) {
+        if (child.nodeName === "BR" && child !== childrenOfLine[childrenOfLine.length - 1]) {
           lines.push(lineContents);
           lineContents = [];
           continue;

@@ -239,8 +239,6 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
             const win = showWindow("theme-creator");
             win.dataset.imageSource = this.#json.webpage.thumbnail.substring(0, 10);
             win.querySelector("#theme-name").value = "My theme";
-            // Theme.reset();
-            // this.rootElement.click();
           })
         ]),
         RadioGroupInspector(value => {
@@ -321,14 +319,12 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
         Button("button-like-main", "Rename", async () => {
           if (themeRemover.dataset.themeSRC === "") return;
           
-          const response = await AJAX.patch(`/theme/rename/${themeRemover.dataset.themeSRC}`, JSONHandler());
-          
-          if (response.error) {
-            console.log(response);
-          }
+          const win = showWindow("theme-rename", false);
+          win.querySelector("#theme-rename-field").name = themeRemover.dataset.name;
+          win.dataset.src = themeRemover.dataset.themeSRC;
         }),
         Button("button-like-main", "Remove", async () => {
-          if (themeRemover.dataset.themeSRC === "") return;
+          if (themeRemover.dataset.themeSRC === "" || !confirm("Do you want to remove current theme?")) return;
     
           const response = await AJAX.delete(`/theme/${themeRemover.dataset.themeSRC}`, JSONHandler());
     
@@ -365,6 +361,7 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
   
           themeSelect.value = themeOption.dataset.value;
           themeLabel.innerText = themeOption.innerText;
+          themeRemover.dataset.name = themeOption.innerText;
           break;
         }
         
@@ -398,6 +395,7 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
           for (const themeOption of themeContent.children) {
             if (themeOption.dataset.value === themeSelect.dataset.value) {
               themeLabel.innerText = themeOption.innerText;
+              themeRemover.dataset.name = themeOption.innerText;
               break;
             }
           }

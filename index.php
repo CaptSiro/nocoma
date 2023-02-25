@@ -49,10 +49,8 @@
     $response->json(
       ["src" => DynamicTheme::createFrom(
         "My theme#1",
-        "wjFBIebvzf",
-        "__test-bot__",
-        2,
-        15)
+        "3ij5yl74WZ",
+        "__test-bot__", 4, 2)
         ->forwardFailure($response)
         ->getSuccess()]
     );
@@ -81,10 +79,6 @@
   
   $router->get("/error", [function (Request $request, Response $response) {
     $response->render("error", ["message" => $request->query->get("message")]);
-  }]);
-  
-  $router->get("/s", [function (Request $request, Response $response) {
-    $response->render("somthin");
   }]);
   
   

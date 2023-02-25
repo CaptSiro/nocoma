@@ -259,8 +259,10 @@ input[type="radio"]:after {
   transition: background-color 0ms linear;
 }
 
-.button-like-main:disabled {
+button:disabled {
   opacity: 0.5;
+  pointer-events: none;
+  touch-action: none;
 }
 
 .transition-background {

@@ -494,7 +494,7 @@ fileSelectModal.querySelector("#file-upload-input").addEventListener("change", a
 const themeCreatorModal = $("#theme-creator");
 const parameterA = themeCreatorModal.querySelector("#parameter-a");
 const parameterB = themeCreatorModal.querySelector("#parameter-b");
-const colorBucketing = themeCreatorModal.querySelector("#color-group-size");
+// const colorBucketing = themeCreatorModal.querySelector("#color-group-size");
 const themeNameField = themeCreatorModal.querySelector("#theme-name");
 const themeCreatorError = themeCreatorModal.querySelector(".error");
 const themeCreatorSubmit = themeCreatorModal.querySelector("button[type=submit]");
@@ -519,10 +519,8 @@ themeCreatorSubmit.addEventListener("click", async () => {
       name: themeNameField.value,
       a: +parameterA.value,
       b: +parameterB.value,
-      rounding: +colorBucketing.value,
     })
   });
-  themeCreatorSubmit.disabled = false;
   
   if (generationResponse.error !== undefined) {
     console.log(generationResponse);
@@ -546,8 +544,31 @@ themeCreatorSubmit.addEventListener("click", async () => {
     return;
   }
   
+  themeCreatorSubmit.disabled = false;
   Theme.reset();
-  console.log(window.rootWidget);
+  inspect(window.rootWidget.inspectorHTML, window.rootWidget);
+});
+
+
+const themeRenameModal = $("#theme-rename");
+const renameField = $("#theme-rename-field");
+themeRenameModal.querySelector("button[type=submit]").addEventListener("click", async () => {
+  if (renameField.value.trim() === "" || themeRenameModal.dataset.src === undefined || themeRenameModal.dataset.src === "") {
+    return;
+  }
+  
+  const response = await AJAX.patch(`/theme/rename/${themeRenameModal.dataset.src}`, JSONHandler(), {
+    body: JSON.stringify({ name: renameField.value })
+  });
+  
+  if (response.error !== undefined) {
+    console.log(response);
+    return;
+  }
+  
+  clearWindows();
+  
+  Theme.resetUsersThemes();
   inspect(window.rootWidget.inspectorHTML, window.rootWidget);
 });
 
@@ -708,7 +729,7 @@ function edit_paste (evt) {
   const selectedWidgets = Array.from($$("." + WIDGET_SELECTION_CLASS));
   if (selectedWidgets.length === 0) return;
   
-  const insertAfter = selectedWidgets.at(-1);
+  const insertAfter = selectedWidgets[selectedWidgets.length - 1];
   if (insertAfter === null) return;
   
   const parentWidget = insertAfter?.widget.parentWidget;

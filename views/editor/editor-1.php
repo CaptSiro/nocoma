@@ -120,5 +120,21 @@
         <p class="blockquote error error-modal"></p>
       </div>
     </div>
+    
+    <div class="window form" id="theme-rename">
+      <div class="wrapper">
+        <p class="label">Theme name:</p>
+        <input type="text" name="theme-rename-field" id="theme-rename-field" value="Theme name">
+      </div>
+  
+      <div class="wrapper sideways-end">
+        <button class="cancel-modal">Cancel</button>
+        <button class="submit" type="submit">Rename</button>
+      </div>
+  
+      <div class="wrapper">
+        <p class="blockquote error error-modal"></p>
+      </div>
+    </div>
   </div>
   <div class="display-none" id="page-data">

@@ -19,6 +19,7 @@ $(".toggle-viewport").addEventListener("pointerdown", () => {
  * @property {number} convertedHeight
  * @property {number} width
  * @property {number} height
+ * @property {number} duration
  *
  * @callback ViewportListener
  * @param {ViewportDimensions} dimensions
@@ -36,8 +37,13 @@ let viewportDimensions;
 window.addEventListener("resize", viewportResize);
 
 onViewportResize(dimensions => {
-  viewport.style.width = dimensions.width + "px";
-  viewport.style.height = dimensions.height + "px";
+  viewport.animate({
+    width: dimensions.width + "px",
+    height: dimensions.height + "px",
+  }, {
+    duration: dimensions.duration ?? 250,
+    fill: "forwards"
+  });
 });
 
 viewportResize();
@@ -67,7 +73,8 @@ function viewportResize () {
     convertedWidth,
     convertedHeight,
     width: Math.max(Math.min(convertedWidth, maxWidth), 324.22),
-    height: Math.min(convertedHeight, maxHeight)
+    height: Math.min(convertedHeight, maxHeight),
+    duration: 250
   }
   
   for (const viewportListener of viewportListeners) {
@@ -526,6 +533,7 @@ themeCreatorSubmit.addEventListener("click", async () => {
     console.log(generationResponse);
     themeCreatorError.classList.add("show");
     themeCreatorError.textContent = generationResponse.error;
+    themeCreatorSubmit.disabled = false;
     return;
   }
   
@@ -541,6 +549,7 @@ themeCreatorSubmit.addEventListener("click", async () => {
     console.log(themeChangeResponse);
     themeCreatorError.classList.add("show");
     themeCreatorError.textContent = generationResponse.error;
+    themeCreatorSubmit.disabled = false;
     return;
   }
   
@@ -612,7 +621,7 @@ document.body.addEventListener("dragover", evt => {
   evt.dataTransfer.dropEffect = "none";
   evt.stopPropagation();
 });
-async function cleanUpAfterDrag (evt) {
+async function cleanUpAfterDrag () {
   document.body.classList.remove("dragging");
   for (const widgetElement of $$("." + WIDGET_SELECTION_CLASS)) {
     widgetElement.classList.remove(WIDGET_SELECTION_CLASS);
@@ -678,11 +687,11 @@ function edit_deselectAll () {
   }
 }
 
-$("#edit-select-all").addEventListener("click", evt => {
+$("#edit-select-all").addEventListener("click", () => {
   edit_selectAll();
   stopDropdown();
 });
-$("#edit-deselect-all").addEventListener("click", evt => {
+$("#edit-deselect-all").addEventListener("click", () => {
   edit_deselectAll();
   stopDropdown();
 });
@@ -916,6 +925,10 @@ async function file_save () {
 }
 function file_open () {
   redirect(postLink);
+}
+function file_share () {
+  navigator.clipboard.writeText(postLink)
+    .then(() => alert("Link copied."))
 }
 function file_exit () {
   redirect(AJAX.SERVER_HOME + '/dashboard');
@@ -1628,3 +1641,29 @@ class ColorPicker {
     this.#display.value = ColorPicker.toHEX(color ?? this.getCurrentColor())
   }
 }
+
+
+
+
+
+
+
+
+
+
+
+f(); // projde
+
+new C(); // vyhodí error
+
+
+function f () {
+  console.log("Funkce byla zavolána předtím než byla definována");
+}
+
+class C {
+  constructor () {
+    console.log("Třída byla zavolána předtím než byla definována");
+  }
+}
+

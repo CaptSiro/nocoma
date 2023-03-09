@@ -1,8 +1,3 @@
-#appeal #post-title {
-  font-weight: bold;
-  font-style: italic;
-}
-
 #appeal textarea {
   background-color: var(--container-2);
   border: 1px solid var(--container-4);
@@ -148,19 +143,19 @@
 
 
 
-#themes {
-  container: theme-grid / inline-size;
-}
-@container theme-grid (inline-size > 1000px) {
-  .theme-view {
-    grid-template-columns: repeat(4, 1fr) !important;
-  }
-}
-@container theme-grid (inline-size > 1350px) {
-  .theme-view {
-    grid-template-columns: repeat(5, 1fr) !important;
-  }
-}
+/*#themes {*/
+/*  container: theme-grid / inline-size;*/
+/*}*/
+/*@container theme-grid (inline-size > 1000px) {*/
+/*  .theme-view {*/
+/*    grid-template-columns: repeat(4, 1fr) !important;*/
+/*  }*/
+/*}*/
+/*@container theme-grid (inline-size > 1350px) {*/
+/*  .theme-view {*/
+/*    grid-template-columns: repeat(5, 1fr) !important;*/
+/*  }*/
+/*}*/
 
 .theme-view {
   display: grid;

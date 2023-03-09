@@ -199,7 +199,7 @@
   
     <div class="window form large" id="appeal">
       <div class="wrapper">
-        <p class="label">Appeal for take down on post: <span id="post-title"></span></p>
+        <p class="label">Appeal for take down on post: <span class="important-span" id="post-title"></span></p>
       </div>
     
       <div class="wrapper">
@@ -212,6 +212,26 @@
       <div class="wrapper sideways-end">
         <button class="cancel-modal">Cancel</button>
         <button class="submit" type="submit">Submit</button>
+      </div>
+    
+      <div class="wrapper">
+        <p class="blockquote error error-modal"></p>
+      </div>
+    </div>
+  
+    <div class="window form large" id="take-down-message">
+      <div class="wrapper">
+        <p class="label">Take down for post <span class="important-span" id="post-title-message"></span>:</p>
+      </div>
+      
+      <div class="wrapper">
+        <p class="label white-space-normal" id="message-container"></p>
+      </div>
+    
+      <div class="divider"></div>
+    
+      <div class="wrapper sideways-end">
+        <button class="cancel-modal">Ok</button>
       </div>
     
       <div class="wrapper">

@@ -56,6 +56,11 @@ class WImage extends Widget {
     this.#imageElement = image;
     this.#imageContainer = imageContainer;
     this.childSupport = "none";
+    
+    json.position = (json.position ?? [50, 50])
+      .filter(any => typeof any === "number")
+      .map(number => clamp(0, 100, number));
+    
     this.#position = json.position ?? [50, 50];
     this.#imageElement.style.objectPosition = this.#position[0] + "% " + this.#position[1] + "%";
     
@@ -133,11 +138,18 @@ class WImage extends Widget {
           freeID(id);
           resolve();
         });
-    }).then(() => this.#dimensions.value = [json.width ?? 0.70, json.height ?? 400, json.borderRadius ?? 0, json.aspectRatio]);
+    }).then(() => this.#dimensions.value = [clamp(0.05, 1, json.width) ?? 0.70, clamp(16, 4096, json.height) ?? 400, clamp(0, 50, json.borderRadius) ?? 0, json.aspectRatio]);
   
-    
-    const resizeListener = () => {
+  
+    /**
+     * @param {ViewportDimensions} dimensions
+     */
+    const resizeListener = async dimensions => {
       if (this.#dimensions.value[3] === undefined || typeof this.#dimensions.value[3] !== "number") return;
+      
+      if (editable) {
+        await sleep((dimensions.duration ?? 250) + 10);
+      }
       
       const oldDimensions = this.#dimensions.value;
       oldDimensions[1] =
@@ -167,7 +179,6 @@ class WImage extends Widget {
     }
   
     this.#resizeable.content.style.height = height + "px";
-    // this.#resizeable.content.style.borderRadius = borderRadius + "%";
     this.#resizeable.setRadiusHandlesPositions(borderRadius);
     
     this.#resizeable.content.animate({
@@ -260,6 +271,10 @@ class WImage extends Widget {
       aspectRatio: this.#dimensions.value[3],
       position: this.#position
     };
+  }
+  
+  focus() {
+    inspect(this.inspectorHTML, this);
   }
 }
 widgets.define("WImage", WImage);

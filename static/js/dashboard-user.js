@@ -80,6 +80,27 @@ $("#appeal button.cancel-modal").addEventListener("click", () => {
 
 
 
+const takeDownMessageWindow = $("#take-down-message");
+const postTitle = takeDownMessageWindow.querySelector("#post-title-message");
+const takeDownMessage = takeDownMessageWindow.querySelector("#message-container");
+const takeDownMessageError = takeDownMessageWindow.querySelector(".error");
+takeDownMessageWindow.addEventListener("fetch", async () => {
+  takeDownMessageError.classList.remove("show");
+  takeDownMessageError.textContent = "";
+  
+  postTitle.textContent = takeDownMessageWindow.dataset.postTitle;
+  
+  takeDownMessage.innerHTML = "<i>Loading...</i>";
+  takeDownMessage.textContent = String(await AJAX.get(`/page/take-down/${takeDownMessageWindow.dataset.postID}/message`, TextHandler())
+    .catch(() => {
+      takeDownMessageError.classList.add("show");
+      takeDownMessageError.textContent = "Could not retrieve take down message.";
+      return "";
+    }));
+});
+
+
+
 //* load posts
 const postView = $(".post-view");
 
@@ -123,10 +144,18 @@ function loadPosts (index) {
                 }
               },
             }),
-            OptionalComponent(post.isTakenDown,
-              Div(__, [
-                Span("label", "appeal to take down")
-              ], {
+            ...OptionalComponents(post.isTakenDown,[
+              OptionBodyItem("View appeal message", {
+                listeners: {
+                  click: () => {
+                    const win = showWindow("take-down-message");
+                    win.dataset.postID = String(post.ID);
+                    win.dataset.postTitle = post.title;
+                    win.dispatchEvent(new CustomEvent("fetch"));
+                  }
+                }
+              }),
+              OptionBodyItem("Appeal to take down", {
                 listeners: {
                   click: () => {
                     postToAppealFor = post;
@@ -134,8 +163,8 @@ function loadPosts (index) {
                     showWindow("appeal");
                   }
                 }
-              })
-            )
+              }),
+            ])
           ])
         );
         

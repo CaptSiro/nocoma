@@ -143,6 +143,18 @@
   
   
   
+  $pageRouter->get("/take-down/:id/message/", [function (Request $request, Response $response) {
+    $takeDownResult = Website::getTakeDown(intval($request->param->get("id")));
+    
+    if ($takeDownResult->isFailure()) {
+      $response->error($takeDownResult->getFailure()->getMessage(), Response::NOT_FOUND);
+    }
+    
+    $response->send($takeDownResult->getSuccess()->message);
+  }], ["id" => Router::REGEX_NUMBER]);
+  
+  
+  
   //TODO: check for usage
   $pageRouter->patch("/isTakenDown/:id/:boolean", [
     Middleware::authorize(Middleware::LEVEL_ADMIN),

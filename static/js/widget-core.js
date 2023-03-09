@@ -213,9 +213,7 @@ class Widget {
     }
   }
   
-  focus () {
-    console.log("You should probably add a way that will show that the element is focused. Like it will appear in inspector and maybe the caret will be set to the end. Just sain.");
-  }
+  focus () {}
 
   /**
    * @returns {WidgetJSON[]}

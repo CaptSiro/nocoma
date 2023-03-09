@@ -21,11 +21,14 @@ class WHeader extends Widget {
     this.removeMargin();
     this.childSupport = this.childSupport;
   
-    const heading = Heading(1, "page-title", webpage.title, {
-      attributes: {
-        title: "Edit->Website Properties->Title",
+    const heading = Heading(1, "page-title", webpage.title, editable
+      ? {
+        attributes: {
+          title: "Edit->Website Properties->Title",
+        }
       }
-    });
+      : undefined
+    );
     const headingContainer = (
       Div("heading-container", [
         heading,
@@ -64,8 +67,13 @@ class WHeader extends Widget {
     
     if (editable) {
       const resizeListener = dimensions => {
-        this.rootElement.style.width = dimensions.width + "px";
-        this.rootElement.style.height = dimensions.height + "px";
+        this.rootElement.animate({
+          width: dimensions.width + "px",
+          height: dimensions.height + "px",
+        }, {
+          duration: dimensions.duration ?? 250,
+          fill: "forwards"
+        });
       };
       
       onViewportResize(resizeListener);

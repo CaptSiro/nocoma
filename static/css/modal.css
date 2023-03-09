@@ -67,6 +67,14 @@
 .window.form > * {
     white-space: nowrap;
 }
+.window.form > *.white-space-normal {
+    white-space: normal;
+}
+.window.form .important-span {
+    font-weight: bold;
+    font-style: italic;
+    white-space: normal;
+}
 .sideways-end {
     flex-direction: row !important;
     justify-content: flex-end;

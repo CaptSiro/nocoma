@@ -218,5 +218,9 @@ class WFileDownload extends Widget {
       name: this.#name
     };
   }
+  
+  focus() {
+    inspect(this.inspectorHTML, this);
+  }
 }
 widgets.define("WFileDownload", WFileDownload);

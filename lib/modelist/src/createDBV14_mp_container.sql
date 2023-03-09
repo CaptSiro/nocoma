@@ -8,22 +8,22 @@ SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
 
 -- -----------------------------------------------------
--- Schema nocoma
+-- Schema horakja19_1
 -- -----------------------------------------------------
-DROP SCHEMA IF EXISTS `nocoma` ;
+DROP SCHEMA IF EXISTS `horakja19_1` ;
 
 -- -----------------------------------------------------
--- Schema nocoma
+-- Schema horakja19_1
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `nocoma` DEFAULT CHARACTER SET utf8 ;
-USE `nocoma` ;
+CREATE SCHEMA IF NOT EXISTS `horakja19_1` DEFAULT CHARACTER SET utf8 ;
+USE `horakja19_1` ;
 
 -- -----------------------------------------------------
--- Table `nocoma`.`appeals`
+-- Table `horakja19_1`.`appeals`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `nocoma`.`appeals` ;
+DROP TABLE IF EXISTS `horakja19_1`.`appeals` ;
 
-CREATE TABLE IF NOT EXISTS `nocoma`.`appeals` (
+CREATE TABLE IF NOT EXISTS `horakja19_1`.`appeals` (
   `ID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `takedownsID` INT NOT NULL,
   `message` VARCHAR(1024) NULL,
@@ -35,42 +35,40 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `nocoma`.`comments`
+-- Table `horakja19_1`.`comments`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `nocoma`.`comments` ;
+DROP TABLE IF EXISTS `horakja19_1`.`comments` ;
 
-CREATE TABLE IF NOT EXISTS `nocoma`.`comments` (
+CREATE TABLE IF NOT EXISTS `horakja19_1`.`comments` (
   `ID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `websitesID` INT UNSIGNED NOT NULL,
   `usersID` INT UNSIGNED NOT NULL,
   `parentCommentID` INT UNSIGNED NULL,
   `timePosted` DATETIME NOT NULL DEFAULT NOW(),
   `content` VARCHAR(2048) NOT NULL,
-  PRIMARY KEY (`ID`),
-  UNIQUE INDEX `ID_UNIQUE` (`ID` ASC) VISIBLE)
+  PRIMARY KEY (`ID`))
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `nocoma`.`dynamicThemes`
+-- Table `horakja19_1`.`dynamicThemes`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `nocoma`.`dynamicThemes` ;
+DROP TABLE IF EXISTS `horakja19_1`.`dynamicThemes` ;
 
-CREATE TABLE IF NOT EXISTS `nocoma`.`dynamicThemes` (
+CREATE TABLE IF NOT EXISTS `horakja19_1`.`dynamicThemes` (
   `dynamicThemesID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `themesSRC` CHAR(10) NOT NULL,
   `mediaSRC` CHAR(10) NULL,
-  UNIQUE INDEX `dynamicThemesID_UNIQUE` (`dynamicThemesID` ASC) VISIBLE,
   PRIMARY KEY (`dynamicThemesID`))
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `nocoma`.`media`
+-- Table `horakja19_1`.`media`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `nocoma`.`media` ;
+DROP TABLE IF EXISTS `horakja19_1`.`media` ;
 
-CREATE TABLE IF NOT EXISTS `nocoma`.`media` (
+CREATE TABLE IF NOT EXISTS `horakja19_1`.`media` (
   `src` CHAR(10) NOT NULL,
   `usersID` INT UNSIGNED NOT NULL,
   `basename` VARCHAR(200) NULL,
@@ -79,17 +77,16 @@ CREATE TABLE IF NOT EXISTS `nocoma`.`media` (
   `timeCreated` DATETIME NOT NULL DEFAULT NOW(),
   `hash` CHAR(40) NOT NULL,
   `size` BIGINT UNSIGNED NOT NULL,
-  PRIMARY KEY (`src`),
-  UNIQUE INDEX `src_UNIQUE` (`src` ASC) VISIBLE)
+  PRIMARY KEY (`src`))
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `nocoma`.`passwordRecoveries`
+-- Table `horakja19_1`.`passwordRecoveries`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `nocoma`.`passwordRecoveries` ;
+DROP TABLE IF EXISTS `horakja19_1`.`passwordRecoveries` ;
 
-CREATE TABLE IF NOT EXISTS `nocoma`.`passwordRecoveries` (
+CREATE TABLE IF NOT EXISTS `horakja19_1`.`passwordRecoveries` (
   `passwordRecoveriesID` INT UNSIGNED NOT NULL,
   `urlArg` CHAR(32) NOT NULL,
   PRIMARY KEY (`passwordRecoveriesID`))
@@ -97,22 +94,22 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `nocoma`.`pinnedComments`
+-- Table `horakja19_1`.`pinnedComments`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `nocoma`.`pinnedComments` ;
+DROP TABLE IF EXISTS `horakja19_1`.`pinnedComments` ;
 
-CREATE TABLE IF NOT EXISTS `nocoma`.`pinnedComments` (
+CREATE TABLE IF NOT EXISTS `horakja19_1`.`pinnedComments` (
   `commentsID` INT UNSIGNED NOT NULL,
   PRIMARY KEY (`commentsID`))
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `nocoma`.`plannedWebsites`
+-- Table `horakja19_1`.`plannedWebsites`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `nocoma`.`plannedWebsites` ;
+DROP TABLE IF EXISTS `horakja19_1`.`plannedWebsites` ;
 
-CREATE TABLE IF NOT EXISTS `nocoma`.`plannedWebsites` (
+CREATE TABLE IF NOT EXISTS `horakja19_1`.`plannedWebsites` (
   `websitesID` INT UNSIGNED NOT NULL,
   `releaseDate` DATETIME NOT NULL,
   PRIMARY KEY (`websitesID`))
@@ -120,11 +117,11 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `nocoma`.`profilePictures`
+-- Table `horakja19_1`.`profilePictures`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `nocoma`.`profilePictures` ;
+DROP TABLE IF EXISTS `horakja19_1`.`profilePictures` ;
 
-CREATE TABLE IF NOT EXISTS `nocoma`.`profilePictures` (
+CREATE TABLE IF NOT EXISTS `horakja19_1`.`profilePictures` (
   `src` CHAR(10) NOT NULL,
   `usersID` INT UNSIGNED NOT NULL,
   `hash` CHAR(40) NOT NULL,
@@ -134,11 +131,11 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `nocoma`.`reactions`
+-- Table `horakja19_1`.`reactions`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `nocoma`.`reactions` ;
+DROP TABLE IF EXISTS `horakja19_1`.`reactions` ;
 
-CREATE TABLE IF NOT EXISTS `nocoma`.`reactions` (
+CREATE TABLE IF NOT EXISTS `horakja19_1`.`reactions` (
   `commentsID` INT UNSIGNED NOT NULL,
   `usersID` INT UNSIGNED NOT NULL,
   `value` TINYINT(1) NOT NULL,
@@ -147,11 +144,11 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `nocoma`.`takedowns`
+-- Table `horakja19_1`.`takedowns`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `nocoma`.`takedowns` ;
+DROP TABLE IF EXISTS `horakja19_1`.`takedowns` ;
 
-CREATE TABLE IF NOT EXISTS `nocoma`.`takedowns` (
+CREATE TABLE IF NOT EXISTS `horakja19_1`.`takedowns` (
   `websitesID` INT UNSIGNED NOT NULL,
   `message` VARCHAR(1024) NOT NULL,
   PRIMARY KEY (`websitesID`))
@@ -159,40 +156,38 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `nocoma`.`themes`
+-- Table `horakja19_1`.`themes`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `nocoma`.`themes` ;
+DROP TABLE IF EXISTS `horakja19_1`.`themes` ;
 
-CREATE TABLE IF NOT EXISTS `nocoma`.`themes` (
+CREATE TABLE IF NOT EXISTS `horakja19_1`.`themes` (
   `src` CHAR(10) NOT NULL,
   `usersID` INT UNSIGNED NULL DEFAULT 0,
   `name` VARCHAR(64) NOT NULL,
   `hash` CHAR(40) NOT NULL,
-  PRIMARY KEY (`src`),
-  UNIQUE INDEX `ID_UNIQUE` (`src` ASC) VISIBLE)
+  PRIMARY KEY (`src`))
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `nocoma`.`timeoutMails`
+-- Table `horakja19_1`.`timeoutMails`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `nocoma`.`timeoutMails` ;
+DROP TABLE IF EXISTS `horakja19_1`.`timeoutMails` ;
 
-CREATE TABLE IF NOT EXISTS `nocoma`.`timeoutMails` (
+CREATE TABLE IF NOT EXISTS `horakja19_1`.`timeoutMails` (
   `ID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `usersID` INT UNSIGNED NOT NULL,
   `expires` BIGINT UNSIGNED NOT NULL,
-  PRIMARY KEY (`ID`),
-  UNIQUE INDEX `ID_UNIQUE` (`ID` ASC) VISIBLE)
+  PRIMARY KEY (`ID`))
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `nocoma`.`users`
+-- Table `horakja19_1`.`users`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `nocoma`.`users` ;
+DROP TABLE IF EXISTS `horakja19_1`.`users` ;
 
-CREATE TABLE IF NOT EXISTS `nocoma`.`users` (
+CREATE TABLE IF NOT EXISTS `horakja19_1`.`users` (
   `ID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `themesSRC` CHAR(10) NULL,
   `email` VARCHAR(320) NOT NULL,
@@ -202,18 +197,16 @@ CREATE TABLE IF NOT EXISTS `nocoma`.`users` (
   `isVerified` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
   `isDisabled` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
   `username` VARCHAR(32) NOT NULL,
-  PRIMARY KEY (`ID`),
-  UNIQUE INDEX `usersID_UNIQUE` (`ID` ASC) VISIBLE,
-  UNIQUE INDEX `website_UNIQUE` (`website` ASC) VISIBLE)
+  PRIMARY KEY (`ID`))
 ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `nocoma`.`verificationCodes`
+-- Table `horakja19_1`.`verificationCodes`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `nocoma`.`verificationCodes` ;
+DROP TABLE IF EXISTS `horakja19_1`.`verificationCodes` ;
 
-CREATE TABLE IF NOT EXISTS `nocoma`.`verificationCodes` (
+CREATE TABLE IF NOT EXISTS `horakja19_1`.`verificationCodes` (
   `verificationCodesID` INT UNSIGNED NOT NULL,
   `code` CHAR(6) NOT NULL,
   PRIMARY KEY (`verificationCodesID`))
@@ -221,11 +214,11 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `nocoma`.`websites`
+-- Table `horakja19_1`.`websites`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `nocoma`.`websites` ;
+DROP TABLE IF EXISTS `horakja19_1`.`websites` ;
 
-CREATE TABLE IF NOT EXISTS `nocoma`.`websites` (
+CREATE TABLE IF NOT EXISTS `horakja19_1`.`websites` (
   `ID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `themesSRC` CHAR(10) NULL,
   `thumbnailSRC` CHAR(10) NULL,
@@ -233,43 +226,40 @@ CREATE TABLE IF NOT EXISTS `nocoma`.`websites` (
   `src` CHAR(10) NOT NULL,
   `timeCreated` DATETIME NOT NULL DEFAULT NOW(),
   `title` VARCHAR(64) NOT NULL,
-  `isTemplate` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
   `isPublic` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
   `areCommentsAvailable` TINYINT(1) UNSIGNED NOT NULL DEFAULT 1,
   `isHomepage` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
   `isTakenDown` TINYINT(1) UNSIGNED NOT NULL DEFAULT 0,
-  PRIMARY KEY (`ID`),
-  UNIQUE INDEX `ID_UNIQUE` (`ID` ASC) VISIBLE,
-  UNIQUE INDEX `src_UNIQUE` (`src` ASC) VISIBLE)
+  PRIMARY KEY (`ID`))
 ENGINE = InnoDB;
 
-USE `nocoma`;
+USE `horakja19_1`;
 
 DELIMITER $$
 
-USE `nocoma`$$
-DROP TRIGGER IF EXISTS `nocoma`.`takedowns_BEFORE_DELETE` $$
-USE `nocoma`$$
-CREATE DEFINER = CURRENT_USER TRIGGER `nocoma`.`takedowns_BEFORE_DELETE` BEFORE DELETE ON `takedowns` FOR EACH ROW
+USE `horakja19_1`$$
+DROP TRIGGER IF EXISTS `horakja19_1`.`takedowns_BEFORE_DELETE` $$
+USE `horakja19_1`$$
+CREATE DEFINER = CURRENT_USER TRIGGER `horakja19_1`.`takedowns_BEFORE_DELETE` BEFORE DELETE ON `takedowns` FOR EACH ROW
 BEGIN
 	DELETE FROM `appeals` WHERE `appeals`.takedownsID = OLD.websitesID;
 END$$
 
 
-USE `nocoma`$$
-DROP TRIGGER IF EXISTS `nocoma`.`timeoutMails_BEFORE_DELETE` $$
-USE `nocoma`$$
-CREATE DEFINER = CURRENT_USER TRIGGER `nocoma`.`timeoutMails_BEFORE_DELETE` BEFORE DELETE ON `timeoutMails` FOR EACH ROW
+USE `horakja19_1`$$
+DROP TRIGGER IF EXISTS `horakja19_1`.`timeoutMails_BEFORE_DELETE` $$
+USE `horakja19_1`$$
+CREATE DEFINER = CURRENT_USER TRIGGER `horakja19_1`.`timeoutMails_BEFORE_DELETE` BEFORE DELETE ON `timeoutMails` FOR EACH ROW
 BEGIN
 	DELETE FROM `passwordRecoveries` WHERE `passwordRecoveries`.passwordRecoveriesID = OLD.ID;
     DELETE FROM `verificationCodes` WHERE `verificationCodes`.verificationCodesID = OLD.ID;
 END$$
 
 
-USE `nocoma`$$
-DROP TRIGGER IF EXISTS `nocoma`.`websites_BEFORE_DELETE` $$
-USE `nocoma`$$
-CREATE DEFINER = CURRENT_USER TRIGGER `nocoma`.`websites_BEFORE_DELETE` BEFORE DELETE ON `websites` FOR EACH ROW
+USE `horakja19_1`$$
+DROP TRIGGER IF EXISTS `horakja19_1`.`websites_BEFORE_DELETE` $$
+USE `horakja19_1`$$
+CREATE DEFINER = CURRENT_USER TRIGGER `horakja19_1`.`websites_BEFORE_DELETE` BEFORE DELETE ON `websites` FOR EACH ROW
 BEGIN
 
 END

@@ -43,17 +43,23 @@
   
   
   
-  $router->get("/tinter", [function (Request $request, Response $response) {
-    require_once __DIR__ . "/models/DynamicTheme.php";
-    
-    $response->json(
-      ["src" => DynamicTheme::createFrom(
-        "My theme#1",
-        "3ij5yl74WZ",
-        "__test-bot__", 4, 2)
-        ->forwardFailure($response)
-        ->getSuccess()]
-    );
+//  $router->get("/tinter", [function (Request $request, Response $response) {
+//    require_once __DIR__ . "/models/DynamicTheme.php";
+//
+//    $response->json(
+//      ["src" => DynamicTheme::createFrom(
+//        "My theme#1",
+//        "3ij5yl74WZ",
+//        "__test-bot__", 4, 2)
+//        ->forwardFailure($response)
+//        ->getSuccess()]
+//    );
+//  }]);
+  
+  
+  
+  $router->get("/favicon.ico", [function (Request $request, Response $response) {
+    $response->readFile(__DIR__ . "/static/images/nocoma-icon.ico");
   }]);
   
   

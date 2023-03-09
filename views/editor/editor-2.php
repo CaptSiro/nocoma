@@ -10,6 +10,9 @@
             <span class="content">Save</span>
             <span class="hint">ctrl + s</span>
           </div>
+          <div class="dropdown-item" onclick="file_share()">
+            <span class="content">Share</span>
+          </div>
 <!--          <div class="dropdown-item inner-dropdown drop">-->
 <!--            <span class="content">Save as</span><span class="hint">ctrl + shift + s</span>-->
 <!--            <div class="dropdown">-->
@@ -18,9 +21,9 @@
 <!--              <div class="dropdown-item"><span class="content">.pdf</span></div>-->
 <!--            </div>-->
 <!--          </div>-->
-          <div class="dropdown-item">
-            <span class="content">Delete</span>
-          </div>
+<!--          <div class="dropdown-item">-->
+<!--            <span class="content">Delete</span>-->
+<!--          </div>-->
           <div class="dropdown-item next-section" onclick="file_open()">
             <span class="content">Open</span>
             <span class="hint">ctrl + o</span>

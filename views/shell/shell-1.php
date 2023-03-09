@@ -7,7 +7,7 @@
   <meta name="title" content="<?= htmlspecialchars($GLOBALS["webpage"]->title) ?>">
   <title><?= htmlspecialchars($GLOBALS["webpage"]->title) ?></title>
   
-  <link rel="icon" href="<?= $GLOBALS["__HOME__"] ?>/public/images/nocoma-icon.ico">
+  <link rel="icon" href="<?= $GLOBALS["__SERVER_HOME__"] ?>/public/images/nocoma-icon.ico">
   
   <script src="<?= $GLOBALS["__SERVER_HOME__"] ?>/public/js/main-v2.js"></script>
   <script>
@@ -38,6 +38,10 @@
 
     .notice-box p.blockquote.note {
       margin-top: 0;
+    }
+    
+    body {
+      overflow-x: hidden;
     }
   </style>
 </head>

@@ -124,7 +124,7 @@ body {
 .w-root {
   width: 100%;
   min-height: 100%;
-  overflow-x: hidden;
+  overflow: hidden;
   /*padding: 0 16px;*/
 
   background-color: var(--container-0);

@@ -142,6 +142,7 @@ class WList extends ContainerWidget {
   }
   
   focus() {
+    inspect(this.inspectorHTML, this);
     this.children[this.children.length - 1].focus();
   }
   

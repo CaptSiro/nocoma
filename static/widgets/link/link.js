@@ -142,6 +142,10 @@ class WLink extends Widget {
     };
   }
   
+  focus() {
+    inspect(this.inspectorHTML, this);
+  }
+  
   isSelectAble() {
     return false;
   }

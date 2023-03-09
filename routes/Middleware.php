@@ -40,12 +40,7 @@
           ->forwardFailure($response)
           ->getSuccess();
         if (preg_match("/^.*$hostName\/$/", $_SERVER["HTTP_REFERER"])) {
-          $response->setHeader(Response::HEADER_CORS_METHODS, $methods);
-          $response->setHeader(Response::HEADER_CORS_HEADERS, "access-control-allow-origin");
-          $response->setHeader(Response::HEADER_CORS_CREDENTIALS, "true");
-          $response->setHeader(Response::HEADER_CORS_ORIGIN,
-            substr($_SERVER["HTTP_REFERER"], 0, strlen($_SERVER["HTTP_REFERER"]) - 1)
-          );
+          $response->setCORS($methods);
         }
         
         if ($doSend) $response->end();

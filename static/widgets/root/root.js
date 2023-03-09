@@ -101,6 +101,7 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
     const root = new WRoot(json, null, editable);
     
     for (const child of json.children) {
+      // if (child.type === "WCommand") continue;
       await root.page.appendWidget(widgets.get(child.type).build(child, root.page, editable));
     }
     

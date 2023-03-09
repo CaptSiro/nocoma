@@ -32,11 +32,11 @@
       
       $themeCount = Count::parseProps(Database::get()->fetch(
         "SELECT COUNT(media.src) amount FROM `media`
-        LEFT JOIN dynamicthemes ON media.src = dynamicthemes.mediaSRC
+        LEFT JOIN dynamicThemes ON media.src = dynamicThemes.mediaSRC
         WHERE media.src = :src
             AND mimeContentType LIKE 'image/%'
-            AND dynamicthemes.a = :a
-            AND dynamicthemes.b = :b",
+            AND dynamicThemes.a = :a
+            AND dynamicThemes.b = :b",
         Count::class,
         [
           new DatabaseParam("src", $imageSRC, PDO::PARAM_STR),
@@ -49,11 +49,11 @@
         return fail(new InvalidArgumentExc("Theme already exists."));
 //        $themeSRC = Database::get()->fetch(
 //          "SELECT themesSRC FROM `media`
-//          LEFT JOIN dynamicthemes ON media.src = dynamicthemes.mediaSRC
+//          LEFT JOIN dynamicThemes ON media.src = dynamicThemes.mediaSRC
 //          WHERE media.src = :src
 //            AND mimeContentType LIKE 'image/%'
-//            AND dynamicthemes.a = :a
-//            AND dynamicthemes.b = :b",
+//            AND dynamicThemes.a = :a
+//            AND dynamicThemes.b = :b",
 //          stdClass::class,
 //          [
 //            new DatabaseParam("src", $imageSRC, PDO::PARAM_STR),
@@ -220,7 +220,7 @@
       }
       
       $sideEffect = Database::get()->statement(
-        "INSERT INTO dynamicthemes (themesSRC, mediaSRC, a, b)
+        "INSERT INTO dynamicThemes (themesSRC, mediaSRC, a, b)
         VALUE (:themesSRC, :mediaSRC, :a, :b)",
         [
           new DatabaseParam("themesSRC", $sourceResult->getSuccess(), PDO::PARAM_STR),

@@ -108,6 +108,16 @@
         $this->headers[$header[0]] = $header[1];
       }
     }
+    public function setCORS (string $methods = "GET, HEAD, POST, PUT, PATCH, DELETE") {
+      $this->setHeader(Response::HEADER_CORS_METHODS, $methods);
+      $this->setHeader(Response::HEADER_CORS_HEADERS, "access-control-allow-origin");
+      $this->setHeader(Response::HEADER_CORS_CREDENTIALS, "true");
+    
+      $origin = isset($_SERVER["HTTP_REFERER"])
+        ? substr($_SERVER["HTTP_REFERER"], 0, strlen($_SERVER["HTTP_REFERER"]) - 1)
+        : "*";
+      $this->setHeader(Response::HEADER_CORS_ORIGIN, $origin);
+    }
     public static function getMimeType (string $file): Result {
       if (!file_exists($file)) {
         return fail(new NotFoundExc("Could not find file: '$file'"));

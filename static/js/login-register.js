@@ -143,6 +143,7 @@ registerSubmit.addEventListener("click", evt => {
     if (json.error !== undefined) {
       registerErrorView.textContent = "Server: " + json.error;
       registerErrorView.classList.add("show");
+      return;
     }
     
     registerErrorView.textContent = "";

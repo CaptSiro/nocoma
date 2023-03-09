@@ -4,6 +4,7 @@ class WCommand extends Widget { // var is used because it creates reference on g
   // or json.children for array of widgets
   /**
    * @typedef CommandJSONType
+   * @param {string} text
    * 
    * @typedef {CommandJSONType & WidgetJSON} CommandJSON
    */
@@ -14,7 +15,7 @@ class WCommand extends Widget { // var is used because it creates reference on g
    * @param {boolean} editable
    */
   constructor (json, parent, editable = false) {
-    super(Span("w-command show-hint"), parent, editable);
+    super(Span("w-command show-hint", json?.text), parent, editable);
     this.childSupport = "none";
   }
 
@@ -209,10 +210,20 @@ class WCommand extends Widget { // var is used because it creates reference on g
    * @param {CommandJSON} json
    * @param {Widget} parent
    * @param {boolean} editable
-   * @returns {WCommand}
+   * @returns {WCommand | WText}
    */
   static build (json, parent, editable = false) {
-    return this.default(parent);
+    if (editable === false) {
+      return WText.build({
+        type: "WText",
+        textEditor: {
+          content: [json.text ?? ""],
+          mode: "simple"
+        }
+      }, parent, editable);
+    }
+    
+    return new WCommand(json, parent, editable);
   }
 
   /**
@@ -232,7 +243,8 @@ class WCommand extends Widget { // var is used because it creates reference on g
   save () {
     //TODO: when content => file_save as text (more on Notion)
     return {
-      type: "WCommand"
+      type: "WCommand",
+      text: this.rootElement.textContent
     };
   }
 

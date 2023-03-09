@@ -36,7 +36,7 @@
 
 
   class Parser {
-    public static function ON_FAIL () {
+    public static function ON_FAIL (): Closure {
       return function (Exc $failure) {
         global $res;
         if (!isset($res)) {
@@ -48,7 +48,7 @@
       };
     }
 
-    public $registry = [];
+    public array $registry = [];
     private function addRecord (string $class, Record $r) {
       $this->registry[$class] = $r;
       file_put_contents(__DIR__ . "/" . SAVE_FILE, json_encode($this->registry));

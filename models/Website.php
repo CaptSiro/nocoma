@@ -2,12 +2,20 @@
 
   require_once __DIR__ . "/../lib/modelist/modelist.php";
   require_once __DIR__ . "/../lib/retval/retval.php";
+  require_once __DIR__ . "/../lib/susmail/susmail.php";
+  require_once __DIR__ . "/../lib/dotenv/dotenv.php";
+  require_once __DIR__ . "/../lib/paths.php";
+  
+  $env = new Env(ENV_FILE);
+  
+  require_once __DIR__ . "/User.php";
+  
 
   class Website extends StrictModel {
     protected $ID, $usersID, $website, $themesSRC, $thumbnailSRC, $thumbnail, $src, $timeCreated, $title,
       $isTemplate, $isPublic, $areCommentsAvailable, $isHomePage, $isTakenDown, $releaseDate;
     const ALL_COLUMNS = ["ID", "usersID", "thumbnailSRC", "src", "timeCreated", "title",
-      "isTemplate", "isPublic", "isHomePage"];
+      "isPublic", "isHomePage"];
     
     const TABLE_NAME = "websites";
     const PLANNED_WEBSITES_TABLE_NAME = "plannedWebsites";
@@ -39,7 +47,7 @@
     
     public static function parseProps($objectOrArray) {
       $callback = function ($website) {
-        if ($website->releaseDate !== null && new DateTime() > new DateTime($website->releaseDate)) {
+        if (isset($website->releaseDate) && new DateTime() > new DateTime($website->releaseDate)) {
           $website->ID = intval($website->ID);
           Website::markPublic($website);
         }
@@ -130,16 +138,75 @@
         ]
       );
     }
+  
+    /**
+     * @param int $websiteID
+     * @return Result Success([User, Website])
+     */
+    public static function getTakeDownInfo (int $websiteID): Result {
+      $websiteResult = Website::getByID($websiteID);
+      if ($websiteResult->isFailure()) {
+        return $websiteResult;
+      }
+  
+      $userResult = User::get($websiteResult->getSuccess()->usersID);
+      if ($userResult->isFailure()) {
+        return $userResult;
+      }
+      
+      return success([$userResult->getSuccess(), $websiteResult->getSuccess()]);
+    }
+  
+    public static function getTakeDown(int $id): Result {
+      $takeDown = Database::get()->fetch(
+        "SELECT
+            websitesID,
+            message
+        FROM
+            takedowns
+        WHERE websitesID = :id",
+        stdClass::class,
+        [new DatabaseParam("id", $id)]
+      );
+      
+      if ($takeDown === false) {
+        return fail(new NotFoundExc("Take down does not exist for such ID."));
+      }
+      
+      return success($takeDown);
+    }
+    
     public static function takeDown (int $websiteID, string $message): Result {
       try {
-        return success(Database::get()->statement(
+        $result = Database::get()->statement(
           "INSERT INTO `takeDowns` (`websitesID`, `message`)
          VALUES (:websiteID, :message)",
           [
             new DatabaseParam("websiteID", $websiteID),
             new DatabaseParam("message", $message, PDO::PARAM_STR)
           ]
-        ));
+        );
+        
+        global $env;
+        $doSendEmailsResult = $env->get("DO_SEND_EMAILS");
+        
+        if ($result->rowCount == 1 && $doSendEmailsResult->isSuccess() && $doSendEmailsResult->getSuccess() === "true") {
+          $infoResult = self::getTakeDownInfo($websiteID);
+          if ($infoResult->isFailure()) {
+            return $infoResult;
+          }
+  
+          /**
+           * @var User $user
+           * @var Website $website
+           */
+          $user = $infoResult->getSuccess()[0];
+          $website = $infoResult->getSuccess()[1];
+          
+          MailTemplate::postTakedown($user, $website->title, $message)->send();
+        }
+        
+        return success($result);
       } catch (PDOException $exception) {
         return fail(new InvalidArgumentExc("This post is already taken down."));
       }
@@ -185,7 +252,7 @@
         [new DatabaseParam("id", $id)]
       );
     
-      if (!isset($post->ID)) {
+      if ($post === false) {
         return fail(new NotFoundExc("Could not find website by given ID."));
       }
     

@@ -1,7 +1,11 @@
 <?php
   
   require_once __DIR__ . "/../lib/routepass/routers.php";
+  require_once __DIR__ . "/../lib/susmail/susmail.php";
+  require_once __DIR__ . "/../lib/dotenv/dotenv.php";
   require_once __DIR__ . "/../lib/paths.php";
+  
+  $env = new Env(ENV_FILE);
   
   require_once __DIR__ . "/Middleware.php";
   
@@ -51,6 +55,24 @@
   
   $userRouter->patch("/isDisabled/:id/:boolean", [
     function (Request $request, Response $response) {
+      global $env;
+      $env->get("DO_SEND_EMAILS")->succeeded(function ($value) use ($request) {
+        if (!($value === "true")) {
+          return;
+        }
+        
+        $user = User::get(intval($request->param->get("id")));
+        if ($user->isFailure()) {
+          return;
+        }
+        
+        if (boolval($request->param->get("boolean") === true)) {
+          MailTemplate::userBanned($user->getSuccess())->send();
+        } else {
+          MailTemplate::userUnbanned($user->getSuccess())->send();
+        }
+      });
+    
       $response->json(User::set(
         intval($request->param->get("id")),
         "isDisabled",

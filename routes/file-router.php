@@ -42,7 +42,13 @@
   
   
   
+  $fileRouter->options("/:websiteSRC/:file", [Middleware::corsAllowAll("GET")], [
+    "websiteSRC" => Router::REGEX_BASE64_URL_SAFE,
+    "file" => Router::REGEX_ANY,
+  ]);
   $fileRouter->get("/:websiteSRC/:file", [function (Request $request, Response $response) {
+    $response->setCORS();
+    
     $website = Website::getBySourceWithUser($request->param->get("websiteSRC"))
       ->forwardFailure($response)
       ->getSuccess()->website;

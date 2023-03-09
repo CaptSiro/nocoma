@@ -223,9 +223,7 @@
   
     MailTemplate::passwordRecovery(
       $user,
-      (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] === "on"
-        ? "https"
-        : "http") . "://$_SERVER[HTTP_HOST]" . Response::createRedirectURL("/auth/password-recovery/$argument")
+      Response::createRedirectURL("/auth/password-recovery/$argument")
     )->send();
   
     $response->json((object)["next" => "forgotten-password-2"]);

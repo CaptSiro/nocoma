@@ -4,6 +4,12 @@
   require_once __DIR__ . "/../lib/retval/retval.php";
   
   require_once __DIR__ . "/User.php";
+  require_once __DIR__ . "/Website.php";
+  
+  require_once __DIR__ . "/../lib/dotenv/dotenv.php";
+  require_once __DIR__ . "/../lib/paths.php";
+  
+  $env = new Env(ENV_FILE);
   
   class Appeal extends StrictModel {
     protected $ID, $takedownsID, $message, $hasBeenRead, $dateAdded, $hasBeenAccepted;
@@ -47,19 +53,69 @@
         [new DatabaseParam("id", $id)]
       );
     }
-    public static function accept (int $id): Result {
-      $appealResult = self::get($id);
+  
+    /**
+     * @param $appealID
+     * @return Result Success([Appeal, User, Website])
+     */
+    public static function getAppealInfo ($appealID): Result {
+      $appealResult = self::get($appealID);
       if ($appealResult->isFailure()) {
         return $appealResult;
       }
-      
+  
       /**
        * @var Appeal $appeal
        */
       $appeal = $appealResult->getSuccess();
+  
+      $infoResult = Website::getTakeDownInfo($appeal->takedownsID);
+      if ($infoResult->isFailure()) {
+        return $infoResult;
+      }
+      
+      return success([$appeal, ...$infoResult->getSuccess()]);
+    }
+    
+    public static function accept (int $id): Result {
+      $infoResult = self::getAppealInfo($id);
+  
+      /**
+       * @var User $user
+       * @var Website $website
+       * @var Appeal $appeal
+       */
+      [$appeal, $user, $website] = $infoResult->getSuccess();
+      
+      global $env;
+      $doSendEmailsResult = $env->get("DO_SEND_EMAILS");
+      
+      if ($doSendEmailsResult->isSuccess() && $doSendEmailsResult->getSuccess() === "true") {
+        MailTemplate::appealAccepted($user, $website->title)->send();
+      }
       
       return Website::removeTakeDown($appeal->takedownsID);
     }
+    
+    public static function decline (int $id): Result {
+      global $env;
+      $doSendEmailsResult = $env->get("DO_SEND_EMAILS");
+  
+      if ($doSendEmailsResult->isSuccess() && $doSendEmailsResult->getSuccess() === "true") {
+        $infoResult = self::getAppealInfo($id);
+    
+        /**
+         * @var User $user
+         * @var Website $website
+         */
+        [$_, $user, $website] = $infoResult->getSuccess();
+    
+        MailTemplate::appealAccepted($user, $website->title)->send();
+      }
+      
+      return self::delete($id);
+    }
+    
     public static function delete (int $id): Result {
       return success(Database::get()->statement(
         "DELETE FROM `appeals` WHERE `ID` = :id LIMIT 1",

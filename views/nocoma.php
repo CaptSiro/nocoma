@@ -15,7 +15,7 @@
   <link rel="icon" href="<?= $GLOBALS["__HOME__"] ?>/public/images/nocoma-icon.ico">
 
   <script src="<?= $GLOBALS["__HOME__"] ?>/public/js/components/Renderer3D.js"></script>
-  <script src="<?=$GLOBALS["__HOME__"]?>/public/js/main-v2.js"></script>
+  <script src="<?= $GLOBALS["__HOME__"] ?>/public/js/main-v2.js"></script>
   <script>
     AJAX.DOMAIN_HOME = "<?=$GLOBALS["__HOME__"]?>";
     AJAX.SERVER_HOME = "<?=$GLOBALS["__SERVER_HOME__"] ?? $GLOBALS["__HOME__"]?>";
@@ -23,10 +23,10 @@
   <script src="<?= $GLOBALS["__HOME__"] ?>/public/js/theme.js"></script>
   <script src="<?= $GLOBALS["__HOME__"] ?>/public/js/nocoma.js" defer></script>
 
-  <link href='https://css.gg/chevron-double-down.css' rel='stylesheet'>
-  <link href='https://css.gg/facebook.css' rel='stylesheet'>
-  <link href='https://css.gg/youtube.css' rel='stylesheet'>
-  <link href='https://css.gg/instagram.css' rel='stylesheet'>
+<!--  <link href='https://css.gg/chevron-double-down.css' rel='stylesheet'>-->
+<!--  <link href='https://css.gg/facebook.css' rel='stylesheet'>-->
+<!--  <link href='https://css.gg/youtube.css' rel='stylesheet'>-->
+<!--  <link href='https://css.gg/instagram.css' rel='stylesheet'>-->
 </head>
 <body>
   <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="display: none;">
@@ -85,10 +85,11 @@
     </div>
     <div class="text">
       <div class="container">
-        <h3>Lorem ipsum dolor sit amet.</h3>
-        <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Placeat eaque sapiente odit possimus quaerat iste praesentium ad quia, corrupti, tempore maiores quis id vel soluta alias magni, nulla optio consequuntur?</p>
-        <p>Labore animi perspiciatis ipsa sed quisquam odit, assumenda fugiat, eveniet harum maiores excepturi omnis facilis, quas distinctio repellat consequatur totam a voluptatem aspernatur at velit saepe nulla. Nihil, sequi accusamus!</p>
-        <p>Possimus, nobis dicta ratione dolore reprehenderit totam qui itaque esse ut quisquam magnam minus, laudantium culpa odio quaerat! Quas cumque blanditiis ex soluta consectetur obcaecati. Saepe ut impedit quis modi!</p>
+        <h3>Why website building app?</h3>
+        <p>Create a website you'll love with our website building app!</p>
+        <p>Our user-friendly app offers a range of features that make it easy to design, customize, and launch your website in no time.</p>
+        <p>With our drag-and-drop interface, dynamic themes, and mobile-responsive designs, you can create a stunning website that looks great on any device. Best of all, our app offers free hosting, so you can get your website online without breaking the bank.</p>
+        <p>Start building your dream website today with our all-in-one website building app!</p>
       </div>
     </div>
   </section>
@@ -97,6 +98,8 @@
     <div class="text flipped">
       <div class="container">
         <h3>Wide library of themes</h3>
+        <p>Transform your website with dynamic image themes!</p>
+        <p>Our app offers a unique feature that turns your favorite images into stunning website themes. Simply upload your image, and our app will automatically create a dynamic theme that perfectly complements your content. With our image themes, you can add a personalized touch to your website and captivate your audience.</p>
         <p>User selectable website themes are a great way to customize the look and feel of your website. With a wide range of themes to choose from, you can create a unique and personalized experience for your visitors.</p>
         <p>With themes that range from modern and minimal to vibrant and professional, you can find the perfect theme to match your brand and content.</p>
       </div>
@@ -118,10 +121,10 @@
     </div>
     <div class="text">
       <div class="container">
-        <h3>Lorem ipsum dolor sit amet.</h3>
-        <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Placeat eaque sapiente odit possimus quaerat iste praesentium ad quia, corrupti, tempore maiores quis id vel soluta alias magni, nulla optio consequuntur?</p>
-        <p>Labore animi perspiciatis ipsa sed quisquam odit, assumenda fugiat, eveniet harum maiores excepturi omnis facilis, quas distinctio repellat consequatur totam a voluptatem aspernatur at velit saepe nulla. Nihil, sequi accusamus!</p>
-        <p>Possimus, nobis dicta ratione dolore reprehenderit totam qui itaque esse ut quisquam magnam minus, laudantium culpa odio quaerat! Quas cumque blanditiis ex soluta consectetur obcaecati. Saepe ut impedit quis modi!</p>
+        <h3>Easy to edit</h3>
+        <p>Creating a website has never been easier with our website building app!</p>
+        <p>Our user-friendly drag-and-drop interface allows you to create a professional-looking website in no time, without any coding knowledge. With just a few clicks, you can choose from a wide range of widgets, including text boxes, images, and videos.</p>
+        <p>Our app is perfect for beginners and experienced website builders alike, offering a seamless website building experience that will save you time and hassle. Don't wait any longer, start building your dream website today with our easy-to-use website building app!</p>
       </div>
     </div>
   </section>
@@ -129,14 +132,10 @@
   <section class="bullet-points snap-scrollable">
     <div class="text flipped">
       <div class="container">
-        <h3>Lorem ipsum dolor sit amet.</h3>
-        <p>Lorem ipsum dolor sit amet consectetur, adipisicing elit. Placeat eaque sapiente odit possimus quaerat iste praesentium ad quia, corrupti, tempore maiores quis id vel soluta alias magni, nulla optio consequuntur?</p>
-        <p>Labore animi perspiciatis ipsa sed quisquam odit, assumenda fugiat, eveniet harum maiores excepturi omnis facilis, quas distinctio repellat consequatur totam a voluptatem aspernatur at velit saepe nulla. Nihil, sequi accusamus!</p>
-        <p>Possimus, nobis dicta ratione dolore reprehenderit totam qui itaque esse ut quisquam magnam minus, laudantium culpa odio quaerat! Quas cumque blanditiis ex soluta consectetur obcaecati. Saepe ut impedit quis modi!</p>
-        <p>Possimus, nobis dicta ratione dolore reprehenderit totam qui itaque esse ut quisquam magnam minus, laudantium culpa odio quaerat! Quas cumque blanditiis ex soluta consectetur obcaecati. Saepe ut impedit quis modi!</p>
-        <p>Possimus, nobis dicta ratione dolore reprehenderit totam qui itaque esse ut quisquam magnam minus, laudantium culpa odio quaerat! Quas cumque blanditiis ex soluta consectetur obcaecati. Saepe ut impedit quis modi!</p>
-        <p>Possimus, nobis dicta ratione dolore reprehenderit totam qui itaque esse ut quisquam magnam minus, laudantium culpa odio quaerat! Quas cumque blanditiis ex soluta consectetur obcaecati. Saepe ut impedit quis modi!</p>
-        <p>Possimus, nobis dicta ratione dolore reprehenderit totam qui itaque esse ut quisquam magnam minus, laudantium culpa odio quaerat! Quas cumque blanditiis ex soluta consectetur obcaecati. Saepe ut impedit quis modi!</p>
+        <h3>Free hosting: Get online now!</h3>
+        <p>Say goodbye to costly hosting fees with our website building app!</p>
+        <p>We offer free hosting to all of our users, making it easy to get your website up and running without breaking the bank. Our reliable hosting service ensures that your website is available 24/7, with no downtime or interruptions.</p>
+        <p>With our free hosting, you can focus on creating a stunning website that will attract and engage your audience. Start building your dream website today with our easy-to-use website building app and enjoy the benefits of free hosting!</p>
       </div>
     </div>
     <div>
@@ -153,44 +152,50 @@
     <div class="branding">
       <h3>Nocoma</h3>
       <div>
-        <div class="padding">
-          <i class="gg-facebook"></i>
-        </div>
-        <div class="padding">
-          <i class="gg-instagram"></i>
-        </div>
-        <div class="padding">
-          <i class="gg-youtube"></i>
-        </div>
+<!--        <div class="padding">-->
+<!--          <i class="gg-facebook"></i>-->
+<!--        </div>-->
+<!--        <div class="padding">-->
+<!--          <i class="gg-instagram"></i>-->
+<!--        </div>-->
+<!--        <div class="padding">-->
+<!--          <i class="gg-youtube"></i>-->
+<!--        </div>-->
       </div>
     </div>
     <div class="columns">
-      <div class="column">
-        <h4>Section title</h4>
-        <a class="lci">Lorem</a>
-        <a class="lci">Lorem, ipsum.</a>
-        <a class="lci">Lorem</a>
-        <a class="lci">Lorem ipsum dolor sit.</a>
+      <div class="column faq">
+        <h4>FAQ</h4>
+        <div class="question">
+          <span>How much does your hosting cost?</span>
+          <span>It is free! No paying or subscriptions with limited access.</span>
+        </div>
+        <div class="question">
+          <span>Do I need coding knowledge to use your app?</span>
+          <span>No. Our website does not require any coding knowledge.</span>
+        </div>
+        <div class="question">
+          <span>Can I use my own domain name with your app?</span>
+          <span>No, but you can choose your own subdomain name.</span>
+        </div><div class="question">
+          <span>Is your website mobile-responsive?</span>
+          <span>Yes. In fact, you can see how your website will look on mobile device in editor.</span>
+        </div>
+        <div class="question">
+          <span>How many websites can I create with your app?</span>
+          <span>As many as you want.</span>
+        </div>
       </div>
       <div class="column">
-        <h4>Section title</h4>
-        <a class="lci">Lorem</a>
-        <a class="lci">Lorem, ipsum.</a>
-        <a class="lci">Lorem ipsum dolor sit.</a>
+        <h4>Contact</h4>
+        <span>Email: support@nocoma.com</span>
+        <span>Telephone: +420 123 456 789</span>
       </div>
       <div class="column">
-        <h4>Section title</h4>
-        <a class="lci">Lorem</a>
-        <a class="lci">Lorem, ipsum.</a>
-        <a class="lci">Lorem ipsum dolor sit.</a>
-        <a class="lci">Lorem, ipsum.</a>
-        <a class="lci">Lorem, ipsum.</a>
-        <a class="lci">Lorem</a>
-      </div>
-      <div class="column">
-        <h4>Section title</h4>
-        <a class="lci">Lorem, ipsum.</a>
-        <a class="lci">Lorem</a>
+        <h4>Legal Information</h4>
+        <span>© 2023 Nocoma™. All rights reserved.</span>
+        <a href="<?=$GLOBALS["__HOME__"]?>/public/pages/privacy-policy.html" class="lci">Privacy policy</a>
+        <a href="<?=$GLOBALS["__HOME__"]?>/public/pages/terms-of-service.html" class="lci">Terms of Service</a>
       </div>
     </div>
   </footer>

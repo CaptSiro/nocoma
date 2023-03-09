@@ -66,7 +66,7 @@
           return;
         }
         
-        if (boolval($request->param->get("boolean") === true)) {
+        if ($request->param->get("boolean") == "true") {
           MailTemplate::userBanned($user->getSuccess())->send();
         } else {
           MailTemplate::userUnbanned($user->getSuccess())->send();

@@ -179,7 +179,7 @@
     public static function takeDown (int $websiteID, string $message): Result {
       try {
         $result = Database::get()->statement(
-          "INSERT INTO `takeDowns` (`websitesID`, `message`)
+          "INSERT INTO `takedowns` (`websitesID`, `message`)
          VALUES (:websiteID, :message)",
           [
             new DatabaseParam("websiteID", $websiteID),
@@ -213,7 +213,7 @@
     }
     public static function removeTakeDown (int $websiteID): Result {
       return success(Database::get()->statement(
-        "DELETE FROM `takeDowns` WHERE websitesID = :websiteID LIMIT 1",
+        "DELETE FROM `takedowns` WHERE websitesID = :websiteID LIMIT 1",
         [new DatabaseParam("websiteID", $websiteID)]
       ));
     }

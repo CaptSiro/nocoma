@@ -194,7 +194,7 @@
         ->forwardFailure($response)
         ->getSuccess();
       
-      if ($websiteObject->usersID !== $request->session->get("user")->ID) {
+      if ($websiteObject->usersID !== intval($request->session->get("user")->ID)) {
         $response->fail(new IllegalArgumentExc("You are not authorised to perform this action."));
       }
       

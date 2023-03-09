@@ -1641,29 +1641,3 @@ class ColorPicker {
     this.#display.value = ColorPicker.toHEX(color ?? this.getCurrentColor())
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-f(); // projde
-
-new C(); // vyhodí error
-
-
-function f () {
-  console.log("Funkce byla zavolána předtím než byla definována");
-}
-
-class C {
-  constructor () {
-    console.log("Třída byla zavolána předtím než byla definována");
-  }
-}
-

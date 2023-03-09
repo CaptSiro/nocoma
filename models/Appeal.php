@@ -110,7 +110,7 @@
          */
         [$_, $user, $website] = $infoResult->getSuccess();
     
-        MailTemplate::appealAccepted($user, $website->title)->send();
+        MailTemplate::appealDeclined($user, $website->title)->send();
       }
       
       return self::delete($id);

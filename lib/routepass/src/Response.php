@@ -380,6 +380,57 @@
         return;
       }
       
+      if ($request->query->isset("cropAndScale")) {
+        $size = getimagesize($filePath);
+        $cropWidth = intval($request->query->looselyGet("width", $size[self::WIDTH]));
+        $cropHeight = intval($request->query->looselyGet("height", $cropWidth));
+        
+        $scaledHeight = 0;
+        $scaledWidth = 0;
+        
+        if ($cropWidth < $cropHeight) {
+          $scaledHeight = $cropHeight;
+          $scaledWidth = ($size[self::WIDTH] / $size[self::HEIGHT]) * $cropHeight;
+        } else {
+          $scaledWidth = $cropWidth;
+          $scaledHeight = ($size[self::HEIGHT] / $size[self::WIDTH]) * $cropWidth;
+        }
+        
+        $image = imagecreatefromstring(
+          file_get_contents($filePath)
+        );
+  
+        $scaledImage = $image;
+        
+        if ($size[self::WIDTH] < $scaledWidth) {
+          $cropWidth = ($size[self::WIDTH] / $scaledWidth) * $cropWidth;
+          $cropHeight = ($size[self::HEIGHT] / $scaledHeight) * $cropHeight;
+          $scaledWidth = $size[self::WIDTH];
+          $scaledHeight = $size[self::HEIGHT];
+        } else {
+          $scaledImage = imagescale($image, $scaledWidth);
+        }
+  
+        $x = ($scaledWidth - $cropWidth) / 2;
+        $y = ($scaledHeight - $cropHeight) / 2;
+  
+        $croppedImage = imagecrop($image, [
+          "x" => $x,
+          "y" => $y,
+          "width" => $cropWidth,
+          "height" => $cropHeight,
+        ]);
+  
+        $this->setHeader("Content-Type", "image/png");
+        imagepng($croppedImage);
+        
+        imagedestroy($croppedImage);
+        imagedestroy($scaledImage);
+        imagedestroy($image);
+        
+        $this->flush();
+      }
+      
       if ($request->query->isset("crop")) {
         $this->sendCroppedImage(
           $filePath,

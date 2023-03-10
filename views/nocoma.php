@@ -81,7 +81,7 @@
 
   <section class="bullet-points snap-scrollable">
     <div>
-      <img src="<?= $GLOBALS["__HOME__"] ?>/public/images/theme-stock-pictures/laptop.png" alt="">
+      <img src="<?= $GLOBALS["__HOME__"] ?>/public/images/theme-stock-pictures/laptop.png?width=600" alt="">
     </div>
     <div class="text">
       <div class="container">
@@ -117,7 +117,7 @@
   
   <section class="bullet-points snap-scrollable">
     <div>
-      <img src="<?= $GLOBALS["__HOME__"] ?>/public/images/theme-stock-pictures/laptop.png" alt="">
+      <img src="<?= $GLOBALS["__HOME__"] ?>/public/images/theme-stock-pictures/laptop.png?width=600" alt="">
     </div>
     <div class="text">
       <div class="container">
@@ -139,7 +139,7 @@
       </div>
     </div>
     <div>
-      <img src="<?= $GLOBALS["__HOME__"] ?>/public/images/theme-stock-pictures/website.png" alt="">
+      <img src="<?= $GLOBALS["__HOME__"] ?>/public/images/theme-stock-pictures/website.png?width=600" alt="">
     </div>
   </section>
 

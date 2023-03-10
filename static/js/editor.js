@@ -430,7 +430,7 @@ const filesModalInfiniteScroller = new InfiniteScroller(filesModal, async (index
   for (const file of files) {
     const fileURL = `${AJAX.SERVER_HOME}/file/${webpage.src}/${file.src}${file.extension}`;
     element = Div("item", [
-      FileIcon(file.mimeContentType, { "image": fileURL }),
+      FileIcon(file.mimeContentType, { "image": fileURL + "?width=150" }),
       Paragraph(__, String(file.basename + file.extension))
     ], {
       listeners: {

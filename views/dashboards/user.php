@@ -250,7 +250,7 @@
         reference-to="profile"
         class="link-pointer"
         title="Profile"
-        style="background-image: url(<?= $GLOBALS["__SERVER_HOME__"] ?>/profile/picture)" id="profile-picture-small"></button>
+        style="background-image: url(<?= $GLOBALS["__SERVER_HOME__"] ?>/profile/picture/)" id="profile-picture-small"></button>
     </section>
     <section>
       <button class="logout" title="Logout" id="logout"><span style="font-family: monospace; font-weight: bolder;">&lt;-</span></button>

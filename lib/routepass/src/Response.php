@@ -296,6 +296,105 @@
       
       $this->error("RequestFile not found: $file", self::NOT_FOUND);
     }
+  
+    private const WIDTH = 0;
+    private const HEIGHT = 1;
+    public function sendScaledImage (string $filePath, int $width, int $height = -1, bool $doOverScaleImage = false) {
+      $type = Response::getMimeType($filePath)
+        ->forwardFailure($this)
+        ->getSuccess();
+  
+      $size = getimagesize($filePath);
+  
+      if ($size[self::WIDTH] < $width && !$doOverScaleImage) {
+        $this->setHeader("Content-Type", $type);
+        $this->readFile($filePath);
+      }
+  
+      $image = imagecreatefromstring(
+        file_get_contents($filePath)
+      );
+  
+      $image = imagescale($image, $width !== -1 ? $width : $size[self::WIDTH], $height);
+  
+      $this->setHeader("Content-Type", "image/png");
+      imagepng($image);
+      imagedestroy($image);
+      $this->flush();
+    }
+    
+    public function sendCroppedImage (string $filePath, int $width, int $height = -1) {
+      $type = Response::getMimeType($filePath)
+        ->forwardFailure($this)
+        ->getSuccess();
+  
+      $size = getimagesize($filePath);
+      
+      $width = $width === -1
+        ? $size[self::WIDTH]
+        : min($size[self::WIDTH], $width);
+      
+      $height = $height === -1
+        ? $size[self::HEIGHT]
+        : min($size[self::HEIGHT], $height);
+  
+      if ($size[self::WIDTH] === $width && $size[self::HEIGHT] === $height) {
+        $this->setHeader("Content-Type", $type);
+        $this->readFile($filePath);
+      }
+      
+      $x = ($size[self::WIDTH] - $width) / 2;
+      $y = ($size[self::HEIGHT] - $height) / 2;
+  
+      $image = imagecreatefromstring(
+        file_get_contents($filePath)
+      );
+  
+      $image = imagecrop($image, [
+        "x" => $x,
+        "y" => $y,
+        "width" => $width,
+        "height" => $height,
+      ]);
+  
+      $this->setHeader("Content-Type", "image/png");
+      imagepng($image);
+      imagedestroy($image);
+      $this->flush();
+    }
+  
+    /**
+     * If the most optimal image is the one provided in file then it will NOT send that image. It will do nothing.
+     *
+     * @param $filePath
+     * @param $type
+     * @param Request $request
+     * @return void
+     */
+    public function sendOptimalImage ($filePath, $type, Request $request) {
+      $this->fileExists($filePath);
+      
+      $isTypeOfImage = preg_match("/^image\//", $type) !== false;
+      $areDimensionsSet = $request->query->isset("width") || $request->query->isset("height");
+      if (!($isTypeOfImage && $areDimensionsSet)) {
+        return;
+      }
+      
+      if ($request->query->isset("crop")) {
+        $this->sendCroppedImage(
+          $filePath,
+          intval($request->query->looselyGet("width", -1)),
+          intval($request->query->looselyGet("height", -1))
+        );
+      }
+      
+      $this->sendScaledImage(
+        $filePath,
+        intval($request->query->looselyGet("width", -1)),
+        intval($request->query->looselyGet("height", -1))
+      );
+    }
+    
     /**
      * Reads file and sends it contents to the user.
      *
@@ -310,6 +409,7 @@
         exit();
       }
     }
+    
     public function readFileSafe (string $file, bool $doFlushResponse = true) {
       $this->fileExists($file);
       $this->generateHeaders();

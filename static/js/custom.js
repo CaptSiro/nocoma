@@ -70,13 +70,8 @@ function PostComponent (idGroup, post, optionBodyItems, postOptions = undefined)
   
   return Async(async () => {
     postOptions.attributes.style = post.thumbnail !== undefined
-      ? `background-image: url(${AJAX.SERVER_HOME}/file/${post.src}/${post.thumbnail})`
-      : `background-image: url(${await AJAX.get(
-        "/auth/background",
-        TextHandler(),
-        {},
-        AJAX.SERVER_HOME
-      )})`;
+      ? `background-image: url(${AJAX.SERVER_HOME}/file/${post.src}/${post.thumbnail}?height=70&crop=true)`
+      : `background-image: url(${await AJAX.get("/auth/background", TextHandler(), {}, AJAX.SERVER_HOME)}?height=70&crop=true)`;
     
     return (
       Div("post" + (post.isTakenDown ? " taken-down" : ""), [

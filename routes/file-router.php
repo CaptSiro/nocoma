@@ -54,11 +54,18 @@
       ->getSuccess()->website;
     
     $filePath = HOSTS_DIR . "/$website/media/" . $request->param->get("file");
-
-    $response->setHeader("Content-Type", Response::getMimeType($filePath)
-      ->forwardFailure($response)
-      ->getSuccess());
     
+    $type = Response::getMimeType($filePath)
+      ->forwardFailure($response)
+      ->getSuccess();
+    
+    $response->sendOptimalImage(
+      $filePath,
+      $type,
+      $request
+    );
+
+    $response->setHeader("Content-Type", $type);
     $response->readFile($filePath);
   }], [
     "websiteSRC" => Router::REGEX_BASE64_URL_SAFE,

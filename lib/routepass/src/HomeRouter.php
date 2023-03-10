@@ -132,11 +132,19 @@
           ]);
         }
         
-        $mimeTypeResult = Response::getMimeType($filePath);
-        $mimeTypeResult->forwardFailure($response);
-        
-        $response->setHeader("Content-Type", $mimeTypeResult->getSuccess());
         $response->setHeader(Response::HEADER_CORS_ORIGIN, "*");
+
+        $type = Response::getMimeType($filePath)
+          ->forwardFailure($response)
+          ->getSuccess();
+  
+        $response->sendOptimalImage(
+          $filePath,
+          $type,
+          $request
+        );
+        
+        $response->setHeader("Content-Type", $type);
         
         if (preg_match("/\.php$/", $filePath)) {
           $response->generateHeaders();

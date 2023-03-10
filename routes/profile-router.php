@@ -80,30 +80,31 @@
   
   
   
-  $renderPicture = function (string $path, Response $response) {
-    $response->setHeader("Content-Type",
-      Response::getMimeType($path)
-        ->forwardFailure($response)
-        ->getSuccess()
-    );
-  
+  $renderPicture = function (string $path, Request $request, Response $response) {
+    $type = Response::getMimeType($path)
+      ->forwardFailure($response)
+      ->getSuccess();
+    
+    $response->sendOptimalImage($path, $type, $request);
+
+    $response->setHeader("Content-Type", $type);
     $response->readFile($path);
   };
   $serveUserPicture = function (Request $request, Response $response, Closure $next, Result $userResult) use ($renderPicture) {
     if ($userResult->isFailure()) {
-      $renderPicture(__DIR__ . "/../static/images/stock/pfp-user-not-found.png", $response);
+      $renderPicture(__DIR__ . "/../static/images/stock/pfp-user-not-found.png", $request, $response);
     }
     
     /** @var User $user */
     $user = $userResult->getSuccess();
     
     $usersPicture = ProfilePicture::getByUserID($user->ID)
-      ->failed(function () use ($response, $renderPicture) {
-        $renderPicture(__DIR__ . "/../static/images/stock/pfp.png", $response);
+      ->failed(function () use ($request, $response, $renderPicture) {
+        $renderPicture(__DIR__ . "/../static/images/stock/pfp.png", $request, $response);
       })
       ->getSuccess();
   
-    $renderPicture(HOSTS_DIR . "/$user->website/media/$usersPicture->src$usersPicture->extension", $response);
+    $renderPicture(HOSTS_DIR . "/$user->website/media/$usersPicture->src$usersPicture->extension", $request, $response);
   };
   
   $profileRouter->get("/picture", [

@@ -114,9 +114,7 @@ let profilePictureIndex = 0;
 $("#profile-picture-upload").addEventListener("change", evt => {
   AJAX.post("/profile/picture/", JSONHandlerSync(response => {
     if (response.error) {
-      console.log(evt.target.closest("section.info"))
       rejected(evt.target.closest("section.info"));
-      //TODO: custom alert
       console.log(response.error);
       return;
     }

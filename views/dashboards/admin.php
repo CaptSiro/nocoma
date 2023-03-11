@@ -166,7 +166,12 @@
     <section>
       <button reference-to="users" class="link-pointer active" title="Users"><span>1</span></button>
       <button reference-to="appeals" class="link-pointer" title="Appeals"><span>2</span></button>
-      <button reference-to="profile" class="link-pointer" title="Profile" style="background-image: url(<?= $GLOBALS["__SERVER_HOME__"] ?>/profile/picture)" id="profile-picture-small"></button>
+      <button
+        reference-to="profile"
+        class="link-pointer"
+        title="Profile"
+        style="background-image: url(<?= $GLOBALS["__SERVER_HOME__"] ?>/profile/picture/?width=75&height=75&cropAndScale=true)"
+        id="profile-picture-small"></button>
     </section>
     <section>
       <button class="logout" title="Logout" id="logout"><span style="font-family: monospace; font-weight: bolder; ">&lt;-</span></button>
@@ -210,7 +215,7 @@
     <div columns="7" class="c-grid link-element" auto-fill="true" id="profile">
       <section column="0-7" row="0-3" class="info">
         <div class="pfp">
-          <img src="<?= $GLOBALS["__HOME__"] ?>/profile/picture/" alt="profile picture" id="profile-picture">
+          <img src="<?= $GLOBALS["__HOME__"] ?>/profile/picture/?width=225&height=225&cropAndScale=true" alt="profile picture" id="profile-picture">
           <div class="edit">
             <label for="profile-picture-upload">
               <svg class="icon button-like" viewBox="0 0 24 24" style="width: 100%;height: 100%;">

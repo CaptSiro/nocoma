@@ -85,7 +85,7 @@
       ->forwardFailure($response)
       ->getSuccess();
     
-    $response->sendOptimalImage($path, $type, $request);
+    $response->sendOptimalImage($path, $request);
 
     $response->setHeader("Content-Type", $type);
     $response->readFile($path);

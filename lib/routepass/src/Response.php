@@ -296,6 +296,21 @@
       
       $this->error("RequestFile not found: $file", self::NOT_FOUND);
     }
+    
+    private function imageFromFile (string $fileName) {
+      $this->fileExists($fileName);
+  
+      switch (strtolower(pathinfo($fileName, PATHINFO_EXTENSION))) {
+        case 'jpg':
+        case 'jpeg': return imagecreatefromjpeg($fileName);
+        
+        case 'png': return imagecreatefrompng($fileName);
+        case 'gif': return imagecreatefromgif($fileName);
+        default: return imagecreatefromstring(
+          file_get_contents($fileName)
+        );
+      }
+    }
   
     private const WIDTH = 0;
     private const HEIGHT = 1;
@@ -311,15 +326,17 @@
         $this->readFile($filePath);
       }
   
-      $image = imagecreatefromstring(
-        file_get_contents($filePath)
-      );
+      $image = $this->imageFromFile($filePath);
   
-      $image = imagescale($image, $width !== -1 ? $width : $size[self::WIDTH], $height);
+      $scaledImage = imagescale($image, $width !== -1 ? $width : $size[self::WIDTH], $height);
+      imagedestroy($image);
   
       $this->setHeader("Content-Type", "image/png");
-      imagepng($image);
-      imagedestroy($image);
+  
+      imagesavealpha($scaledImage, true);
+      imagepng($scaledImage);
+      imagedestroy($scaledImage);
+      
       $this->flush();
     }
     
@@ -346,89 +363,111 @@
       $x = ($size[self::WIDTH] - $width) / 2;
       $y = ($size[self::HEIGHT] - $height) / 2;
   
-      $image = imagecreatefromstring(
-        file_get_contents($filePath)
-      );
+      $image = $this->imageFromFile($filePath);
   
-      $image = imagecrop($image, [
+      $croppedImage = imagecrop($image, [
         "x" => $x,
         "y" => $y,
         "width" => $width,
         "height" => $height,
       ]);
+      imagedestroy($image);
   
       $this->setHeader("Content-Type", "image/png");
-      imagepng($image);
+      
+      imagesavealpha($croppedImage, true);
+      imagepng($croppedImage);
+      
+      imagedestroy($croppedImage);
+      
+      $this->flush();
+    }
+    
+    public function sendCroppedAndScaledImage (string $filePath, int $width, int $height = -1) {
+      require_once __DIR__ . "/../../lumber/lumber.php";
+      
+      $size = getimagesize($filePath);
+      $cropWidth = $width === -1 ? $size[self::WIDTH] : $width;
+      $cropHeight = $height === -1 ? $cropWidth : $height;
+  
+      if ($cropWidth < $cropHeight) {
+        $scaledHeight = $cropHeight;
+        $scaledWidth = ($size[self::WIDTH] / $size[self::HEIGHT]) * $cropHeight;
+      } else {
+        $scaledWidth = $cropWidth;
+        $scaledHeight = ($size[self::HEIGHT] / $size[self::WIDTH]) * $cropWidth;
+      }
+      
+      $image = $this->imageFromFile($filePath);
+  
+      $scaledImage = &$image;
+  
+      if ($size[self::WIDTH] < $scaledWidth) {
+        $cropWidth = ($size[self::WIDTH] / $scaledWidth) * $cropWidth;
+        $cropHeight = ($size[self::HEIGHT] / $scaledHeight) * $cropHeight;
+        $scaledWidth = $size[self::WIDTH];
+        $scaledHeight = $size[self::HEIGHT];
+      } else {
+        $scaledImage = imagescale($image, $scaledWidth, $scaledHeight);
+      }
+  
+      $x = ($scaledWidth - $cropWidth) / 2;
+      $y = ($scaledHeight - $cropHeight) / 2;
+  
+      $croppedImage = imagecrop($scaledImage, [
+        "x" => $x,
+        "y" => $y,
+        "width" => $cropWidth,
+        "height" => $cropHeight,
+      ]);
+  
+      $this->setHeader("Content-Type", "image/png");
+  
+      imagesavealpha($croppedImage, true);
+      imagepng($croppedImage, null, 0);
+  
+      imagedestroy($croppedImage);
+      imagedestroy($scaledImage);
       imagedestroy($image);
+  
       $this->flush();
     }
   
     /**
-     * If the most optimal image is the one provided in file then it will NOT send that image. It will do nothing.
+     * Optimal image size depends on query parameters in request.
+     *
+     * <b>`width`<b> - in pixels
+     *
+     * <b>`height`<b> - in pixels (if left undefined, the image will be scaled by width, and it will retain same aspect ratio)
+     *
+     * <b>`crop=true`<b> - cropping will be used instead of default scaling
+     *
+     * <b>`cropAndScale=true`<b> - before cropping the image, the image is scaled down
      *
      * @param $filePath
-     * @param $type
      * @param Request $request
      * @return void
      */
-    public function sendOptimalImage ($filePath, $type, Request $request) {
+    public function sendOptimalImage ($filePath, Request $request) {
       $this->fileExists($filePath);
       
-      $isTypeOfImage = preg_match("/^image\//", $type) !== false;
       $areDimensionsSet = $request->query->isset("width") || $request->query->isset("height");
-      if (!($isTypeOfImage && $areDimensionsSet)) {
-        return;
+      if (!$areDimensionsSet) {
+        $this->setHeader(
+          "Content-Type",
+          Response::getMimeType($filePath)
+            ->forwardFailure($this)
+            ->getSuccess()
+        );
+        $this->readFile($filePath);
       }
       
       if ($request->query->isset("cropAndScale")) {
-        $size = getimagesize($filePath);
-        $cropWidth = intval($request->query->looselyGet("width", $size[self::WIDTH]));
-        $cropHeight = intval($request->query->looselyGet("height", $cropWidth));
-        
-        $scaledHeight = 0;
-        $scaledWidth = 0;
-        
-        if ($cropWidth < $cropHeight) {
-          $scaledHeight = $cropHeight;
-          $scaledWidth = ($size[self::WIDTH] / $size[self::HEIGHT]) * $cropHeight;
-        } else {
-          $scaledWidth = $cropWidth;
-          $scaledHeight = ($size[self::HEIGHT] / $size[self::WIDTH]) * $cropWidth;
-        }
-        
-        $image = imagecreatefromstring(
-          file_get_contents($filePath)
+        $this->sendCroppedAndScaledImage(
+          $filePath,
+          intval($request->query->looselyGet("width", -1)),
+          intval($request->query->looselyGet("height", -1))
         );
-  
-        $scaledImage = $image;
-        
-        if ($size[self::WIDTH] < $scaledWidth) {
-          $cropWidth = ($size[self::WIDTH] / $scaledWidth) * $cropWidth;
-          $cropHeight = ($size[self::HEIGHT] / $scaledHeight) * $cropHeight;
-          $scaledWidth = $size[self::WIDTH];
-          $scaledHeight = $size[self::HEIGHT];
-        } else {
-          $scaledImage = imagescale($image, $scaledWidth);
-        }
-  
-        $x = ($scaledWidth - $cropWidth) / 2;
-        $y = ($scaledHeight - $cropHeight) / 2;
-  
-        $croppedImage = imagecrop($image, [
-          "x" => $x,
-          "y" => $y,
-          "width" => $cropWidth,
-          "height" => $cropHeight,
-        ]);
-  
-        $this->setHeader("Content-Type", "image/png");
-        imagepng($croppedImage);
-        
-        imagedestroy($croppedImage);
-        imagedestroy($scaledImage);
-        imagedestroy($image);
-        
-        $this->flush();
       }
       
       if ($request->query->isset("crop")) {

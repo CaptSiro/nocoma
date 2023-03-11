@@ -396,7 +396,7 @@ function Comment (comment, context, isJustForShow = false) {
     Div("comment " + (comment.isPinned ? "pinned" : ""), [
       Div("published", [
         Div("profile-picture", [
-          Img(AJAX.SERVER_HOME + "/profile/picture/" + comment.usersID, "pfp")
+          Img(AJAX.SERVER_HOME + "/profile/picture/" + comment.usersID + "/?width=250&height=250&cropAndScale=true", "pfp")
         ]),
         Div("text-content expand-able", [
           Div("column", [
@@ -524,7 +524,7 @@ function CommentForm (context, parentCommentID = undefined, isJustForShow = fals
     Div("comment reply", [
       Div("published", [
         Div("profile-picture", [
-          Img(AJAX.SERVER_HOME + "/profile/picture/", "pfp")
+          Img(AJAX.SERVER_HOME + "/profile/picture/?width=250&height=250&cropAndScale=true", "pfp")
         ]),
         Div("text-content expand expand-able", [
           Div("column", [

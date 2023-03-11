@@ -58,12 +58,13 @@
     $type = Response::getMimeType($filePath)
       ->forwardFailure($response)
       ->getSuccess();
-    
-    $response->sendOptimalImage(
-      $filePath,
-      $type,
-      $request
-    );
+  
+    if (preg_match("/^image\//", $type) !== false) {
+      $response->sendOptimalImage(
+        $filePath,
+        $request
+      );
+    }
 
     $response->setHeader("Content-Type", $type);
     $response->readFile($filePath);

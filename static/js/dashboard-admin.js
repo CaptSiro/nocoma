@@ -162,7 +162,7 @@ function loadUsers (index) {
                     click: () => userElement.classList.toggle("expanded")
                   }
                 }),
-                Img(AJAX.SERVER_HOME + "/profile/picture/" + user.ID, "pfp"),
+                Img(AJAX.SERVER_HOME + "/profile/picture/" + user.ID + "/?width=250&height=250&cropAndScale=true", "pfp"),
                 Div("u-column", [
                   Heading(4, __, user.username),
                   Span(__, user.website)
@@ -266,7 +266,7 @@ const appealScroll = new InfiniteScroller(appealView, (index) => {
           Div("a-head", [
             Div("u-head", [
               Div("start", [
-                Img(AJAX.SERVER_HOME + "/profile/picture/" + appeal.usersID, "pfp for " + appeal.username),
+                Img(AJAX.SERVER_HOME + "/profile/picture/" + appeal.usersID + "/?width=250&height=250&cropAndScale=true", "pfp for " + appeal.username),
                 Div("u-column", [
                   Heading(4, __, appeal.username),
                   Span(__, appeal.website)

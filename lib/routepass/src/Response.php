@@ -311,6 +311,19 @@
         );
       }
     }
+    
+    private function sendImageResource ($image, string $type) {
+      imagesavealpha($image, true);
+      
+      if ($type !== "image/gif") {
+        $this->setHeader("Content-Type", "image/png");
+        imagepng($image, null, 0);
+        return;
+      }
+
+      $this->setHeader("Content-Type", "image/gif");
+      imagegif($image);
+    }
   
     private const WIDTH = 0;
     private const HEIGHT = 1;
@@ -331,10 +344,7 @@
       $scaledImage = imagescale($image, $width !== -1 ? $width : $size[self::WIDTH], $height);
       imagedestroy($image);
   
-      $this->setHeader("Content-Type", "image/png");
-  
-      imagesavealpha($scaledImage, true);
-      imagepng($scaledImage);
+      $this->sendImageResource($scaledImage, $type);
       imagedestroy($scaledImage);
       
       $this->flush();
@@ -373,11 +383,7 @@
       ]);
       imagedestroy($image);
   
-      $this->setHeader("Content-Type", "image/png");
-      
-      imagesavealpha($croppedImage, true);
-      imagepng($croppedImage);
-      
+      $this->sendImageResource($croppedImage, $type);
       imagedestroy($croppedImage);
       
       $this->flush();
@@ -420,15 +426,14 @@
         "width" => $cropWidth,
         "height" => $cropHeight,
       ]);
-  
-      $this->setHeader("Content-Type", "image/png");
-  
-      imagesavealpha($croppedImage, true);
-      imagepng($croppedImage, null, 0);
-  
-      imagedestroy($croppedImage);
       imagedestroy($scaledImage);
       imagedestroy($image);
+  
+      $this->sendImageResource(
+        $croppedImage,
+        Response::getMimeType($filePath)->forwardFailure($this)->getSuccess()
+      );
+      imagedestroy($croppedImage);
   
       $this->flush();
     }

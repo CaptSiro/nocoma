@@ -370,11 +370,11 @@ footer .column > *:first-child {
   font-size: x-large;
 }
 footer .column a {
-  color: var(--container-opposite-1);
+  color: #a283ea;
   transition: color 250ms;
 }
 footer .column a:hover {
-  color: var(--container-opposite-0);
+  color: #b8bdfc;
 }
 
 footer .column .question {

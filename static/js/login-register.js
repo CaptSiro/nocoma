@@ -57,8 +57,8 @@ const regexes = {
     err: "Not a valid email address."
   },
   website: {
-    r: /^[a-zA-Z0-9-_]{1,64}$/,
-    err: "Website may contain only letters, numbers, dashes or underscores. Maximum length is 64 characters. (abcABC-_)"
+    r: new RegExp("^[a-zA-Z0-9-_]{1," + Math.min(255 - host.length, 63) + "}$"),
+    err: "Website may contain only letters, numbers, dashes or underscores. Maximum length is " + Math.min(255 - host.length, 63) + " characters. (abcABC-_)"
   },
   password: {
     r: /(?=.{8,})(?=.*[a-zA-Z]+)(?=.*[0-9]+)(?=.*[!"#$%&'()*+,-./:;<=>?@\\^_\[\]`{|}~]+)^[a-zA-Z0-9!"#$%&'()*+,-./:;<=>?@\\^_\[\]`{|}~]+$/,
@@ -138,6 +138,9 @@ registerSubmit.addEventListener("click", evt => {
   }
 
   registerErrorView.classList.remove("show");
+  
+  alert("registered");
+  return;
 
   AJAX.post("/auth/register", JSONHandlerSync(json => {
     if (json.error !== undefined) {

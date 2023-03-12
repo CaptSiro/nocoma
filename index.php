@@ -175,6 +175,10 @@
 //  }]);
   
   
+  $router->get("/robots.txt", [function (Request $request, Response $response) {
+    $response->setHeader("Content-Type", "text/plain");
+    $response->send("User-agent: *\nAllow: /auth/");
+  }]);
   
   $router->domain("[website].$hostName", new RouterPromise(__DIR__ . "/routes/domain-router.php"), [
     "website" => Router::REGEX_BASE64_URL_SAFE

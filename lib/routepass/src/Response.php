@@ -342,10 +342,10 @@
       $image = $this->imageFromFile($filePath);
   
       $scaledImage = imagescale($image, $width !== -1 ? $width : $size[self::WIDTH], $height);
-      imagedestroy($image);
   
       $this->sendImageResource($scaledImage, $type);
       imagedestroy($scaledImage);
+      imagedestroy($image);
       
       $this->flush();
     }
@@ -381,10 +381,10 @@
         "width" => $width,
         "height" => $height,
       ]);
-      imagedestroy($image);
   
       $this->sendImageResource($croppedImage, $type);
       imagedestroy($croppedImage);
+      imagedestroy($image);
       
       $this->flush();
     }
@@ -426,14 +426,15 @@
         "width" => $cropWidth,
         "height" => $cropHeight,
       ]);
-      imagedestroy($scaledImage);
-      imagedestroy($image);
   
       $this->sendImageResource(
         $croppedImage,
         Response::getMimeType($filePath)->forwardFailure($this)->getSuccess()
       );
+      
       imagedestroy($croppedImage);
+      imagedestroy($scaledImage);
+      imagedestroy($image);
   
       $this->flush();
     }

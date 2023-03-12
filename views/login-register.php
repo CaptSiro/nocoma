@@ -16,6 +16,7 @@
   <script>
     AJAX.DOMAIN_HOME = "<?=$GLOBALS["__HOME__"]?>";
     AJAX.SERVER_HOME = "<?=$GLOBALS["__SERVER_HOME__"] ?? $GLOBALS["__HOME__"]?>";
+    const host = ".<?= $GLOBALS["host"] ?>";
   </script>
   <script src="<?= $GLOBALS["__HOME__"] ?>/public/js/theme.js"></script>
   <script src="<?=$GLOBALS["__HOME__"]?>/public/js/background-loader.js"></script>

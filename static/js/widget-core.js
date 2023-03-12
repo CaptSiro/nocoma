@@ -471,7 +471,7 @@ class Widget {
     
     if (this.children[indexOfAfter + 1] instanceof WCommand) return;
     
-    const cmd = WCommand.default(this);
+    const cmd = WCommand.default(this, true);
     this.children.splice(indexOfAfter + 1, 0, cmd);
     
     if (indexOfAfter + 2 === this.children.length) {

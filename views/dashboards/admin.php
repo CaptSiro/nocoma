@@ -133,6 +133,26 @@
           <circle fill="currentColor" cx="250.6" cy="249.8" r="37.8"/>
         </g>
       </g>
+      <g id="icon-users">
+        <style type="text/css">
+          .Hq60zyxA{fill:none;stroke:currentColor;stroke-width:20;stroke-miterlimit:10;}
+        </style>
+        <circle class="Hq60zyxA" cx="251.6" cy="208.4" r="87.6"/>
+        <path class="Hq60zyxA" d="M71.3,435.2c0-156.1,358.5-156.1,358.5,0H71.3z"/>
+      </g>
+      <g id="icon-appeals">
+        <style type="text/css">
+          .mF7HnU_r{fill:none;stroke:currentColor;stroke-width:20;stroke-miterlimit:10;}
+        </style>
+        <g>
+          <path class="mF7HnU_r" d="M144.2,328.2c-16.2-21.9-25.8-48.9-25.8-78.2c0-72.7,58.9-131.6,131.6-131.6c29.3,0,56.3,9.6,78.2,25.8
+		l27.9-27.9c-29.1-23.1-66-37-106.1-37c-94.3,0-170.7,76.4-170.7,170.7c0,40.1,13.8,76.9,37,106.1L144.2,328.2z"/>
+          <path class="mF7HnU_r" d="M383.7,143.9l-27.9,27.9c16.2,21.9,25.8,48.9,25.8,78.2c0,72.7-58.9,131.6-131.6,131.6
+		c-29.3,0-56.3-9.6-78.2-25.8l-27.9,27.9c29.1,23.1,66,37,106.1,37c94.3,0,170.7-76.4,170.7-170.7
+		C420.7,209.9,406.8,173.1,383.7,143.9z"/>
+        </g>
+        <rect x="230.5" y="38.6" transform="matrix(0.7071 0.7071 -0.7071 0.7071 250 -103.5534)" class="mF7HnU_r" width="39.1" height="422.8"/>
+      </g>
     </defs>
   </svg>
   
@@ -164,8 +184,16 @@
   
   <nav>
     <section>
-      <button reference-to="users" class="link-pointer active" title="Users"><span>1</span></button>
-      <button reference-to="appeals" class="link-pointer" title="Appeals"><span>2</span></button>
+      <button reference-to="users" class="link-pointer active" title="Users">
+        <svg class="icon" viewBox="0 0 500 500" style="width: 100%;height: 100%;">
+          <use xlink:href="#icon-users"></use>
+        </svg>
+      </button>
+      <button reference-to="appeals" class="link-pointer" title="Appeals">
+        <svg class="icon" viewBox="0 0 500 500" style="width: 100%;height: 100%;">
+          <use xlink:href="#icon-appeals"></use>
+        </svg>
+      </button>
       <button
         reference-to="profile"
         class="link-pointer"

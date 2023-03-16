@@ -65,7 +65,7 @@ function PostComponent (idGroup, post, optionBodyItems, postOptions = undefined)
   
   let iconDescription = undefined;
   if (visibilityState === "planned") {
-    iconDescription = {attributes: {title: new Date(post.releaseDate).toLocaleString()}};
+    iconDescription = {attributes: {title: new Date(post.releaseDate?.replace(" ", "T") + "Z").toLocaleString()}};
   }
   
   return Async(async () => {

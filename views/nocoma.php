@@ -120,7 +120,7 @@
   
   <section class="bullet-points snap-scrollable">
     <div>
-      <img src="<?= $GLOBALS["__HOME__"] ?>/public/images/theme-stock-pictures/laptop.png?width=600" alt="">
+      <img src="<?= $GLOBALS["__HOME__"] ?>/public/images/stock/editor.png?width=600" alt="">
     </div>
     <div class="text">
       <div class="container">

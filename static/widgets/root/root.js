@@ -53,6 +53,7 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
     this.editable = editable;
     this.#json = json;
     this.#json.webpage = Object.assign({}, webpage);
+    this.#json.webpage.releaseDate = new Date(webpage.releaseDate.replace(" ", "T") + "Z");
     // this.#json.webpage.thumbnailSRC = AJAX.SERVER_HOME + "/public/images/theme-stock-pictures/laptop.png";
     
     this.header = WHeader.build({
@@ -260,9 +261,7 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
     
     
     const releaseDate = DateInspector(
-      webpage.releaseDate !== undefined
-        ? new Date(webpage.releaseDate)
-        : undefined,
+      this.json.webpage.releaseDate,
       async (value, parentElement) => {
         const response = await AJAX.patch("/page/release-date", JSONHandler(), {
           body: JSON.stringify({
@@ -286,12 +285,10 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
       true
     );
     
-    const releaseDateNotice = Paragraph("blockquote note", HTML("After refreshing the editor, the hours of release date might not align, due to timezone conversion.", true));
     const releaseDateInput = releaseDate.querySelector("input");
     
     if (this.#json.webpage.releaseDate === undefined) {
       releaseDate.classList.add("display-none");
-      releaseDateNotice.classList.add("display-none");
     }
     
     
@@ -416,8 +413,8 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
       TitleInspector("Visibility"),
       RadioGroupInspector(async (value, parentElement) => {
         if (value === "planned") {
-          const releaseDateString = releaseDateInput.valueAsDate !== null
-            ? releaseDateInput.valueAsDate.toISOString()
+          const releaseDateString = releaseDateInput.value !== null
+            ? new Date(releaseDateInput.value).toISOString()
             : undefined;
           const plannedResponse = await AJAX.patch("/page/visibility/planned", JSONHandler(), {
             body: JSON.stringify({
@@ -433,8 +430,7 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
           
           validated(parentElement);
           releaseDate.classList.remove("display-none");
-          releaseDateNotice.classList.remove("display-none");
-          this.#json.webpage.releaseDate = (releaseDateInput.valueAsDate !== null ? releaseDateInput.valueAsDate : new Date()).toISOString();
+          this.#json.webpage.releaseDate = new Date(releaseDateInput.value ?? undefined).toISOString();
           this.dispatchJSONEvent();
           return true;
         }
@@ -453,7 +449,6 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
   
         validated(parentElement);
         releaseDate.classList.add("display-none");
-        releaseDateNotice.classList.add("display-none");
         this.#json.webpage.releaseDate = undefined;
         this.#json.webpage.isPublic = value === "public";
         this.dispatchJSONEvent();
@@ -468,7 +463,6 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
           ? "planned"
           : "private")),
       releaseDate,
-      releaseDateNotice,
       
       HRInspector(),
       

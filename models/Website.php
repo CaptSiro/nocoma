@@ -129,11 +129,15 @@
     }
     public static function setReleaseDate (int $websiteID, $releaseDate = null): SideEffect {
       $releaseDate = $releaseDate ?: (new DateTime())->format("c");
-      
+  
       return Database::get()->statement(
         "UPDATE plannedWebsites SET releaseDate = :releaseDate WHERE websitesID = :websiteID",
         [
-          new DatabaseParam("releaseDate", $releaseDate, PDO::PARAM_STR),
+          new DatabaseParam("releaseDate",
+            DateTime::createFromFormat(
+              "Y-m-d\TH:i:s.uP",
+              $releaseDate
+            )->format('Y-m-d H:i:s'), PDO::PARAM_STR),
           new DatabaseParam("websiteID", $websiteID),
         ]
       );

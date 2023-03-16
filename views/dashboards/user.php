@@ -134,6 +134,29 @@
           <circle fill="currentColor" cx="250.6" cy="249.8" r="37.8"/>
         </g>
       </g>
+      <g id="icon-pencil">
+        <style type="text/css">
+          .oag4rWlj{fill:none;stroke:currentColor;stroke-width:20;stroke-miterlimit:10;}
+        </style>
+        <g>
+          <rect x="200.2" y="176" transform="matrix(0.7071 0.7071 -0.7071 0.7071 256.5491 -88.1385)" class="oag4rWlj" width="68.9" height="179.3"/>
+          <polygon class="oag4rWlj" points="105.5,394.6 172,376.8 123.3,328.1 	"/>
+          <rect x="311.4" y="119.6" transform="matrix(0.7071 0.7071 -0.7071 0.7071 210.2297 -199.4354)" class="oag4rWlj" width="68.9" height="68.9"/>
+        </g>
+      </g>
+      <g id="icon-folder">
+        <style type="text/css">
+          .dE2H8xB3{fill:none;stroke:currentColor;stroke-width:20;stroke-miterlimit:10;}
+          .Ov3qSjdv{fill:#020203;font-family: 'CreteRound-Italic', serif;font-size:12px;}
+        </style>
+        <g>
+          <path class="dE2H8xB3" d="M53.9,169v195.7c0,0,2.4,32.1,32.2,32.1s327.8,0,327.8,0s32.2-1.5,32.2-32.2s0-195.6,0-195.6
+		s2.4-32.2-38.4-32.2c0-14.1-14.2-14.1-14.2-14.1H277.1L250,103.4l-147.1-0.3c0,0-12.2,1.2-12,12s0,21.7,0,21.7h-4.8
+		C86.1,136.9,53.9,139.7,53.9,169z"/>
+          <line class="dE2H8xB3" x1="90.9" y1="136.9" x2="407.6" y2="136.9"/>
+          <text transform="matrix(1 0 0 1 105.6339 124.8584)" class="Ov3qSjdv">SUS</text>
+        </g>
+      </g>
     </defs>
   </svg>
   
@@ -242,10 +265,18 @@
   
   <nav>
     <section>
-      <button reference-to="posts" class="link-pointer active" title="Posts"><span>1</span></button>
+      <button reference-to="posts" class="link-pointer active" title="Posts">
+        <svg class="icon" viewBox="0 0 500 500" style="width: 100%;height: 100%;">
+          <use xlink:href="#icon-pencil"></use>
+        </svg>
+      </button>
 <!--      <button reference-to="comments" class="link-pointer" title="Comments"><span>2</span></button>-->
 <!--      <button reference-to="themes" class="link-pointer" title="Themes"><span>3</span></button>-->
-      <button reference-to="gallery" class="link-pointer" title="Gallery"><span>4</span></button>
+      <button reference-to="gallery" class="link-pointer" title="Gallery">
+        <svg class="icon" viewBox="0 0 500 500" style="width: 100%;height: 100%;">
+          <use xlink:href="#icon-folder"></use>
+        </svg>
+      </button>
       <button
         reference-to="profile"
         class="link-pointer"

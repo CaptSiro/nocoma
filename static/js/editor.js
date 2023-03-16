@@ -1291,17 +1291,21 @@ function NumberInspector (state, setter, label = undefined, placeholder = undefi
 function DateInspector (state, setter, label = undefined, isDateTime = false, placeholder = undefined) {
   const input = Input(isDateTime ? "datetime-local" : "date");
   input.addEventListener("change", async () => {
-    if (state === input.valueAsDate) return;
-    if (await setter(input.valueAsDate, input.parentElement)) {
-      state = input.valueAsDate;
+    const date = new Date(input.value);
+  
+    if (state === date) return;
+    if (await setter(date, input.parentElement)) {
+      state = date;
       return;
     }
   
-    input.valueAsDate = state ?? "";
+    input.value = state?.toISOString().slice(0, 16);
   });
   
   if (state) {
-    input.valueAsDate = state;
+    const timezoneOffset = new Date().getTimezoneOffset() * 60 * 1000;
+    const localDateTime = new Date(state.getTime() - timezoneOffset);
+    input.value = localDateTime.toISOString().slice(0, 16);
   }
   
   return (

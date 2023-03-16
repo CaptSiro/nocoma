@@ -797,6 +797,7 @@ input[type=text].invalid {
   padding: 8px;
   border-radius: 10px;
   width: 120px;
+  max-height: 140px;
   background-color: transparent;
 
   transition: background-color 100ms linear;

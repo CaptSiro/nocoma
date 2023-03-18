@@ -53,7 +53,7 @@ new TextSlider($(".url-website"), { gapSize: 50 });
 // regex checks
 const regexes = {
   email: {
-    r: /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/,
+    r: /^[\w-+\.]+@([\w-]+\.)+[\w-]{2,4}$/,
     err: "Not a valid email address."
   },
   website: {
@@ -138,9 +138,6 @@ registerSubmit.addEventListener("click", evt => {
   }
 
   registerErrorView.classList.remove("show");
-  
-  alert("registered");
-  return;
 
   AJAX.post("/auth/register", JSONHandlerSync(json => {
     if (json.error !== undefined) {

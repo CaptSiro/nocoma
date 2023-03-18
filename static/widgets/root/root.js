@@ -53,8 +53,9 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
     this.editable = editable;
     this.#json = json;
     this.#json.webpage = Object.assign({}, webpage);
-    this.#json.webpage.releaseDate = new Date(webpage.releaseDate.replace(" ", "T") + "Z");
-    // this.#json.webpage.thumbnailSRC = AJAX.SERVER_HOME + "/public/images/theme-stock-pictures/laptop.png";
+    this.#json.webpage.releaseDate = webpage.releaseDate !== undefined
+      ? new Date(webpage.releaseDate?.replace(" ", "T") + "Z")
+      : undefined;
     
     this.header = WHeader.build({
       titleAlign: json.headerTitleAlign,
@@ -413,9 +414,7 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
       TitleInspector("Visibility"),
       RadioGroupInspector(async (value, parentElement) => {
         if (value === "planned") {
-          const releaseDateString = releaseDateInput.value !== null
-            ? new Date(releaseDateInput.value).toISOString()
-            : undefined;
+          const releaseDateString = new Date(releaseDateInput.value === "" ? Date.now() : releaseDateInput.value).toISOString();
           const plannedResponse = await AJAX.patch("/page/visibility/planned", JSONHandler(), {
             body: JSON.stringify({
               id: webpage.ID,
@@ -430,7 +429,7 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
           
           validated(parentElement);
           releaseDate.classList.remove("display-none");
-          this.#json.webpage.releaseDate = new Date(releaseDateInput.value ?? undefined).toISOString();
+          this.#json.webpage.releaseDate = new Date(releaseDateInput.value === "" ? Date.now() : releaseDateInput.value).toISOString();
           this.dispatchJSONEvent();
           return true;
         }

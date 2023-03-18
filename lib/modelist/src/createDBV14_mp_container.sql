@@ -10,7 +10,7 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,N
 -- -----------------------------------------------------
 -- Schema horakja19_1
 -- -----------------------------------------------------
-DROP SCHEMA IF EXISTS `horakja19_1` ;
+-- DROP SCHEMA IF EXISTS `horakja19_1` ;
 
 -- -----------------------------------------------------
 -- Schema horakja19_1
@@ -59,6 +59,8 @@ CREATE TABLE IF NOT EXISTS `horakja19_1`.`dynamicThemes` (
   `dynamicThemesID` INT UNSIGNED NOT NULL AUTO_INCREMENT,
   `themesSRC` CHAR(10) NOT NULL,
   `mediaSRC` CHAR(10) NULL,
+  a INT NOT NULL,
+  b INT NOT NULL,
   PRIMARY KEY (`dynamicThemesID`))
 ENGINE = InnoDB;
 
@@ -169,6 +171,23 @@ CREATE TABLE IF NOT EXISTS `horakja19_1`.`themes` (
 ENGINE = InnoDB;
 
 
+INSERT INTO `themes` (`src`, `usersID`, `name`, `hash`) VALUES
+('000000_d', 0, 'Nocoma (Dark)', 'd7210444a19e7455f62acf7a5f10445b072f78b6'),
+('000000_l', 0, 'Nocoma (Light)', 'e633ecbd8b1817fb7ec7ad3295e7c2f4a61c213c'),
+('000001_d', 0, 'Leafy (Dark)', '7692ea40457abe48ff3838f71f391bd1d74cd1b9'),
+('000001_l', 0, 'Leafy (Light)', 'be4d3a79fb0f847ec2214b29e4bed3ad8577761a'),
+('000002_d', 0, 'Orange (Dark)', '81c1e78b576b2170a8a655d4858e7267e57ffab2'),
+('000002_l', 0, 'Orange (Light)', 'c56d87a9c89f101da89e18ff307386bec73ad460'),
+('000003_l', 0, 'Weathered Copper (Light)', '14a219ca3605ce11e33a99ec5097a57e42fae142'),
+('000004_l', 0, 'Ruby (Light)', 'ca1d037bfccfdbb19194887e15a9f98e832397df'),
+('000005_b', 0, 'Idea (Dark Blue)', 'e43231edd743c13f28e5ab4918a326d1347a8b28'),
+('000005_w', 0, 'Idea (Light)', 'a1448b76a8e4d9a20ac643e84d2e940e52e42a32'),
+('000006_d', 0, 'Glacier Ice (Dark)', '382e8fafc740175f6c61c8665242fced1ec5d966'),
+('000006_l', 0, 'Glacier Ice (Light)', '8aede0b85e227329ccd848a87f40dbd52d821be8'),
+('000007_d', 0, 'Red Wine (Dark)', 'f316afa992dd6f25ee129a5e926a8f0cd78333e0'),
+('000008_d', 0, 'Cherry Blossom (Dark)', '7054b7d770eb571076a7b9d60076d7f50ca01f88');
+
+
 -- -----------------------------------------------------
 -- Table `horakja19_1`.`timeoutMails`
 -- -----------------------------------------------------
@@ -254,16 +273,6 @@ BEGIN
 	DELETE FROM `passwordRecoveries` WHERE `passwordRecoveries`.passwordRecoveriesID = OLD.ID;
     DELETE FROM `verificationCodes` WHERE `verificationCodes`.verificationCodesID = OLD.ID;
 END$$
-
-
-USE `horakja19_1`$$
-DROP TRIGGER IF EXISTS `horakja19_1`.`websites_BEFORE_DELETE` $$
-USE `horakja19_1`$$
-CREATE DEFINER = CURRENT_USER TRIGGER `horakja19_1`.`websites_BEFORE_DELETE` BEFORE DELETE ON `websites` FOR EACH ROW
-BEGIN
-
-END
-$$
 
 
 DELIMITER ;

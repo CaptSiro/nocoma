@@ -63,7 +63,9 @@ class WRoot extends ContainerWidget { // var is used because it creates referenc
     }, this, editable);
     this.page = WPage.build({}, this, editable);
     this.commentSection = WCommentSection.build({
-      areCommentsAvailable: json.areCommentsAvailable
+      areCommentsAvailable: json.areCommentsAvailable,
+      webpageID: webpage.ID,
+      creatorID: webpage.usersID
     }, this, editable);
     
     this.appendWidget(this.header);

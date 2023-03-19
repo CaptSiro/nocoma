@@ -5,6 +5,8 @@ class WCommentSection extends Widget {
   /**
    * @typedef CommentSectionJSONType
    * @property {boolean} areCommentsAvailable
+   * @property {boolean} webpageID
+   * @property {boolean} creatorID
    *
    * @typedef {CommentSectionJSONType & WidgetJSON} CommentSectionJSON
    */
@@ -14,6 +16,11 @@ class WCommentSection extends Widget {
   #topLevelInfiniteLoader;
   
   #commentCount;
+  
+  #json;
+  get json () {
+    return this.#json;
+  }
   
   /**
    * @param {CommentSectionJSON} json
@@ -27,6 +34,7 @@ class WCommentSection extends Widget {
     this.removeMargin();
     this.childSupport = this.childSupport;
     this.commentRoot = commentRoot;
+    this.#json = json;
     const root = this.getRoot();
     
     if (!json.areCommentsAvailable) {
@@ -49,7 +57,7 @@ class WCommentSection extends Widget {
       Div("comments-count", [
         "Comments: ",
         Async(async () => {
-          this.#commentCount = Span(__, Number(await AJAX.get("/comments/count/" + webpage.ID, TextHandler(), {}, AJAX.SERVER_HOME)).toLocaleString());
+          this.#commentCount = Span(__, Number(await AJAX.get("/comments/count/" + json.webpageID, TextHandler(), {}, AJAX.SERVER_HOME)).toLocaleString());
           return this.#commentCount;
         }, Span(__, "..."))
       ]),
@@ -98,7 +106,7 @@ class WCommentSection extends Widget {
    * @param {number} index
    */
   async topLevelCommentLoader (index) {
-    const comments = await AJAX.get(`/comments/${webpage.ID}/${index}`, JSONHandler(), AJAX.CORS_OPTIONS, AJAX.SERVER_HOME);
+    const comments = await AJAX.get(`/comments/${this.#json.webpageID}/${index}`, JSONHandler(), AJAX.CORS_OPTIONS, AJAX.SERVER_HOME);
   
     let element;
     for (const comment of comments) {
@@ -248,7 +256,7 @@ widgets.define("WCommentSection", WCommentSection);
  */
 /**
  * @param {DatabaseComment} comment
- * @param {Widget} context
+ * @param {WCommentSection} context
  * @param {boolean} isJustForShow
  */
 function Comment (comment, context, isJustForShow = false) {
@@ -485,9 +493,15 @@ function Comment (comment, context, isJustForShow = false) {
   );
 }
 
+/**
+ * @param commentID
+ * @param {WCommentSection} context
+ * @param container
+ * @return {function(*): Promise<HTMLElement>}
+ */
 function subCommentsLoader (commentID, context, container) {
   return async (index) => {
-    const comments = await AJAX.get(`/comments/${webpage.ID}/replies/${commentID}/${index}`, JSONHandler(), AJAX.CORS_OPTIONS, AJAX.SERVER_HOME);
+    const comments = await AJAX.get(`/comments/${context.json.webpageID}/replies/${commentID}/${index}`, JSONHandler(), AJAX.CORS_OPTIONS, AJAX.SERVER_HOME);
     
     let element;
     for (const comment of comments) {
@@ -503,6 +517,12 @@ function subCommentsLoader (commentID, context, container) {
   }
 }
 
+/**
+ * @param {WCommentSection} context
+ * @param parentCommentID
+ * @param isJustForShow
+ * @return {HTMLElement}
+ */
 function CommentForm (context, parentCommentID = undefined, isJustForShow = false) {
   const textEditor = WTextEditor.build({
     content: [],
@@ -534,7 +554,7 @@ function CommentForm (context, parentCommentID = undefined, isJustForShow = fals
                 OptionalComponent(user.level === 0,
                   Div("admin", "Admin")
                 ),
-                OptionalComponent(webpage.usersID === user.ID,
+                OptionalComponent(context.json.creatorID === user.ID,
                   Div("creator", "Creator")
                 ),
               ])
@@ -559,7 +579,7 @@ function CommentForm (context, parentCommentID = undefined, isJustForShow = fals
             const comment = await AJAX.post("/comments/", JSONHandler(), AJAX.addCORSHeaders({
               body: JSON.stringify({
                 parentCommentID,
-                websitesID: webpage.ID,
+                websitesID: context.json.webpageID,
                 content: payload
               })
             }), AJAX.SERVER_HOME);
@@ -572,7 +592,7 @@ function CommentForm (context, parentCommentID = undefined, isJustForShow = fals
             cancelForm(evt);
             context.updateCommentCount(1);
             
-            comment.creatorID = webpage.usersID;
+            comment.creatorID = context.json.creatorID;
             comment.isPinned = false;
             comment.reactionCount = 0;
             comment.username = user.username;

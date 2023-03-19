@@ -117,54 +117,93 @@ function loadPosts (index) {
       let element = undefined;
       
       for (const post of posts) {
-        element = (
-          PostComponent("page", post, [
-            OptionBodyItem("View", {
-              listeners: {
-                click: () => redirect(createPostLink(post.website, post.src))
+        let hidden = true;
+        let commentNumber = "...";
+        const commentOption = (
+          OptionBodyItem([
+            "Show Comments (",
+            Async(async () => {
+              commentNumber = Number(await AJAX.get("/comments/count/" + post.ID, TextHandler(), {}, AJAX.SERVER_HOME)).toLocaleString();
+              return Span(__, commentNumber);
+            }, Span(__, "...")),
+            ")"
+          ], {
+            listeners: {
+              click: () => {
+                const commentsMount = commentOption.closest(".post").parentElement.querySelector(".comments-mount");
+                if (commentsMount.children.length === 0) {
+                  const commentSection = WCommentSection.build({
+                    areCommentsAvailable: true,
+                    webpageID: post.ID,
+                    creatorID: post.usersID
+                  }, null, false);
+                  
+                  commentsMount.append(commentSection.rootElement);
+                }
+                
+                hidden = !hidden;
+                commentsMount.classList.toggle("display-none", hidden);
+                
+                commentOption.querySelector("span.label").textContent = hidden === true
+                  ? "Show Comments (" + commentNumber + ")"
+                  : "Hide Comments (" + commentNumber + ")";
               }
-            }),
-            OptionBodyItem("Edit", {
-              listeners: {
-                click: () => redirect(AJAX.SERVER_HOME + "/editor/" + post.src)
-              },
-            }),
-            OptionBodyItem("Delete", {
-              listeners: {
-                click: evt => {
-                  AJAX.delete("/page/delete/" + post.src, JSONHandlerSync(response => {
-                    if (response.error !== undefined) {
-                      //TODO: create my own alert
-                      alert(response.error);
-                      return;
+            }
+          })
+        );
+        
+        element = (
+          Div(__, [
+            PostComponent("page", post, [
+              OptionBodyItem("View", {
+                listeners: {
+                  click: () => redirect(createPostLink(post.website, post.src))
+                }
+              }),
+              commentOption,
+              OptionBodyItem("Edit", {
+                listeners: {
+                  click: () => redirect(AJAX.SERVER_HOME + "/editor/" + post.src)
+                },
+              }),
+              OptionBodyItem("Delete", {
+                listeners: {
+                  click: evt => {
+                    AJAX.delete("/page/delete/" + post.src, JSONHandlerSync(response => {
+                      if (response.error !== undefined) {
+                        //TODO: create my own alert
+                        alert(response.error);
+                        return;
+                      }
+            
+                      evt.target.closest(".post").remove();
+                    }));
+                  }
+                },
+              }),
+              ...OptionalComponents(post.isTakenDown,[
+                OptionBodyItem("View appeal message", {
+                  listeners: {
+                    click: () => {
+                      const win = showWindow("take-down-message");
+                      win.dataset.postID = String(post.ID);
+                      win.dataset.postTitle = post.title;
+                      win.dispatchEvent(new CustomEvent("fetch"));
                     }
-          
-                    evt.target.closest(".post").remove();
-                  }));
-                }
-              },
-            }),
-            ...OptionalComponents(post.isTakenDown,[
-              OptionBodyItem("View appeal message", {
-                listeners: {
-                  click: () => {
-                    const win = showWindow("take-down-message");
-                    win.dataset.postID = String(post.ID);
-                    win.dataset.postTitle = post.title;
-                    win.dispatchEvent(new CustomEvent("fetch"));
                   }
-                }
-              }),
-              OptionBodyItem("Appeal to take down", {
-                listeners: {
-                  click: () => {
-                    postToAppealFor = post;
-                    $("#post-title").textContent = post.title;
-                    showWindow("appeal");
+                }),
+                OptionBodyItem("Appeal to take down", {
+                  listeners: {
+                    click: () => {
+                      postToAppealFor = post;
+                      $("#post-title").textContent = post.title;
+                      showWindow("appeal");
+                    }
                   }
-                }
-              }),
-            ])
+                }),
+              ])
+            ]),
+            Div("comments-mount display-none editor")
           ])
         );
         

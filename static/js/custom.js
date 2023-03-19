@@ -7,7 +7,7 @@ function OptionVisible () {
 }
 
 /**
- * @param {string} label
+ * @param {ComponentContent} label
  * @param {ComponentOptions} options
  */
 function OptionBodyItem (label, options = undefined) {

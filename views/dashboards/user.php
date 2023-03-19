@@ -12,10 +12,13 @@
   <link rel="stylesheet" href="<?=$GLOBALS["__HOME__"]?>/public/css/user-dashboard.css">
   <link rel="stylesheet" href="<?=$GLOBALS["__HOME__"]?>/public/css/modal.css">
   <link rel="stylesheet" href="<?=$GLOBALS["__HOME__"]?>/public/css/forms.css">
+  <link rel="stylesheet" href="<?= $GLOBALS["__HOME__"] ?>/bundler/css/?widgets=WCommentSection,WRoot" id="widgets-styles">
   
   <link rel="icon" href="<?= $GLOBALS["__HOME__"] ?>/public/images/nocoma-icon.ico">
   
   <script src="<?=$GLOBALS["__HOME__"]?>/public/js/main-v2.js"></script>
+  <script src="<?=$GLOBALS["__HOME__"]?>/public/js/widget-core.js"></script>
+  <script src="<?= $GLOBALS["__HOME__"] ?>/bundler/js/?widgets=WCommentSection" id="widgets-scripts"></script>
   <script src="<?=$GLOBALS["__HOME__"]?>/public/js/custom.js"></script>
   <script src="<?=$GLOBALS["__HOME__"]?>/public/js/components/InfiniteScroller.js"></script>
   <script>
@@ -23,6 +26,8 @@
     AJAX.SERVER_HOME = "<?=$GLOBALS["__SERVER_HOME__"] ?? $GLOBALS["__HOME__"]?>";
     AJAX.HOST_NAME = "<?=$GLOBALS["env_home"]?>";
     AJAX.PROTOCOL = "<?=$GLOBALS["protocol"]?>";
+
+    const user = Object.freeze(JSON.parse(`<?= json_encode($GLOBALS["user"]) ?>`));
   </script>
   <script src="<?= $GLOBALS["__HOME__"] ?>/public/js/theme.js"></script>
   

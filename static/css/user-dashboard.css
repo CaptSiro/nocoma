@@ -95,45 +95,7 @@
 
 
 
-.comment {
-  padding: 32px;
-  display: flex;
-  flex-direction: column;
-  background-color: var(--container-1);
-  border-bottom: 1px solid var(--container-3);
-}
-.comment.new {
-  background-color: var(--container-0);
-  border-bottom: 1px solid var(--container-2);
-}
-.comment-view > *:last-child {
-  border-bottom: unset;
-}
-.comment .c-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-bottom: 8px;
-}
-.comment .c-msg {
-  text-align: justify;
-}
-.comment .c-controls {
-  padding-top: 8px;
-}
-.comment .c-reply {
-  padding: 16px;
-  padding-bottom: unset;
-}
 
-.comment-view .system-msg {
-  padding: 32px;
-  background-color: var(--container-1);
-  border-bottom: 1px solid var(--container-3);
-}
-.comment-view .system-msg * {
-  color: var(--text-color-2);
-}
 
 
 
